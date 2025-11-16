@@ -54,11 +54,29 @@ Consider that the document should be delivered to another team (unknown to you)
 
 # Business Model
 
+### Customer Segment:
+The target customer segment for EZshop is composed of owners of small shops who require a reliable, easy-to-use system to manage everyday store activities. The primary users include the owner and store employees, particularly cashiers, logistic operators and accountants.
+
+### Value Proposition:
+EZshop provides a desktop application for managing the main shop activities: sales processing, inventory tracking, suppliers and orders management and basic accounting.
+The application can run on multiple computers at the same time, ensuring availability and stability of the shop’s operations even without requiring an internet connection, if the computers are connected to the same local network. EZshop relies on some external system only to manage payments and can work with regular barcode scanners to scan products, so the cost of the solution for shop owners is limited.  
+
+### Revenue Stream:
+The shop owner pays an initial fee that covers the software licence(s) and installation, first employees training. After a warranty period, the client will pay for system updates and technical assistance if they need it.
+
+
 # Stakeholders
 
 | Stakeholder name | Description |
-| :--------------: | :---------: |
-| Stakeholder x..  |             |
+| :--------------: | :--------- |
+| Shop owner | Person who holds the role of system administrator |
+| Cashier  | Employee responsible for overseeing sales. Their job is to process a customer sale |
+| Logistic operator | Employee that manages inventory and handles orders to product suppliers |
+| Accountant | Employee who handles the accounting reports created by EZshop |
+| Cash station | Hardware and software system that allows customers to pay with cash. It automatically handles transactions and provides cash change. (e.g. [this](https://cashmatic.it/prodotti/selfpay/?gclid=Cj0KCQjwgpzIBhCOARIsABZm7vFn1HBO9fjzIP3ga-uvUXyKMNdOeX9g5ZvEqUyeSzf5ZBjQxBBWzq8aAj3jEALw_wcB)) |
+| POS station | Hardware and software system that allows customers to pay with credit cards. It automatically handles transactions with credit card circuits. (e.g. [this](https://www.mypos.com/it-it)) |
+| Product | Exchange good that can be purchased at the shop by customers |
+| Receipt printer | Dedicated printer system for producing the non-fiscal itemized receipt. (e.g. [this](https://www.amazon.it/NETUM-Stampante-termica-per-ricevute/dp/B0854CCF75?ref_=Oct_d_Oct_d_ss_d_6572840031_1&pd_rd_w=SIutK&content-id=amzn1.sym.3a84fb8b-d4d6-4483-8fd7-0000cb59ea5a&pf_rd_p=3a84fb8b-d4d6-4483-8fd7-0000cb59ea5a&pf_rd_r=X5XJMQ88AS3PNWAM8167&pd_rd_wg=YZ1PH&pd_rd_r=a73378a2-7d7f-458e-ba9d-d6eff854a21d&pd_rd_i=B0854CCF75)) |
 
 # Context Diagram and interfaces
 
@@ -70,12 +88,17 @@ Consider that the document should be delivered to another team (unknown to you)
 
 ## Interfaces
 
-\<describe here each interface in the context diagram>
 
-
-|   Actor   | Logical Interface | Physical Interface |
-| :-------: | :---------------: | :----------------: |
-| Actor x.. |                   |                    |
+|   Actor   |  Physical Interface | Logical Interface |
+| :-------: | :--------------- | :---------------- |
+| Shop owner | Monitor, mouse e keyboard / monitor touch| GUI (Graphic User Interface) |
+| Cashier  | Monitor, mouse e keyboard / monitor touch | GUI |
+| Logistic operator| Monitor, mouse e keyboard / monitor touch | GUI |
+| Accountant  | Monitor, mouse e keyboard / monitor touch | GUI |
+| Cash station  | Ethernet cable / Bluetooth / USB cable / WiFi | Cash station driver |
+| POS station  | Ethernet cable / Bluetooth / USB cable / WiFi | myPOS API: (integration tools and APIs are available [here](https://developers.mypos.com/en)) |
+| Product  | Barcode scanner (e.g. [this](https://www.amazon.it/Yanzeo-USB-Barcode-Scanner-computer/dp/B07KD4C7WL?pd_rd_w=yKpzM&content-id=amzn1.sym.58ed5d1b-41a3-4c6c-a38c-3416ea9905f1&pf_rd_p=58ed5d1b-41a3-4c6c-a38c-3416ea9905f1&pf_rd_r=TFX7D02PYAGKE88FQ9XH&pd_rd_wg=mBPpY&pd_rd_r=a4f43118-426a-4c39-863c-88847ba043fa&pd_rd_i=B07KD4C7WL&th=1)) | Scanner driver |
+| Receipt printer | Bluetooth / USB cable | Operating System API for printers |
 
 
 # Functional and non functional requirements
