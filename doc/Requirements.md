@@ -150,8 +150,16 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Use case brief
 |  UC name   | Goal         | Description |
-| :---:    | :---------: | :---: |
-|          |             |       |
+| :---    | :--------- | :--- |
+| 1: Sale management | Complete a sale between the shop and a customer, involving multiple products and updating the inventory accordingly | Cashiers can start a new sale, add or remove products from the sale, specify manual discount and select an appropriate payment method. After the successfull payment, a receipt is printed and all quantities for products involved in the sale are updated
+| 2: Product management | Define and update product information | Logistic operators can add new products, specify various information (e.g. discount, price, taxes...) and update products information when needed
+| 3: Inventory management | Track and update products quantities in the shop, manage orders to suppliers | Logistic operators can track orders to suppliers, including the involved products and suppliers; the inventory quantities for each product get automatically updated once an order is confirmed as delivered
+| 4: Supplier management | Define and update various product suppliers information | Logistic operators can add new product suppliers into the system, specifying some contact information and with the ability to update each supplier information if needed
+| 5: Accounting report creation | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
+6: Account management | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
+
+
+
 
 
 
