@@ -105,9 +105,6 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Functional Requirements
 
-\<In the form DO SOMETHING, or VERB NOUN, describe high level capabilities of the system>
-
-\<they match to high level use cases>
 
 |  ID   | Name | Description |
 | :---: | :--------- | :--------- |
@@ -140,7 +137,6 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Non Functional Requirements
 
-\<Describe constraints on functional requirements>
 
 |   ID    | Type (efficiency, reliability, ..) | Description | Refers to |
 | :-----: | :--------------------------------: | :--------- | :------- |
