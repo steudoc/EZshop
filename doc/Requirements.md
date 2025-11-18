@@ -143,17 +143,31 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 \<Describe constraints on functional requirements>
 
 |   ID    | Type (efficiency, reliability, ..) | Description | Refers to |
-| :-----: | :--------------------------------: | :---------: | :-------: |
-|  NFR1   |                                    |             |           |
-|  NFR2   |                                    |             |           |
-|  NFR3   |                                    |             |           |
-| NFRx .. |                                    |             |           |
+| :-----: | :--------------------------------: | :--------- | :------- |
+|  NFR1 | Usability | After the initial training, even not tech-savvy should be able to use the system | All FR |
+| NFR2 | Efficiency | Product information should be gathered in less than 1 second upon code scan | FR1.2, FR2 |
+| NFR3 | Efficiency | Monthly sales report should take less than 1 minute to compute | FR4 |
+| NFR4 | Efficiency | Stock quantity for products should be updated in less than 10 minutes after transaction | FR2, FR3 |
+| NFR5 | Efficiency | Manual discounts should be applied in less than 1 second upon confirmation | FR1.5 |
+| NFR6 | Efficiency | All account-related operations should take the system less than then 30s to complete | FR5 |
+| NFR7 | Efficiency | All orders for a specific product / specific supplier should be retrieved in less than 10 seconds | FR3 |
+| NFR8 | Reliability | Less than a week of downtime per year | All FR |
+| NFR9 | Portability | Desktop computer running windows from version 10 | All FR |
+| NFR10 | Portability | Software application must be responsive (the size of GUI must change with different size screen) | All FR |
+| NFR11 | Security | Passwords for EZShop accounts should not be directly saved | FR5 |
+
 
 # Table of rights
 
-|  Actor   | FR1         | FRx |
-| :---:    | :---------: | :---: |
-|          |             |       |
+|  Actor   | FR1         | FR2 | FR3 | FR4 | FR5 | 
+| :---:    | :---------: | :---: | :---: | :---: | :---: |
+| Cashier | X | | | | |
+| Shop owner | X | X | X | X | X | 
+| Logistic operator | | X | X | |   |
+| Cash station | | | | X | |
+| Pos station | | | | | |
+| Barcode scanner | | | | | | 
+| Receipt printer | | | | | |
 
 # Use case diagram and use cases
 
