@@ -31,30 +31,30 @@ Consider the EZShop project as described in your requirements document, assume t
 | design document      | 15 |
 | GUI prototype        | 35 |
 | EZshop application   | 217 (total) |
-| - GUI |  |
-| -- GUI structure design | 10 |
-| -- tabs |   |
-| --- login tab | 3 |
-| --- sale management tab(s) | 30 |
-| --- product inventory management tab(s) | 15 | 
-| --- orders management tab(s) | 10 | 
-| --- suppliers management tab(s)  | 6 | 
-| --- accounting tab(s)  | 15 | 
-| --- EZshop accounts management tab(s)  | 6 |
-| - backend |  |
-| -- core module |   |
-| --- low-level design | 30 |
-| --- source code | 50 |
-| -- DB management module |   |
-| --- low-level design | 7 |
-| --- source code | 15 |
-| -- GUI integration module |  |
-| --- low-level design | 5 |
-| --- source code | 15 |
+| &nbsp;&nbsp;&nbsp; GUI |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GUI structure design | 10 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tabs |   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; login tab | 3 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sale management tab(s) | 30 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; product inventory management tab(s) | 15 | 
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; orders management tab(s) | 10 | 
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; suppliers management tab(s)  | 6 | 
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; accounting tab(s)  | 15 | 
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EZshop accounts management tab(s)  | 6 |
+| &nbsp;&nbsp;&nbsp; backend |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; core module |   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; low-level design | 30 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source code | 50 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DB management module |   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; low-level design | 7 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source code | 15 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GUI integration module |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; low-level design | 5 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source code | 15 |
 | database |  |
-| - schema definition document | 15 |
-| - DB tables | 15 |
-| - DB optimization structures | 5 |
+| &nbsp;&nbsp;&nbsp; schema definition document | 15 |
+| &nbsp;&nbsp;&nbsp; DB tables | 15 |
+| &nbsp;&nbsp;&nbsp; DB optimization structures | 5 |
 | user guide | 15 |
 
 
@@ -67,44 +67,44 @@ step 1: activities (WBS), step 2 Gantt chart
 | Activity name | Estimated effort (person hours) |
 | ------------- | ------------------------------- |
 | Requirements definition | |
-| - explore target market needs | 16 |
-| - define functional requirements | 29 |
-| - define non-functional requirements | 5 |
+| &nbsp;&nbsp;&nbsp; explore target market needs | 16 |
+| &nbsp;&nbsp;&nbsp; define functional requirements | 29 |
+| &nbsp;&nbsp;&nbsp; define non-functional requirements | 5 |
 | Design | |
-| - redact system design document | 10 |
-| - GUI prototype | 35 |
-| - explore available development technologies| |
-| -- choose programming language | 4 |
-| -- choose GUI framework | 8 |
-| -- choose database technology | 4 |
-| -- choose CM tool | 2 |
+| &nbsp;&nbsp;&nbsp; redact system design document | 10 |
+| &nbsp;&nbsp;&nbsp; GUI prototype | 35 |
+| &nbsp;&nbsp;&nbsp; explore available development technologies| |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; choose programming language | 4 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; choose GUI framework | 8 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; choose database technology | 4 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; choose CM tool | 2 |
 | Application developement| |
-| - software architecture definition | 20 |
-| - implementation| |
-| -- GUI creation| |
-| --- tabs creation | 60 |
-| --- tabs documentation | 10 |
-| --- initial GUI validation | 25 |
-| -- source code creation| |
-| --- coding | 100 |
-| --- testing | 10 |
-| --- documentation | 10 |
-| -- db creation| |
-| --- db schema definition | 15 |
-| --- db schema documentation | 2 |
-| --- db implementation | 20 |
-| -- DB integration | 10 |
-| -- GUI integration | 10 |
-| - validation | 20 |
-| - final polish and bug-fixes | 18 |
-| - User guide development | 30 |
+| &nbsp;&nbsp;&nbsp; software architecture definition | 20 |
+| &nbsp;&nbsp;&nbsp; implementation| |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GUI creation| |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tabs creation | 60 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tabs documentation | 10 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; initial GUI validation | 25 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source code creation| |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coding | 100 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; testing | 10 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; documentation | 10 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; db creation| |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; db schema definition | 15 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; db schema documentation | 2 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; db implementation | 20 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DB integration | 10 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GUI integration | 10 |
+| &nbsp;&nbsp;&nbsp; validation | 20 |
+| &nbsp;&nbsp;&nbsp; final polish and bug-fixes | 18 |
+| &nbsp;&nbsp;&nbsp; User guide development | 30 |
 
 
 ###
 
 ## Gantt chart
 
-![Gantt chart for EZshop project](EZshop_estimation_gantt_img_cut.png)
+![Gantt chart for EZshop project](./images/EstimationGantt.png)
 
 Estimated duration: 4 weeks
 
