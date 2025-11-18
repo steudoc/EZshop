@@ -190,31 +190,21 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ### Use case 1, UC1
 
-| Actors Involved  |                                                                      |
-| :--------------: | :------------------------------------------------------------------: |
-|   Precondition   | \<Boolean expression, must evaluate to true before the UC can start> |
-|  Post condition  |  \<Boolean expression, must evaluate to true after UC is finished>   |
-| Nominal Scenario |         \<Textual description of actions executed by the UC>         |
-|     Variants     |                      \<other normal executions>                      |
-|    Exceptions    |                        \<exceptions, errors >                        |
+|||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Cashier, Cash station, POS station, Barcode scanner, Receipt printer |
+| Nominal Scenario | 1.1 |
+|     Variants     | 1.2, 1.3 |
+|    Exceptions    | 1.4, 1.5 |
 
-##### Scenario 1.1
 
-\<describe here scenarios instances of UC1>
-
-\<a scenario is a sequence of steps that corresponds to a particular execution of one use case>
-
-\<a scenario is a more formal description of a story>
-
-\<only relevant scenarios should be described>
-
-|  Scenario 1.1  |                                                                            |
-| :------------: | :------------------------------------------------------------------------: |
+|Scenario 1.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | \<Boolean expression, must evaluate to true before the scenario can start> |
 | Post condition |  \<Boolean expression, must evaluate to true after scenario is finished>   |
 
 
-Steps
+### Steps
 
 |     Actor's action      |  System action                                                                    | FR needed |
 | :------------: | :------------------------------------------------------------------------: |:---:|
