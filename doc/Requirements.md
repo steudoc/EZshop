@@ -190,15 +190,14 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ### Use case 1, UC1
 
-| Actors Involved  |                                                                      |
-| :--------------: | :------------------------------------------------------------------: |
-|   Precondition   | \<Boolean expression, must evaluate to true before the UC can start> |
-|  Post condition  |  \<Boolean expression, must evaluate to true after UC is finished>   |
+|||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | \<actors involved>|
 | Nominal Scenario |         \<Textual description of actions executed by the UC>         |
 |     Variants     |                      \<other normal executions>                      |
 |    Exceptions    |                        \<exceptions, errors >                        |
 
-##### Scenario 1.1
+#### Scenario 1.1
 
 \<describe here scenarios instances of UC1>
 
@@ -214,7 +213,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Post condition |  \<Boolean expression, must evaluate to true after scenario is finished>   |
 
 
-Steps
+### Steps
 
 |     Actor's action      |  System action                                                                    | FR needed |
 | :------------: | :------------------------------------------------------------------------: |:---:|
