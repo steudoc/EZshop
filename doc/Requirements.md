@@ -109,11 +109,34 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 \<they match to high level use cases>
 
-|  ID   | Description |
-| :---: | :---------: |
-|  FR1  |             |
-|  FR2  |             |
-| FRx.. |             |
+|  ID   | Name | Description |
+| :---: | :--------- | :--------- |
+|  FR1  | Manage sales | |
+| FR1.1 || Start/End sale |
+| FR1.2 || Insert/delete product into an existing sale (both with scanner or manually with keyboard input or from GUI) |
+| FR1.3 || Specify for each product the amount of unit |
+| FR1.4 || Print receipt (with products list, price, taxes, total price, total taxes, shop info) |
+| FR1.5 || Compute price and apply discount for product during sale |
+| FR1.6 || Allow to manually override discount on a selected product during sale |
+| FR1.7 || Allow the transaction to be canceled before ending the sale |
+|  FR2  | Manage products ||
+| FR2.1 || Add products (need to save code, name, category (e.g. fruit), price, unit of measurement, taxes, saleability (ex. saleable, not saleable), optional comment, optional discount) |
+| FR2.2 || Update products information |
+| FR3 | Manage inventory ||
+| FR3.1 || Manage product stock/incoming quantity (manually and automatically, both after a sale and when a product is ordered) |
+| FR3.2 || Inform about low-on-stock products (“low” is a threshold user-defined) |
+| FR3.3 || Manage list of suppliers (with info about name, contact information) |
+| FR3.4 || Keep track of orders (with info about products, supplier, order date, arrival date, total quantity, total cost, state (e.g. delivered, canceled, in-progress)) |
+| FR3.5 || Confirm orders to automatically update inventory quantity for the product involved in the order |
+| FR4 | Supporting accounting ||
+| FR4.1 || Gather sales and orders data for a specific period of time, to compute expenses and revenue|
+| FR4.2 || Group sales and orders data with a certain time granularity (e.g. date, week, month, quarter) |
+| FR4.3 || Support manual inclusion of other expenses (i.e. light bills, employees salary…) |
+| FR4.4 || Generate report file about sales, revenue and inventory costs |
+| FR5 | Manage EZShop accounts ||
+| FR5.1 || Create/remove account |
+| FR5.2 || Change permissions for existing account |
+| FR5.3 || Authenticate existing account (login/logout) |
 
 ## Non Functional Requirements
 
