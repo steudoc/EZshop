@@ -176,16 +176,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | 5: Accounting report creation | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
 6: Account management | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
-
-
-
-
-
 ## Use case diagram
 
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
-
-\<next describe here each use case in the UCD>
+![Use case diagram for EZshop project](./images/UseCaseDiagram.png)
 
 ## Use case 1, UC1 - Sale management
 
