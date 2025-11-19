@@ -116,6 +116,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | FR1.5 || Compute price and apply discount for product during sale |
 | FR1.6 || Allow to manually override discount on a selected product during sale |
 | FR1.7 || Allow the transaction to be canceled before ending the sale |
+|FR1.8||Show product information|
 |  FR2  | Manage products ||
 | FR2.1 || Add products (need to save code, name, category (e.g. fruit), price, unit of measurement, taxes, saleability (ex. saleable, not saleable), optional comment, optional discount) |
 | FR2.2 || Update products information |
@@ -188,31 +189,110 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 \<next describe here each use case in the UCD>
 
-### Use case 1, UC1
+## Use case 1, UC1 - Sale management
 
-|||
+|Use case 1||
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Cashier, Cash station, POS station, Barcode scanner, Receipt printer |
 | Nominal Scenario | 1.1 |
 |     Variants     | 1.2, 1.3 |
 |    Exceptions    | 1.4, 1.5 |
 
+### Scenario 1.1 - Successful sale
 
 |Scenario 1.1 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  | \<Boolean expression, must evaluate to true before the scenario can start> |
-| Post condition |  \<Boolean expression, must evaluate to true after scenario is finished>   |
+|  Precondition  | The cashier has a valid EZshop account and is logged in. The system is operational, Cash station, POS station and receipt printer are connected. |
+| Post condition |  The sale is closed, the product inventory is automatically decremented, the receipt is printed, and the sales revenue data is recorded for accounting. |
 
 
 ### Steps
 
-|     Actor's action      |  System action                                                                    | FR needed |
-| :------------: | :------------------------------------------------------------------------: |:---:|
-|               |                                                                 |  |
-|   |  |  |
-##### Scenario 1.2
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The cashier starts a new sale|The system initializes a new sale transaction.|FR1.1|
+|The cashier inserts a product into the sale (by scanning barcode or manual input).|The system retrieves product information (code, name, price, taxes), applies automatic discounts, and adds the item to the list.| FR1.2 |
+| The cashier selects a product and inserts the specific quantity (for items with a price per unit of measure). | The system computes the specific price using the inserted quantity and the price per unit of measure. | FR1.3 |
+| The cashier manually overrides the discount on a selected product. | The system updates the item price based on the manually applied discount. | FR1.6 |
+|The cashier selects the option to end the sale.|The system calculates the total amount (total price, total taxes).|FR1.1|
+|The cashier confirms the payment (after processing via Cash or POS).|The system updates the stock by decrementing the inventory for the sold items.| FR3.1 |
+||The system prints the itemized receipt.|FR1.4|
 
-##### Scenario 1.x
+### Scenario 1.2 (Variant) - Removing product from active sale
+
+|Scenario 1.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as 1.1. The sale is active and contains at least one product that the consumer decides not to purchase. |
+| Post condition | The undesired product is removed from the ale list, and the total sale price is accurately updated to reflect the removal |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The cashier selects a product from the active sale list and triggers the "delete product" function.|The system removes the selected product from the current transaction list.|FR1.2|
+||The system recalculates and updates the displayed total sale amount (and taxes).|FR1.5|
+
+### Scenario 1.3 (Variant) - Product insertion with display message
+
+|Scenario 1.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as 1.1. A specific product has been configured with a message to be displayed upon insertion. |
+| Post condition | The system inserts the product into the sale, and a message is shown to the cashier. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The cashier scans or manually inputs the product code.|The system adds the product to the sale list.|FR1.2|
+||The system retrieves the specific "optional comment" associated with the product and displays it as a message on the screen.|FR2.1|
+|The cashier acknowledges the message.|The system closes the message prompt and returns focus to the active sale, allowing the process to continue.|FR1.8|
+
+### Scenario 1.4 (Exception) - Product cannot be sold
+
+|Scenario 1.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+| Precondition | Same as 1.1. |
+| Post condition | An error message is displayed, and the product is not added to the sale. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The cashier attempts to insert a product via scan or manual entry.|The system searches the database. Upon failing to find the code or finding the product marked as "not saleable," it blocks the addition and displays a specific error message (e.g., "Product code not found").|FR1.2|
+|The cashier acknowledges the error and corrects the input or cancels the insertion.|The system clears the error message and resets the input field, ready for the next action.|FR1.2|
+
+### Scenario 1.5 (Exception) - Receipt printing failure
+
+|Scenario 1.5 |  |
+| :------------: | :------------------------------------------------------------------------ |
+| Precondition | After the successful completion of the financial transaction, the system attempts to send the receipt data to the dedicated receipt printer but the print fails (e.g., printer is offline, out of paper, driver error). |
+| Post condition | The sale is recorded and inventory is updated. An error message informs the cashier of the printing failure. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+||The system catches the printer error, ensures the sale record and inventory update are saved, and displays an error message detailing the issue to the cashier.|FR1.4|
+|The cashier selects the option to retry printing.|The system resends the print command to the receipt printer.|FR1.4|
+|The cashier selects the option to skip the printing.|The system closes the error prompt and finalizes the interface workflow (the sale remains valid in the database).|FR1.4|
+
+### Scenario 1.6 (Exception) - Payment not completed
+
+|Scenario 1.6 |  |
+| :------------: | :------------------------------------------------------------------------ |
+| Precondition | Same as scenario 1.1, the cashier has added all products to the sale. |
+| Post condition | The payment transaction is cancelled. At this stage, it is decided whether to cancel the entire sale or to choose a new payment method. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|(Case A: Cash) The cashier chooses to cancel the ongoing cash payment process.|The system stops the cash payment workflow and returns to the main payment selection menu.|FR1.7|
+|(Case B: POS) The external POS station declines the card transaction.|The system displays an error message (e.g., "Transaction Declined") and automatically returns to the main payment selection menu.|FR1.7|
+|(Option A) The cashier selects the option to cancel the sale from the menu.|The system discards the current transaction data and closes the sale without updating the database (inventory/revenue).|FR1.1|
+|(Option B) The cashier selects an alternative payment method to retry.|The system initiates the new payment process for the same transaction total.|FR1.1|
+
+
 
 ### Use case 2, UC2
 
