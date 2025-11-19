@@ -386,7 +386,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 ..
 
 
-## Use case 5, UC4 - Accounting report
+## Use case 5, UC4 - Accounting report management
 |Use case 5||
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Accountant |
