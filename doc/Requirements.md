@@ -175,7 +175,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | 2: Product management | Define and update product information | Logistic operators can add new products, specify various information (e.g. discount, price, taxes...) and update products information when needed
 | 3: Inventory management | Track and update products quantities in the shop, manage orders to suppliers | Logistic operators can track orders to suppliers, including the involved products and suppliers; the inventory quantities for each product get automatically updated once an order is confirmed as delivered
 | 4: Supplier management | Define and update various product suppliers information | Logistic operators can add new product suppliers into the system, specifying some contact information and with the ability to update each supplier information if needed
-| 5: Accounting report creation | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
+| 5: Accounting report management | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
 6: Account management | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
 
@@ -301,6 +301,77 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 ### Use case x, UCx
 
 ..
+
+
+## Use case 5, UC4 - Accounting report
+|Use case 5||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Accountant |
+| Nominal Scenario | 5.1 |
+|     Variants     | 5.2 |
+|    Exceptions    | 5.3, 5.4 |
+
+### Scenario 5.1 - Report creation
+
+|Scenario 5.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Accountant has valid EZshop account and is logged in. | 
+| Post condition |  An accounting report is generated for all expenses and revenue in a specified date-range. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| A file with the specified name (and an appropriate extension) is created inside the destination folder of the pc, containing data about sales, revenue and inventory costs for the specified date range, with the selected granularity over time. | FR4.4
+
+### Scenario 5.2 (Variant) - Manual expense inclusion
+
+|Scenario 5.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |   Same as 5.1, but the accountant also wants to include external expenses to the report. | 
+| Post condition |  Same as 5.1, with the report also containing information about the specified external expenses. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|With a dedicated option, the accountant manually adds expenses occurring in a specific date within the selected date-range, with a certain amount of money and a description. | The systems displays a list of all manually added expenses, with their information. After being created, the accountant can still edit or remove expenses in the list. | FR4.3 |
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| A file with the specified name (and an appropriate extension) is created inside the destination folder of the pc, containing data about sales, manually included expenses, revenue and inventory costs for the specified date range, with the selected granularity over time. | FR4.4
+
+### Scenario 5.3 (Variant) - Empty report
+
+|Scenario 5.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |   Same as 5.1, but there is no data relative to the selected date-range. | 
+| Post condition | A warning message is displayed to the user, a report may be created. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| A warning message is displayed to the screen to inform about the absence of data for the selected date-range; the accountant can then choose to either abort the creation of the report or to create a report anyway. If the second option is chosen, a file will be created as in 5.1, but it will not contain any expenses or revenue data. | FR4.4
+
+### Scenario 5.4 (Exception) - OS failure to create report file
+
+|Scenario 5.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |   Same as 5.1, but for some reason the report file could not be created by the OS (e.g. memory is full, a file with the same name already exists in the destination folder, other…). | 
+| Post condition |An error message is displayed to the user. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| An error message is displayed to the screen with details about why the report file could not be created. The selected date range and all the other data (including manual expenses) are still present in the report creation tab, but no report is created yet. If the OS failure is resolved, the application should then be able to create the report as in 5.1. | 
+
 
 # Glossary
 
