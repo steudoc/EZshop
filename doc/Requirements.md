@@ -82,9 +82,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Context Diagram
 
-\<Define here Context diagram using UML use case diagram>
-
-\<actors are a subset of stakeholders>
+![Context Diagram for EZshop project](./images/ContextDiagram.png)
 
 ## Interfaces
 
@@ -178,16 +176,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | 5: Accounting report management | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
 6: Account management | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
-
-
-
-
-
 ## Use case diagram
 
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
-
-\<next describe here each use case in the UCD>
+![Use case diagram for EZshop project](./images/UseCaseDiagram.png)
 
 ## Use case 1, UC1 - Sale management
 
@@ -204,7 +195,6 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | The cashier has a valid EZshop account and is logged in. The system is operational, Cash station, POS station and receipt printer are connected. |
 | Post condition |  The sale is closed, the product inventory is automatically decremented, the receipt is printed, and the sales revenue data is recorded for accounting. |
-
 
 ### Steps
 
@@ -292,9 +282,102 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |(Option A) The cashier selects the option to cancel the sale from the menu.|The system discards the current transaction data and closes the sale without updating the database (inventory/revenue).|FR1.1|
 |(Option B) The cashier selects an alternative payment method to retry.|The system initiates the new payment process for the same transaction total.|FR1.1|
 
+## Use case 2, UC2 - Product management
 
+|Use case 1||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Logistic operator |
+| Nominal Scenario | 2.1, 2.3, 2.5 |
+|     Variants     |  |
+|    Exceptions    | 2.2, 2.4, 2.6 |
 
-### Use case 2, UC2
+### Scenario 2.1 - Add product
+
+|Scenario 2.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | The logistic operator has valid account and is logged in. |
+| Post condition |  A new product is added to the products inventory. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
+|The operator inputs product details (code, name, taxes, optional messages, optional discount).|he system validates the input formats.|FR2.1|
+|For products that needs a unit of measurement, the operator enters the price per unit in the price field and specifies the unit of measurement.|The system records the price and the specific unit of measurement (e.g., kg, liter).|FR2.1|
+|The operator inputs the initial quantity of the product.|The system prepares to initialize the stock level for this new product ID.|FR3.1|
+|The operator finalizes the creation.|The system saves the new product definition in the database.|FR2.1|
+||The system updates the inventory with the initial quantity.|FR3.1|
+||The system confirms the successful addition.|FR2.1|
+
+### Scenario 2.2 (Exception) - Code already registered
+
+|Scenario 2.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as in 2.1, but the code for the new product is already in the system. |
+| Post condition |  An error message is shown. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
+|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g., duplicate barcode, missing mandatory field), blocks the save operation, and displays an error message explaining the issue.|FR2.1|
+
+### Scenario 2.3 - Search product
+
+|Scenario 2.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as in 2.1. |
+| Post condition | The searched product is found. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The logistic operator opens the inventory tab and selects the option that allow to search a product by code.|The system displays the search input field.|FR2.2|
+|The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database, retrieves the matching product, and displays its details (code, name, price, current stock, etc.).|FR2.2, FR3.1|
+
+### Scenario 2.4 (Exception) - Product not found
+
+|Scenario 2.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as in 2.1, but the product searched is not found in the inventory. |
+| Post condition | An error message is shown. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The logistic operator opens the inventory tab and selects the option that allow to search a product by code.|The system displays the search input field.|FR2.2|
+|The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database. Upon failing to find a matching code, it displays an error message (e.g., "Product not found") informing the operator about the issue.|FR2.2|
+
+### Scenario 2.5 - Modify product
+
+|Scenario 2.5 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as in 2.1, and the logistic operator has searched and found a product from the inventory. |
+| Post condition | The product information is updated. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The logistic operator selects the option for editing the product information.|The system unlocks the product fields for editing, but keeps the "Product Code" field locked (read-only) to prevent modification.|FR2.2|
+|The operator updates the desired fields (e.g., price, name, tax) and confirms the modifications.|The system validates the new data, saves the changes to the database, and updates the inventory record.|FR2.2|
+
+### Scenario 2.6 (Exception) - Update product while a sale is in progress
+
+|Scenario 2.6 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | Same as in 2.5, but a sale is in progress. |
+| Post condition | An error message is shown. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|The logistic operator attempts to select the option to change or remove product information.|The system checks the status of the Sales module. Detecting that a sale is currently in progress, it blocks the operation and displays an error message (e.g., "Cannot modify inventory during active sale").|FR2.2|
 
 ..
 
