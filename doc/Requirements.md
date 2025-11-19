@@ -82,9 +82,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Context Diagram
 
-\<Define here Context diagram using UML use case diagram>
-
-\<actors are a subset of stakeholders>
+![Context Diagram for EZshop project](./images/ContextDiagram.png)
 
 ## Interfaces
 
