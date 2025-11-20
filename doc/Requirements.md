@@ -249,14 +249,14 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|The cashier attempts to insert a product via scan or manual entry.|The system searches the database. Upon failing to find the code or finding the product marked as "not saleable," it blocks the addition and displays a specific error message (e.g., "Product code not found").|FR1.2|
+|The cashier attempts to insert a product via scan or manual entry.|The system searches the database. Upon failing to find the code or finding the product marked as "not saleable," it blocks the addition and displays a specific error message (e.g. "Product code not found").|FR1.2|
 |The cashier acknowledges the error and corrects the input or cancels the insertion.|The system clears the error message and resets the input field, ready for the next action.|FR1.2|
 
 ### Scenario 1.5 (Exception) - Receipt printing failure
 
 |Scenario 1.5 |  |
 | :------------: | :------------------------------------------------------------------------ |
-| Precondition | After the successful completion of the financial transaction, the system attempts to send the receipt data to the dedicated receipt printer but the print fails (e.g., printer is offline, out of paper, driver error). |
+| Precondition | After the successful completion of the financial transaction, the system attempts to send the receipt data to the dedicated receipt printer but the print fails (e.g. printer is offline, out of paper, driver error). |
 | Post condition | The sale is recorded and inventory is updated. An error message informs the cashier of the printing failure. |
 
 ### Steps
@@ -279,7 +279,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |(Case A: Cash) The cashier chooses to cancel the ongoing cash payment process.|The system stops the cash payment workflow and returns to the main payment selection menu.|FR1.7|
-|(Case B: POS) The external POS station declines the card transaction.|The system displays an error message (e.g., "Transaction Declined") and automatically returns to the main payment selection menu.|FR1.7|
+|(Case B: POS) The external POS station declines the card transaction.|The system displays an error message (e.g. "Transaction Declined") and automatically returns to the main payment selection menu.|FR1.7|
 |(Option A) The cashier selects the option to cancel the sale from the menu.|The system discards the current transaction data and closes the sale without updating the database (inventory/revenue).|FR1.1|
 |(Option B) The cashier selects an alternative payment method to retry.|The system initiates the new payment process for the same transaction total.|FR1.1|
 
@@ -305,7 +305,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
 |The operator inputs product details (code, name, taxes, optional messages, optional discount).|he system validates the input formats.|FR2.1|
-|For products that needs a unit of measurement, the operator enters the price per unit in the price field and specifies the unit of measurement.|The system records the price and the specific unit of measurement (e.g., kg, liter).|FR2.1|
+|For products that needs a unit of measurement, the operator enters the price per unit in the price field and specifies the unit of measurement.|The system records the price and the specific unit of measurement (e.g. kg, liter).|FR2.1|
 |The operator inputs the initial quantity of the product.|The system prepares to initialize the stock level for this new product ID.|FR3.1|
 |The operator finalizes the creation.|The system saves the new product definition in the database.|FR2.1|
 ||The system updates the inventory with the initial quantity.|FR3.1|
@@ -323,7 +323,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
-|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g., duplicate barcode, missing mandatory field), blocks the save operation, and displays an error message explaining the issue.|FR2.1|
+|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g. duplicate barcode, missing mandatory field), blocks the save operation, and displays an error message explaining the issue.|FR2.1|
 
 ### Scenario 2.3 - Search product
 
@@ -351,7 +351,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the option that allow to search a product by code.|The system displays the search input field.|FR2.2|
-|The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database. Upon failing to find a matching code, it displays an error message (e.g., "Product not found") informing the operator about the issue.|FR2.2|
+|The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database. Upon failing to find a matching code, it displays an error message (e.g. "Product not found") informing the operator about the issue.|FR2.2|
 
 ### Scenario 2.5 - Modify product
 
@@ -365,7 +365,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator selects the option for editing the product information.|The system unlocks the product fields for editing, but keeps the "Product Code" field locked (read-only) to prevent modification.|FR2.2|
-|The operator updates the desired fields (e.g., price, name, tax) and confirms the modifications.|The system validates the new data, saves the changes to the database, and updates the inventory record.|FR2.2|
+|The operator updates the desired fields (e.g. price, name, tax) and confirms the modifications.|The system validates the new data, saves the changes to the database, and updates the inventory record.|FR2.2|
 
 ### Scenario 2.6 (Exception) - Update product while a sale is in progress
 
@@ -378,7 +378,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|The logistic operator attempts to select the option to change or remove product information.|The system checks the status of the Sales module. Detecting that a sale is currently in progress, it blocks the operation and displays an error message (e.g., "Cannot modify inventory during active sale").|FR2.2|
+|The logistic operator attempts to select the option to change or remove product information.|The system checks the status of the Sales module. Detecting that a sale is currently in progress, it blocks the operation and displays an error message (e.g. "Cannot modify inventory during active sale").|FR2.2|
 
 ## Use case 3, UC3 - Inventory management
 
@@ -574,10 +574,10 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 |Use case 6||
 | :--------------: | :------------------------------------------------------------------ |
-| Actors involved | Shop owner, cashier, accountant, logistic operator from 6.1 to 6.3. Shop owner from 6.4 to 6.8 |
-| Nominal Scenario | 6.1, 6.3, 6.4, 6.6, 6.7, 6.8 |
-|     Variants     |     |
-|    Exceptions    | 6.2, 6.5 |
+| Actors involved | Shop owner, cashier, accountant, logistic operator from 6.1 to 6.3. Shop owner from 6.4 to 6.10 |
+| Nominal Scenario | 6.1, 6.3, 6.4, 6.6, 6.8, 6.9 |
+|     Variants     |  6.7   |
+|    Exceptions    | 6.2, 6.5, 6.10 |
 
 
 ### Scenario 6.1 - Account authentication (Login)
@@ -592,7 +592,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The user enters their credentials (e.g., username and password) into the login interface. | The system validates the credentials, grants access to the system (the user is now logged in) and displays the main interface corresponding to the user's permissions. | FR5.4 |
+| The user enters their credentials (e.g. username and password) into the login interface. | The system validates the credentials, grants access to the system (the user is now logged in) and displays the main interface corresponding to the user's permissions. | FR5.4 |
 
 
 
@@ -608,7 +608,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The user enters invalid credentials (e.g., wrong password or non-existent username) into the login interface. | The system detects the incorrectness of the credentials and prevents the login. An error message (e.g., "Invalid username or password") is displayed, and the user remains on the login screen. | FR5.4 |
+| The user enters invalid credentials (e.g. wrong password or non-existent username) into the login interface. | The system detects the incorrectness of the credentials and prevents the login. An error message (e.g. "Invalid username or password") is displayed, and the user remains on the login screen. | FR5.4 |
 
 
 ### Scenario 6.3 - Logout
@@ -639,7 +639,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section. They select the option to create a new account. | The system prompts for details (e.g., username, password) and the definition of permissions (e.g., Cashier, Accountant) | FR5.1 |
+| The Shop owner accesses the account management section. They select the option to create a new account. | The system prompts for details (e.g. username, password) and the definition of permissions (e.g. Cashier, Accountant) | FR5.1 |
 | The Shop owner confirms the creation. | The system saves the new account, ensuring the password is not saved directly (as per NFR10). | FR5.1 |
 
 
@@ -656,7 +656,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner attempts to create an account using a username that already exists in the system. | The system detects the duplication and prevents the creation. An error message (e.g., "Username already exists") is displayed to the screen. | FR5.1 |
+| The Shop owner attempts to create an account using a username that already exists in the system. | The system detects the duplication and prevents the creation. An error message (e.g. "Username already exists") is displayed to the screen. | FR5.1 |
 
 
 
@@ -672,13 +672,28 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects an existing account. They choose the option to change permissions. | The system displays the available permissions (e.g., access to accounting, inventory management) | FR5.2 |
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
 | The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves the changes to the account's permissions. | FR5.2 |
 
-
-### Scenario 6.7 - Change account password
+### Scenario 6.7 (Variant) - Change permissions for shop-owner own account
 
 |Scenario 6.7 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. The shop owner tries to change permissions for their own account  | 
+| Post condition |  Some of the permissions for the shop-owner account may be updated; a warning message may be displayed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects teir own account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
+| The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves all the permissions changes except for the administrator privileges (the user continues to possess the administrator privileges). A warning message is displayed to inform the user about what permissions could not be changed | FR5.2 |
+
+
+### Scenario 6.8 - Change account password
+
+|Scenario 6.8 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  |  The Shop owner is logged in.  | 
 | Post condition |  The password for an account is successfully changed.  |
@@ -692,9 +707,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | The Shop owner types the new password and confirms the changes. | The system saves the changes to the account's password.  | FR5.3 |
 
 
-### Scenario 6.8 - Remove account
+### Scenario 6.9 - Remove account
 
-|Scenario 6.8 |  |
+|Scenario 6.9 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  |  The Shop owner is logged in. | 
 | Post condition |  The selected EZshop account is removed from the system.  |
@@ -704,11 +719,22 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects an existing account. They choose the option to remove the account. | The system asks for confirmation to prevent accidental deletion. | FR5.1 |
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to remove the account. | The system asks for confirmation to prevent accidental deletion. | FR5.1, FR5.2 |
 | The Shop owner confirms the removal of the selected account. | The account is permanently deleted from the system (NFR6). | FR5.1 |
 
-# TODO: prevent Shop owner from deleting its own account and prevent them from removing the administrator privileges
+### Scenario 6.10 (Exception) - Remove shop-owner account
 
+|Scenario 6.10 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. | 
+| Post condition |  The selected EZshop account is removed from the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects their own account. They choose the option to remove the account. | The system detects that an user with administrator privileges is trying to remove their own account and displays an error message, informing that no account with administrator privileges can remove itself. | FR5.1, FR5.2 |
 
 
 # Glossary
