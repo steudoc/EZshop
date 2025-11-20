@@ -182,7 +182,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 6: Account management and authentication | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
 ## Use case diagram
-# TODO: update UC diagram
+# TODO: update UC diagram (if needed)
 
 ![Use case diagram for EZshop project](./images/UseCaseDiagram.png)
 
@@ -290,14 +290,12 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Use case 2, UC2 - Product management
 
-|Use case 1||
+|Use case 2||
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Logistic operator |
-| Nominal Scenario | 2.1, 2.3, 2.5 |
-|     Variants     |  |
-|    Exceptions    | 2.2, 2.4, 2.6 |
-
-# TODO: ADD variant 2.2 (add prducts from csv file) + exception for it
+| Nominal Scenario | 2.1, 2.5, 2.7 |
+|     Variants     | 2.2 |
+|    Exceptions    | 2.3, 2.4, 2.6, 2.8 |
 
 ### Scenario 2.1 - Add product
 
@@ -310,31 +308,62 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
-|The operator inputs product details (code, name, taxes, optional messages, optional discount).|he system validates the input formats.|FR2.1|
+| The logistic operator opens the inventory tab and selects the option for adding a new product.|The system displays the form for creating a new product.|FR2.1|
+|The operator inputs product details (code, name, taxes, optional messages, optional discount).| The system validates the input formats.|FR2.1|
 |For products that needs a unit of measurement, the operator enters the price per unit in the price field and specifies the unit of measurement.|The system records the price and the specific unit of measurement (e.g. kg, liter).|FR2.1|
 |The operator inputs the initial quantity of the product.|The system prepares to initialize the stock level for this new product ID.|FR3.1|
 |The operator finalizes the creation.|The system saves the new product definition in the database.|FR2.1|
 ||The system updates the inventory with the initial quantity.|FR3.1|
 ||The system confirms the successful addition.|FR2.1|
 
-### Scenario 2.2 (Exception) - Code already registered
+### Scenario 2.2 (Variant) - Add products from .csv file
 
 |Scenario 2.2 |  |
 | :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | The logistic operator has valid account and is logged in. |
+| Post condition |  A new set of products is added to the products inventory. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the option for adding new products from a .csv file.|The system displays the form for importing a .csv file, with the specified schema that the system expects.|FR2.1|
+|The operator selects a file from the OS and confirms the import form.| The system validates the input formats.|FR2.1|
+||The system saves the new products definition in the database.|FR2.1|
+||The system updates the inventory with the initial quantity.|FR3.1|
+||The system confirms the successful addition.|FR2.1|
+
+### Scenario 2.3 (Exception) - Code already registered
+
+|Scenario 2.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | Same as in 2.1, but the code for the new product is already in the system. |
-| Post condition |  An error message is shown. |
+| Post condition |  An error message is displayed. |
 
 ### Steps
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
-|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g. duplicate barcode, missing mandatory field), blocks the save operation, and displays an error message explaining the issue.|FR2.1|
+|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g. duplicate barcode, missing mandatory field), interrupts the operation and displays an error message explaining the issue.|FR2.1|
 
-### Scenario 2.3 - Search product
+### Scenario 2.4 (Exception) - Error importing .csv file
 
-|Scenario 2.3 |  |
+|Scenario 2.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | The logistic operator has valid account and is logged in. |
+| Post condition |  An error message is displayed. |
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the option for adding new products from a .csv file.|The system displays the form for importing a .csv file, with the specified schema that the system expects.|FR2.1|
+|The operator selects a file from the OS and confirms the import form.| The system validates the input formats and detects some error (e.g. the format of the .csv file does not match the one defined in the system, some of the values in a row are missing or outside the specified domain). The system interrupts the import operation and displays an error message explaining the issue.|FR2.1|
+
+### Scenario 2.5 - Search product
+
+|Scenario 2.5 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | Same as in 2.1. |
 | Post condition | The searched product is found. |
@@ -346,9 +375,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |The logistic operator opens the inventory tab and selects the option that allow to search a product by code.|The system displays the search input field.|FR2.2|
 |The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database, retrieves the matching product, and displays its details (code, name, price, current stock, etc.).|FR2.2, FR3.1|
 
-### Scenario 2.4 (Exception) - Product not found
+### Scenario 2.6 (Exception) - Product not found
 
-|Scenario 2.4 |  |
+|Scenario 2.6 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | Same as in 2.1, but the product searched is not found in the inventory. |
 | Post condition | An error message is shown. |
@@ -360,9 +389,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |The logistic operator opens the inventory tab and selects the option that allow to search a product by code.|The system displays the search input field.|FR2.2|
 |The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database. Upon failing to find a matching code, it displays an error message (e.g. "Product not found") informing the operator about the issue.|FR2.2|
 
-### Scenario 2.5 - Modify product
+### Scenario 2.7 - Modify product
 
-|Scenario 2.5 |  |
+|Scenario 2.7 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | Same as in 2.1, and the logistic operator has searched and found a product from the inventory. |
 | Post condition | The product information is updated. |
@@ -374,11 +403,11 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |The logistic operator selects the option for editing the product information.|The system unlocks the product fields for editing, but keeps the "Product Code" field locked (read-only) to prevent modification.|FR2.2|
 |The operator updates the desired fields (e.g. price, name, tax) and confirms the modifications.|The system validates the new data, saves the changes to the database, and updates the inventory record.|FR2.2|
 
-### Scenario 2.6 (Exception) - Update product while a sale is in progress
+### Scenario 2.8 (Exception) - Update product while a sale is in progress
 
-|Scenario 2.6 |  |
+|Scenario 2.8 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  | Same as in 2.5, but a sale is in progress. |
+|  Precondition  | Same as in 2.7, but a sale is in progress. |
 | Post condition | An error message is shown. |
 
 ### Steps
