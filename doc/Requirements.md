@@ -10,6 +10,8 @@ Version: 1.0.0
 | :------------: | :----: |
 |                |        |
 
+# TODO: update table of contents
+
 # Contents
 
 - [Requirements Document - EzShop](#requirements-document)
@@ -77,6 +79,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | POS station | Hardware and software system that allows customers to pay with credit cards. It automatically handles transactions with credit card circuits. (e.g. [this](https://www.mypos.com/it-it)) |
 | Barcode scanner | Portable scanner (e.g. [this](https://www.amazon.it/Yanzeo-USB-Barcode-Scanner-computer/dp/B07KD4C7WL?pd_rd_w=yKpzM&content-id=amzn1.sym.58ed5d1b-41a3-4c6c-a38c-3416ea9905f1&pf_rd_p=58ed5d1b-41a3-4c6c-a38c-3416ea9905f1&pf_rd_r=TFX7D02PYAGKE88FQ9XH&pd_rd_wg=mBPpY&pd_rd_r=a4f43118-426a-4c39-863c-88847ba043fa&pd_rd_i=B07KD4C7WL&th=1)) which can be used to scan barcodes found in product labels |
 | Receipt printer | Dedicated printer system for producing the non-fiscal itemized receipt. (e.g. [this](https://www.amazon.it/NETUM-Stampante-termica-per-ricevute/dp/B0854CCF75?ref_=Oct_d_Oct_d_ss_d_6572840031_1&pd_rd_w=SIutK&content-id=amzn1.sym.3a84fb8b-d4d6-4483-8fd7-0000cb59ea5a&pf_rd_p=3a84fb8b-d4d6-4483-8fd7-0000cb59ea5a&pf_rd_r=X5XJMQ88AS3PNWAM8167&pd_rd_wg=YZ1PH&pd_rd_r=a73378a2-7d7f-458e-ba9d-d6eff854a21d&pd_rd_i=B0854CCF75)) |
+| Customer | Person that purchases products at the shop |
 
 # Context Diagram and interfaces
 
@@ -103,6 +106,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 ## Functional Requirements
 
+# TODO: find some link for cash station driver
 
 |  ID   | Name | Description |
 | :---: | :--------- | :--------- |
@@ -140,7 +144,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 |   ID    | Type (efficiency, reliability, ..) | Description | Refers to |
 | :-----: | :--------------------------------: | :--------- | :------- |
-|  NFR1 | Usability | After the initial training, even not tech-savvy should be able to use the system | All FR |
+|  NFR1 | Usability | After the initial training of 2 hours, even not tech-savvy should be able to use the system | All FR |
 | NFR2 | Efficiency | Product information should be gathered in less than 1 second upon code scan | FR1.2, FR2 |
 | NFR3 | Efficiency | Monthly sales report should take less than 1 minute to compute | FR4 |
 | NFR4 | Efficiency | Stock quantity for products should be updated in less than 10 minutes after transaction | FR2, FR3 |
@@ -175,9 +179,10 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | 3: Inventory management | Track and update products quantities in the shop, manage orders to suppliers | Logistic operators can track orders to suppliers, including the involved products and suppliers; the inventory quantities for each product get automatically updated once an order is confirmed as delivered
 | 4: Supplier management | Define and update various product suppliers information | Logistic operators can add new product suppliers into the system, specifying some contact information and with the ability to update each supplier information if needed
 | 5: Accounting report management | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
-6: Account management | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
+6: Account management and authentication | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
 ## Use case diagram
+# TODO: update UC diagram
 
 ![Use case diagram for EZshop project](./images/UseCaseDiagram.png)
 
@@ -194,7 +199,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 |Scenario 1.1 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  | The cashier has a valid EZshop account and is logged in. The system is operational, Cash station, POS station and receipt printer are connected. |
+|  Precondition  | The cashier has a valid EZshop account and is logged in.  Cash station, POS station and receipt printer are connected. |
 | Post condition |  The sale is closed, the product inventory is automatically decremented, the receipt is printed, and the sales revenue data is recorded for accounting. |
 
 ### Steps
@@ -292,6 +297,8 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |     Variants     |  |
 |    Exceptions    | 2.2, 2.4, 2.6 |
 
+# TODO: ADD variant 2.2 (add prducts from csv file) + exception for it
+
 ### Scenario 2.1 - Add product
 
 |Scenario 2.1 |  |
@@ -385,8 +392,8 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |Use case 3||
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Logistic operator |
-| Nominal Scenario | 3.1 |
-|     Variants     | 3.2 |
+| Nominal Scenario | 3.1, 3.2 |
+|     Variants     |  |
 |    Exceptions    | 3.3 |
 
 
@@ -408,7 +415,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Once the order is delivered to the store, the logistic operator opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.5 |
 | The logistics operator updates the order status | Order and products information are updated in the database. | FR3.5 |
 
-### Scenario 3.2 (Variant) - Manual adjustment of stock quantity
+### Scenario 3.2 - Manual adjustment of stock quantity
 
 |Scenario 3.2 |  |
 | :------------: | :------------------------------------------------------------------------ |
@@ -447,8 +454,8 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |Use case 4||
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Logistic operator |
-| Nominal Scenario | 4.1 |
-|     Variants     | 4.2 |
+| Nominal Scenario | 4.1, 4.2 |
+|     Variants     |  |
 |    Exceptions    | 4.3 |
 
 
@@ -467,7 +474,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | The logistics operator enters the supplier data | The supplier is recorded in the database with the following details: name, contact information. | FR3.3 |
 
 
-### Scenario 4.2 (Variant) -  Supplier information update
+### Scenario 4.2 -  Supplier information update
 
 |Scenario 4.2 |  |
 | :------------: | :------------------------------------------------------------------------ |
@@ -504,8 +511,8 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Accountant |
 | Nominal Scenario | 5.1 |
-|     Variants     | 5.2 |
-|    Exceptions    | 5.3, 5.4 |
+|     Variants     | 5.2, 5.3 |
+|    Exceptions    | 5.4 |
 
 ### Scenario 5.1 - Report creation
 
@@ -558,7 +565,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |Scenario 5.4 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  |   Same as 5.1, but for some reason the report file could not be created by the OS (e.g. memory is full, a file with the same name already exists in the destination folder, other…). | 
-| Post condition |An error message is displayed to the user. |
+| Post condition |An error message is displayed. |
 
 
 ### Steps
@@ -566,10 +573,10 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
-|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| An error message is displayed to the screen with details about why the report file could not be created. The selected date range and all the other data (including manual expenses) are still present in the report creation tab, but no report is created yet. If the OS failure is resolved, the application should then be able to create the report as in 5.1. | 
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| An error message is displayed with details about why the report file could not be created. The selected date range and all the other data (including manual expenses) are still present in the report creation tab, but no report is created yet. If the OS failure is resolved, the application should then be able to create the report as in 5.1. | 
 
 
-## Use case 6, UC6 - Account management
+## Use case 6, UC6 - Account management and authentication
 
 
 |Use case 6||
@@ -631,7 +638,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 |Scenario 6.4 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in. | 
+|  Precondition  |  The shop owner is logged in. | 
 | Post condition |  A new EZshop account is created and saved in the system.  |
 
 
@@ -639,16 +646,16 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section. They select the option to create a new account. | The system prompts for details (e.g. username, password) and the definition of permissions (e.g. Cashier, Accountant) | FR5.1 |
-| The Shop owner confirms the creation. | The system saves the new account, ensuring the password is not saved directly (as per NFR10). | FR5.1 |
+| The shop owner accesses the account management section. They select the option to create a new account. | The system prompts for details (e.g. username, password) and the definition of permissions (e.g. Cashier, Accountant) | FR5.1 |
+| The shop owner confirms the creation. | The system saves the new account, ensuring the password is not saved directly (as per NFR10). | FR5.1 |
 
 
 ### Scenario 6.5 (Exception) - Duplicate account creation
 
 |Scenario 6.5 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in.  | 
-| Post condition |  The new account is not created. The Shop owner receives an error message.  |
+|  Precondition  |  Same as 6.4. | 
+| Post condition |  The new account is not created. An error message is displayed.  |
 
 
 
@@ -656,7 +663,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner attempts to create an account using a username that already exists in the system. | The system detects the duplication and prevents the creation. An error message (e.g. "Username already exists") is displayed to the screen. | FR5.1 |
+| The shop owner attempts to create an account using a username that already exists in the system. | The system detects the duplication and prevents the creation. An error message (e.g. "Username already exists") is displayed. | FR5.1 |
 
 
 
@@ -664,7 +671,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 |Scenario 6.6 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in.  | 
+|  Precondition  |  Same as 6.4.  | 
 | Post condition |  The permissions for the selected account are updated.  |
 
 
@@ -672,14 +679,14 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects an existing account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
-| The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves the changes to the account's permissions. | FR5.2 |
+| The shop owner accesses the account management section and selects an existing account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
+| The shop owner updates the permissions for the selected account and confirms the changes. | The system saves the changes to the account's permissions. | FR5.2 |
 
 ### Scenario 6.7 (Variant) - Change permissions for shop-owner own account
 
 |Scenario 6.7 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in. The shop owner tries to change permissions for their own account  | 
+|  Precondition  |  Same as 6.4, but the shop owner tries to change permissions for their own account  | 
 | Post condition |  Some of the permissions for the shop-owner account may be updated; a warning message may be displayed.  |
 
 
@@ -687,15 +694,15 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects teir own account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
-| The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves all the permissions changes except for the administrator privileges (the user continues to possess the administrator privileges). A warning message is displayed to inform the user about what permissions could not be changed | FR5.2 |
+| The shop owner accesses the account management section and selects teir own account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
+| The shop owner updates the permissions for the selected account and confirms the changes. | The system saves all the permissions changes except for the administrator privileges (the user continues to possess the administrator privileges). A warning message is displayed to inform the user about what permissions could not be changed | FR5.2 |
 
 
 ### Scenario 6.8 - Change account password
 
 |Scenario 6.8 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in.  | 
+|  Precondition  |  Same as 6.4.  | 
 | Post condition |  The password for an account is successfully changed.  |
 
 
@@ -703,15 +710,15 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects an existing account. They choose the option to change the account password | The system prompts the shop owner to insert a new password for the account | FR5.3 |
-| The Shop owner types the new password and confirms the changes. | The system saves the changes to the account's password.  | FR5.3 |
+| The shop owner accesses the account management section and selects an existing account. They choose the option to change the account password | The system prompts the shop owner to insert a new password for the account | FR5.3 |
+| The shop owner types the new password and confirms the changes. | The system saves the changes to the account's password.  | FR5.3 |
 
 
 ### Scenario 6.9 - Remove account
 
 |Scenario 6.9 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in. | 
+|  Precondition  |  Same as 6.4. | 
 | Post condition |  The selected EZshop account is removed from the system.  |
 
 
@@ -719,14 +726,14 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects an existing account. They choose the option to remove the account. | The system asks for confirmation to prevent accidental deletion. | FR5.1, FR5.2 |
-| The Shop owner confirms the removal of the selected account. | The account is permanently deleted from the system (NFR6). | FR5.1 |
+| The shop owner accesses the account management section and selects an existing account. They choose the option to remove the account. | The system asks for confirmation to prevent accidental deletion. | FR5.1, FR5.2 |
+| The shop owner confirms the removal of the selected account. | The account is permanently deleted from the system (NFR6). | FR5.1 |
 
 ### Scenario 6.10 (Exception) - Remove shop-owner account
 
 |Scenario 6.10 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is logged in. | 
+|  Precondition  |  Same as 6.4. | 
 | Post condition |  The selected EZshop account is removed from the system.  |
 
 
@@ -734,7 +741,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-| The Shop owner accesses the account management section and selects their own account. They choose the option to remove the account. | The system detects that an user with administrator privileges is trying to remove their own account and displays an error message, informing that no account with administrator privileges can remove itself. | FR5.1, FR5.2 |
+| The shop owner accesses the account management section and selects their own account. They choose the option to remove the account. | The system detects that an user with administrator privileges is trying to remove their own account and displays an error message, informing that no account with administrator privileges can remove itself. | FR5.1, FR5.2 |
 
 
 # Glossary
@@ -750,7 +757,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Order | A series of information about a product supply from a specific supplier to the shop.  |
 | Accounting report | Financial report containing information about incoming and outcoming money flow of the shop. It includes revenue generated by transactions and money spent for supplies (also electrical bills, heat bills, employees salary and other expenses can be added manually). |
 | Receipt | Printed sheet of paper produced by a dedicated printer. It contains information such as a list of purchased products, the price and taxes for each product, the total cost and taxes of the sale, the sale date, and personalized store information. |
-| EZshop account | Profile assigned to a shop employee to access some of the EZshop application functionalities. |
+| EZshop account | Profile assigned to a shop employee to access some of the EZshop application functionalities. Also referred to as "account" |
 | Permission | Access to a specific functionality of the EZshop application (such as accounting, inventory management and Accounts management). |
 | Cash station | Hardware and software system that allows customers to pay with cash. It automatically handles transactions and provides cash change. |
 | POS station | Hardware and software system that allows customers to pay with credit cards. It automatically handles transactions with credit card circuits. |
