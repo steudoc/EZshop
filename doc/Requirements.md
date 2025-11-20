@@ -131,8 +131,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | FR4.4 || Generate report file about sales, revenue and inventory costs |
 | FR5 | Manage EZShop accounts ||
 | FR5.1 || Create/remove account |
-| FR5.2 || Change permissions for existing account |
-| FR5.3 || Authenticate existing account (login/logout) |
+| FR5.2 || Manage permissions for existing account |
+| FR5.3 || Manage password for existing account |
+| FR5.4 || Authenticate existing account (login/logout) |
 
 ## Non Functional Requirements
 
@@ -573,17 +574,17 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 |Use case 6||
 | :--------------: | :------------------------------------------------------------------ |
-| Actors involved | Shop owner, cashier, accountant, logistic operator from 6.1 to 6.3; Shop owner from 6.4 to 6.8 |
-| Nominal Scenario | 6.1, 6.2, 6.3, 6.4, 6.5, 6.6 |
+| Actors involved | Shop owner, cashier, accountant, logistic operator from 6.1 to 6.3. Shop owner from 6.4 to 6.8 |
+| Nominal Scenario | 6.1, 6.3, 6.4, 6.6, 6.7, 6.8 |
 |     Variants     |     |
-|    Exceptions    | 6.7, 6.8 |
+|    Exceptions    | 6.2, 6.5 |
 
 
 ### Scenario 6.1 - Account authentication (Login)
 
 |Scenario 6.1 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The system is operational. The user has a valid EZshop account.  | 
+|  Precondition  |  The user has a valid EZshop account.  | 
 | Post condition |  The user is authenticated in the system and has access to functionalities defined by their permissions.  |
 
 
@@ -591,92 +592,15 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
+| The user enters their credentials (e.g., username and password) into the login interface. | The system validates the credentials, grants access to the system (the user is now logged in) and displays the main interface corresponding to the user's permissions. | FR5.4 |
 
-### Scenario 6.2 - Logout
+
+
+### Scenario 6.2 (Exception) - Authentication failed
 
 |Scenario 6.2 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  A user is authenticated in the system.  | 
-| Post condition |  The user's session is terminated, and the system returns to the login interface.  |
-
-
-### Steps
-
-| Actor's action  |  System action | FR needed |
-| :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
-
-
-### Scenario 6.3 - Remove account
-
-|Scenario 6.3 |  |
-| :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is authenticated in the system  | 
-| Post condition |  The selected EZshop account is removed from the system.  |
-
-
-### Steps
-
-| Actor's action  |  System action | FR needed |
-| :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
-
-### Scenario 6.4 - Create account
-
-|Scenario 6.4 |  |
-| :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is authenticated in the system and has administrator privileges.  | 
-| Post condition |  A new EZshop account is created and saved in the system.  |
-
-
-### Steps
-
-| Actor's action  |  System action | FR needed |
-| :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
-
-### Scenario 6.5 - Change account permissions
-
-|Scenario 6.5 |  |
-| :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is authenticated in the system.  | 
-| Post condition |  The permissions for the selected account are updated.  |
-
-
-### Steps
-
-| Actor's action  |  System action | FR needed |
-| :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
-
-
-### Scenario 6.6 - Change account password
-
-|Scenario 6.6 |  |
-| :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner is authenticated in the system and has administrator privileges.  | 
-| Post condition |  The password for an account is successfully changed.  |
-
-
-### Steps
-
-| Actor's action  |  System action | FR needed |
-| :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
-
-
-### Scenario 6.7 (Exception) - Authentication failed
-
-|Scenario 6.7 |  |
-| :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  A user attempts to log in (Scenario 5.1).  | 
+|  Precondition  |  Same as 6.1.  | 
 | Post condition |  Access to the system is denied. An error message is displayed.  |
 
 
@@ -684,24 +608,106 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
+| The user enters invalid credentials (e.g., wrong password or non-existent username) into the login interface. | The system detects the incorrectness of the credentials and prevents the login. An error message (e.g., "Invalid username or password") is displayed, and the user remains on the login screen. | FR5.4 |
 
 
-### Scenario 6.8 (Exception) - Duplicate account creation
+### Scenario 6.3 - Logout
 
-|Scenario 6.8 |  |
+|Scenario 6.3 |  |
 | :------------: | :------------------------------------------------------------------------ |
-|  Precondition  |  The Shop owner attempts to create a new account (Scenario 5.2).  | 
-| Post condition |  The new account is not created. The Shop owner receives an error message.  |
+|  Precondition  |  The user has a valid Ezshop account and is logged in.  | 
+| Post condition |  The user's session is terminated and the system returns to the login interface.  |
 
 
 ### Steps
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|  |  |  |
-|  |  |  |
+| The user selects the logout option from the application interface. | The system goes back to the login screen and all functionalities are locked until login. | FR5.4 |
+
+
+
+### Scenario 6.4 - Create account
+
+|Scenario 6.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. | 
+| Post condition |  A new EZshop account is created and saved in the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section. They select the option to create a new account. | The system prompts for details (e.g., username, password) and the definition of permissions (e.g., Cashier, Accountant) | FR5.1 |
+| The Shop owner confirms the creation. | The system saves the new account, ensuring the password is not saved directly (as per NFR10). | FR5.1 |
+
+
+### Scenario 6.5 (Exception) - Duplicate account creation
+
+|Scenario 6.5 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in.  | 
+| Post condition |  The new account is not created. The Shop owner receives an error message.  |
+
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner attempts to create an account using a username that already exists in the system. | The system detects the duplication and prevents the creation. An error message (e.g., "Username already exists") is displayed to the screen. | FR5.1 |
+
+
+
+### Scenario 6.6 - Change account permissions
+
+|Scenario 6.6 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in.  | 
+| Post condition |  The permissions for the selected account are updated.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to change permissions. | The system displays the available permissions (e.g., access to accounting, inventory management) | FR5.2 |
+| The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves the changes to the account's permissions. | FR5.2 |
+
+
+### Scenario 6.7 - Change account password
+
+|Scenario 6.7 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in.  | 
+| Post condition |  The password for an account is successfully changed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to change the account password | The system prompts the shop owner to insert a new password for the account | FR5.3 |
+| The Shop owner types the new password and confirms the changes. | The system saves the changes to the account's password.  | FR5.3 |
+
+
+### Scenario 6.8 - Remove account
+
+|Scenario 6.8 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. | 
+| Post condition |  The selected EZshop account is removed from the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to remove the account. | The system asks for confirmation to prevent accidental deletion. | FR5.1 |
+| The Shop owner confirms the removal of the selected account. | The account is permanently deleted from the system (NFR6). | FR5.1 |
+
+# TODO: prevent Shop owner from deleting its own account and prevent them from removing the administrator privileges
 
 
 
