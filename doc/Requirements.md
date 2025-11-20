@@ -131,8 +131,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | FR4.4 || Generate report file about sales, revenue and inventory costs |
 | FR5 | Manage EZShop accounts ||
 | FR5.1 || Create/remove account |
-| FR5.2 || Change permissions for existing account |
-| FR5.3 || Authenticate existing account (login/logout) |
+| FR5.2 || Manage permissions for existing account |
+| FR5.3 || Manage password for existing account |
+| FR5.4 || Authenticate existing account (login/logout) |
 
 ## Non Functional Requirements
 
@@ -173,7 +174,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | 2: Product management | Define and update product information | Logistic operators can add new products, specify various information (e.g. discount, price, taxes...) and update products information when needed
 | 3: Inventory management | Track and update products quantities in the shop, manage orders to suppliers | Logistic operators can track orders to suppliers, including the involved products and suppliers; the inventory quantities for each product get automatically updated once an order is confirmed as delivered
 | 4: Supplier management | Define and update various product suppliers information | Logistic operators can add new product suppliers into the system, specifying some contact information and with the ability to update each supplier information if needed
-| 5: Accounting report creation | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
+| 5: Accounting report management | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
 6: Account management | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
 ## Use case diagram
@@ -248,14 +249,14 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|The cashier attempts to insert a product via scan or manual entry.|The system searches the database. Upon failing to find the code or finding the product marked as "not saleable," it blocks the addition and displays a specific error message (e.g., "Product code not found").|FR1.2|
+|The cashier attempts to insert a product via scan or manual entry.|The system searches the database. Upon failing to find the code or finding the product marked as "not saleable," it blocks the addition and displays a specific error message (e.g. "Product code not found").|FR1.2|
 |The cashier acknowledges the error and corrects the input or cancels the insertion.|The system clears the error message and resets the input field, ready for the next action.|FR1.2|
 
 ### Scenario 1.5 (Exception) - Receipt printing failure
 
 |Scenario 1.5 |  |
 | :------------: | :------------------------------------------------------------------------ |
-| Precondition | After the successful completion of the financial transaction, the system attempts to send the receipt data to the dedicated receipt printer but the print fails (e.g., printer is offline, out of paper, driver error). |
+| Precondition | After the successful completion of the financial transaction, the system attempts to send the receipt data to the dedicated receipt printer but the print fails (e.g. printer is offline, out of paper, driver error). |
 | Post condition | The sale is recorded and inventory is updated. An error message informs the cashier of the printing failure. |
 
 ### Steps
@@ -278,7 +279,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |(Case A: Cash) The cashier chooses to cancel the ongoing cash payment process.|The system stops the cash payment workflow and returns to the main payment selection menu.|FR1.7|
-|(Case B: POS) The external POS station declines the card transaction.|The system displays an error message (e.g., "Transaction Declined") and automatically returns to the main payment selection menu.|FR1.7|
+|(Case B: POS) The external POS station declines the card transaction.|The system displays an error message (e.g. "Transaction Declined") and automatically returns to the main payment selection menu.|FR1.7|
 |(Option A) The cashier selects the option to cancel the sale from the menu.|The system discards the current transaction data and closes the sale without updating the database (inventory/revenue).|FR1.1|
 |(Option B) The cashier selects an alternative payment method to retry.|The system initiates the new payment process for the same transaction total.|FR1.1|
 
@@ -304,7 +305,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
 |The operator inputs product details (code, name, taxes, optional messages, optional discount).|he system validates the input formats.|FR2.1|
-|For products that needs a unit of measurement, the operator enters the price per unit in the price field and specifies the unit of measurement.|The system records the price and the specific unit of measurement (e.g., kg, liter).|FR2.1|
+|For products that needs a unit of measurement, the operator enters the price per unit in the price field and specifies the unit of measurement.|The system records the price and the specific unit of measurement (e.g. kg, liter).|FR2.1|
 |The operator inputs the initial quantity of the product.|The system prepares to initialize the stock level for this new product ID.|FR3.1|
 |The operator finalizes the creation.|The system saves the new product definition in the database.|FR2.1|
 ||The system updates the inventory with the initial quantity.|FR3.1|
@@ -322,7 +323,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the "Add new product" option.|The system displays the form for creating a new product.|FR2.1|
-|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g., duplicate barcode, missing mandatory field), blocks the save operation, and displays an error message explaining the issue.|FR2.1|
+|The operator inputs product details (code, name, price, etc.) and attempts to finalize (save) the creation.|The system validates the input, detects an issue (e.g. duplicate barcode, missing mandatory field), blocks the save operation, and displays an error message explaining the issue.|FR2.1|
 
 ### Scenario 2.3 - Search product
 
@@ -350,7 +351,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator opens the inventory tab and selects the option that allow to search a product by code.|The system displays the search input field.|FR2.2|
-|The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database. Upon failing to find a matching code, it displays an error message (e.g., "Product not found") informing the operator about the issue.|FR2.2|
+|The operator inserts the product code (via scanner, keyboard, or GUI) and confirms the search.|The system searches the database. Upon failing to find a matching code, it displays an error message (e.g. "Product not found") informing the operator about the issue.|FR2.2|
 
 ### Scenario 2.5 - Modify product
 
@@ -364,7 +365,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator selects the option for editing the product information.|The system unlocks the product fields for editing, but keeps the "Product Code" field locked (read-only) to prevent modification.|FR2.2|
-|The operator updates the desired fields (e.g., price, name, tax) and confirms the modifications.|The system validates the new data, saves the changes to the database, and updates the inventory record.|FR2.2|
+|The operator updates the desired fields (e.g. price, name, tax) and confirms the modifications.|The system validates the new data, saves the changes to the database, and updates the inventory record.|FR2.2|
 
 ### Scenario 2.6 (Exception) - Update product while a sale is in progress
 
@@ -377,13 +378,364 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 
 | Actor's action  |  System action | FR needed |
 | :------------ | :------------------------------------------------------------------------ |:---|
-|The logistic operator attempts to select the option to change or remove product information.|The system checks the status of the Sales module. Detecting that a sale is currently in progress, it blocks the operation and displays an error message (e.g., "Cannot modify inventory during active sale").|FR2.2|
+|The logistic operator attempts to select the option to change or remove product information.|The system checks the status of the Sales module. Detecting that a sale is currently in progress, it blocks the operation and displays an error message (e.g. "Cannot modify inventory during active sale").|FR2.2|
 
-..
+## Use case 3, UC3 - Inventory management
 
-### Use case x, UCx
+|Use case 3||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Logistic operator |
+| Nominal Scenario | 3.1 |
+|     Variants     | 3.2 |
+|    Exceptions    | 3.3 |
 
-..
+
+### Scenario 3.1 -  Order creation and receipt
+
+|Scenario 3.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The logistic operator has a valid account and is logged in.  | 
+| Post condition |  The order is correctly recorded and updated; in stock and incoming quantities for the involved products are updated properly.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator identifies low inventory levels or other replenishment needs, then contacts the supplier and arranges delivery of one or more products. |  | FR3.2 |
+| The logistic operator opens the inventory tab and selects the "Add new order" option. | The system displays the form for creating a new order. | FR3.4 |
+| The logistics operator enters the order data | The order is recorded in the database with the following details: product, supplier, order date, total quantity, total cost and order status. | FR3.4  |
+| Once the order is delivered to the store, the logistic operator opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.5 |
+| The logistics operator updates the order status | Order and products information are updated in the database. | FR3.5 |
+
+### Scenario 3.2 (Variant) - Manual adjustment of stock quantity
+
+|Scenario 3.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 3.1  | 
+| Post condition |  The in stock quantity of the selected product is successfully updated.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The ogistic operator opens the inventory tab and selects the "Update product" option. | The system displays the form to update the product. | FR3.1 |
+|  The logistic operator adjusts the stock value to ensure the inventory accurately reflects the actual quantity available in storage. |  Product information are updated in the database. | FR3.1 |
+
+
+### Scenario 3.3 (Exception) - Order cancellation
+
+|Scenario 3.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 3.1; an order in-progress needs to be canceled  | 
+| Post condition |  For each product, the incoming quantities are updated and the order status is adjusted accordingly.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  The expected delivery of one or more products is cancelled. |  |  |
+| The logistics operator notifies the system, then opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.4 |
+| The logistic operator update the order status | The system updates the incoming quantity for each product included in the cancelled purchase order | FR3.4|
+
+
+
+## Use case 4, UC4 - Supplier management
+
+|Use case 4||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Logistic operator |
+| Nominal Scenario | 4.1 |
+|     Variants     | 4.2 |
+|    Exceptions    | 4.3 |
+
+
+### Scenario 4.1 -  Adding a new supplier
+|Scenario 4.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | The Logistic Operator has a valid account and is logged in. | 
+| Post condition |  A new supplier is added to the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the "Add new supplier" option. | The system displays the form for creating a new supplier. | FR3.3 |
+| The logistics operator enters the supplier data | The supplier is recorded in the database with the following details: name, contact information. | FR3.3 |
+
+
+### Scenario 4.2 (Variant) -  Supplier information update
+
+|Scenario 4.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 4.1; the supplier already exists in the system.  | 
+| Post condition |  Supplier information is updated. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the "Update supplier" option. | The system displays the form to update a supplier. | FR3.3 |
+| The logistics operator reports new information regarding the supplier | The system stores the new information in the database. | FR3.3 |
+
+### Scenario 4.3 (Exception) -  Duplicate supplier entry
+
+|Scenario 4.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 4.1; the supplier already exists in the system.  | 
+| Post condition |  The supplier list remains unchanged.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the "Add new supplier" option. | The system displays the form for creating a new supplier. | FR3.3 |
+| The logistics operator enters the data to add a new supplier. | The system detects that it already has this supplier in the database. | FR3.3 |
+|| The system does not update the database. | FR3.3 |
+
+
+## Use case 5, UC5 - Accounting report management
+|Use case 5||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Accountant |
+| Nominal Scenario | 5.1 |
+|     Variants     | 5.2 |
+|    Exceptions    | 5.3, 5.4 |
+
+### Scenario 5.1 - Report creation
+
+|Scenario 5.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Accountant has valid EZshop account and is logged in. | 
+| Post condition |  An accounting report is generated for all expenses and revenue in a specified date-range. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| A file with the specified name (and an appropriate extension) is created inside the destination folder of the pc, containing data about sales, revenue and inventory costs for the specified date range, with the selected granularity over time. | FR4.4
+
+### Scenario 5.2 (Variant) - Manual expense inclusion
+
+|Scenario 5.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |   Same as 5.1, but the accountant also wants to include external expenses to the report. | 
+| Post condition |  Same as 5.1, with the report also containing information about the specified external expenses. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|With a dedicated option, the accountant manually adds expenses occurring in a specific date within the selected date-range, with a certain amount of money and a description. | The systems displays a list of all manually added expenses, with their information. After being created, the accountant can still edit or remove expenses in the list. | FR4.3 |
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| A file with the specified name (and an appropriate extension) is created inside the destination folder of the pc, containing data about sales, manually included expenses, revenue and inventory costs for the specified date range, with the selected granularity over time. | FR4.4
+
+### Scenario 5.3 (Variant) - Empty report
+
+|Scenario 5.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |   Same as 5.1, but there is no data relative to the selected date-range. | 
+| Post condition | A warning message is displayed to the user, a report may be created. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| A warning message is displayed to the screen to inform about the absence of data for the selected date-range; the accountant can then choose to either abort the creation of the report or to create a report anyway. If the second option is chosen, a file will be created as in 5.1, but it will not contain any expenses or revenue data. | FR4.4
+
+### Scenario 5.4 (Exception) - OS failure to create report file
+
+|Scenario 5.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |   Same as 5.1, but for some reason the report file could not be created by the OS (e.g. memory is full, a file with the same name already exists in the destination folder, other…). | 
+| Post condition |An error message is displayed to the user. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
+|The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| An error message is displayed to the screen with details about why the report file could not be created. The selected date range and all the other data (including manual expenses) are still present in the report creation tab, but no report is created yet. If the OS failure is resolved, the application should then be able to create the report as in 5.1. | 
+
+
+## Use case 6, UC6 - Account management
+
+
+|Use case 6||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Shop owner, cashier, accountant, logistic operator from 6.1 to 6.3. Shop owner from 6.4 to 6.10 |
+| Nominal Scenario | 6.1, 6.3, 6.4, 6.6, 6.8, 6.9 |
+|     Variants     |  6.7   |
+|    Exceptions    | 6.2, 6.5, 6.10 |
+
+
+### Scenario 6.1 - Account authentication (Login)
+
+|Scenario 6.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The user has a valid EZshop account.  | 
+| Post condition |  The user is authenticated in the system and has access to functionalities defined by their permissions.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The user enters their credentials (e.g. username and password) into the login interface. | The system validates the credentials, grants access to the system (the user is now logged in) and displays the main interface corresponding to the user's permissions. | FR5.4 |
+
+
+
+### Scenario 6.2 (Exception) - Authentication failed
+
+|Scenario 6.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as 6.1.  | 
+| Post condition |  Access to the system is denied. An error message is displayed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The user enters invalid credentials (e.g. wrong password or non-existent username) into the login interface. | The system detects the incorrectness of the credentials and prevents the login. An error message (e.g. "Invalid username or password") is displayed, and the user remains on the login screen. | FR5.4 |
+
+
+### Scenario 6.3 - Logout
+
+|Scenario 6.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The user has a valid Ezshop account and is logged in.  | 
+| Post condition |  The user's session is terminated and the system returns to the login interface.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The user selects the logout option from the application interface. | The system goes back to the login screen and all functionalities are locked until login. | FR5.4 |
+
+
+
+### Scenario 6.4 - Create account
+
+|Scenario 6.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. | 
+| Post condition |  A new EZshop account is created and saved in the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section. They select the option to create a new account. | The system prompts for details (e.g. username, password) and the definition of permissions (e.g. Cashier, Accountant) | FR5.1 |
+| The Shop owner confirms the creation. | The system saves the new account, ensuring the password is not saved directly (as per NFR10). | FR5.1 |
+
+
+### Scenario 6.5 (Exception) - Duplicate account creation
+
+|Scenario 6.5 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in.  | 
+| Post condition |  The new account is not created. The Shop owner receives an error message.  |
+
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner attempts to create an account using a username that already exists in the system. | The system detects the duplication and prevents the creation. An error message (e.g. "Username already exists") is displayed to the screen. | FR5.1 |
+
+
+
+### Scenario 6.6 - Change account permissions
+
+|Scenario 6.6 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in.  | 
+| Post condition |  The permissions for the selected account are updated.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
+| The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves the changes to the account's permissions. | FR5.2 |
+
+### Scenario 6.7 (Variant) - Change permissions for shop-owner own account
+
+|Scenario 6.7 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. The shop owner tries to change permissions for their own account  | 
+| Post condition |  Some of the permissions for the shop-owner account may be updated; a warning message may be displayed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects teir own account. They choose the option to change permissions. | The system displays the available permissions (e.g. access to accounting, inventory management, administrator) | FR5.2 |
+| The Shop owner updates the permissions for the selected account and confirms the changes. | The system saves all the permissions changes except for the administrator privileges (the user continues to possess the administrator privileges). A warning message is displayed to inform the user about what permissions could not be changed | FR5.2 |
+
+
+### Scenario 6.8 - Change account password
+
+|Scenario 6.8 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in.  | 
+| Post condition |  The password for an account is successfully changed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to change the account password | The system prompts the shop owner to insert a new password for the account | FR5.3 |
+| The Shop owner types the new password and confirms the changes. | The system saves the changes to the account's password.  | FR5.3 |
+
+
+### Scenario 6.9 - Remove account
+
+|Scenario 6.9 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. | 
+| Post condition |  The selected EZshop account is removed from the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects an existing account. They choose the option to remove the account. | The system asks for confirmation to prevent accidental deletion. | FR5.1, FR5.2 |
+| The Shop owner confirms the removal of the selected account. | The account is permanently deleted from the system (NFR6). | FR5.1 |
+
+### Scenario 6.10 (Exception) - Remove shop-owner account
+
+|Scenario 6.10 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is logged in. | 
+| Post condition |  The selected EZshop account is removed from the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The Shop owner accesses the account management section and selects their own account. They choose the option to remove the account. | The system detects that an user with administrator privileges is trying to remove their own account and displays an error message, informing that no account with administrator privileges can remove itself. | FR5.1, FR5.2 |
+
 
 # Glossary
 
