@@ -10,8 +10,6 @@ Version: 1.0.0
 | :------------: | :----: |
 |                |        |
 
-# TODO: update table of contents
-
 # Contents
 
 - [Requirements Document - EzShop](#requirements-document)
@@ -28,12 +26,46 @@ Version: 1.0.0
 - [Table of Rights](#table-of-rights)
 - [Use case diagram and use cases](#use-case-diagram-and-use-cases)
   - [Use case diagram](#use-case-diagram)
-    - [Use case 1, UC1](#use-case-1-uc1)
-      - [Scenario 1.1](#scenario-11)
-      - [Scenario 1.2](#scenario-12)
-      - [Scenario 1.x](#scenario-1x)
-    - [Use case 2, UC2](#use-case-2-uc2)
-    - [Use case x, UCx](#use-case-x-ucx)
+    - [Use case 1, UC1 - Sale management](#use-case-1-uc1---sale-management)
+      - [Scenario 1.1 - Successful sale](#scenario-11---successful-sale)
+      - [Scenario 1.2 (Variant) - Removing product from active sale](#scenario-12-variant---removing-product-from-active-sale)
+      - [Scenario 1.3 (Variant) - Product insertion with display message](#scenario-13-variant---product-insertion-with-display-message)
+      - [Scenario 1.4 (Exception) - Product cannot be sold](#scenario-14-exception---product-cannot-be-sold)
+      - [Scenario 1.5 (Exception) - Receipt printing failure](#scenario-15-exception---receipt-printing-failure)
+      - [Scenario 1.6 (Exception) - Payment not completed](#scenario-16-exception---payment-not-completed)
+    - [Use case 2, UC2 - Product management](#use-case-2-uc2---product-management)
+      - [Scenario 2.1 - Add product](#scenario-21---add-product)
+      - [Scenario 2.2 (Variant) - Add products from .csv file](#scenario-22-variant---add-products-from-csv-file)
+      - [Scenario 2.3 (Exception) - Code already registered](#scenario-23-exception---code-already-registered)
+      - [Scenario 2.4 (Exception) - Error importing .csv file](#scenario-24-exception---error-importing-csv-file)
+      - [Scenario 2.5 - Search product](#scenario-25---search-product)
+      - [Scenario 2.6 (Exception) - Product not found](#scenario-26-exception---product-not-found)
+      - [Scenario 2.7 - Modify product](#scenario-27---modify-product)
+      - [Scenario 2.8 (Exception) - Update product while a sale is in progress](#scenario-28-exception---update-product-while-a-sale-is-in-progress)
+    - [Use case 3, UC3 - Inventory management](#use-case-3-uc3---inventory-management)
+      - [Scenario 3.1 - Order creation and receipt](#scenario-31---order-creation-and-receipt)
+      - [Scenario 3.2 - Manual adjustment of stock quantity](#scenario-32---manual-adjustment-of-stock-quantity)
+      - [Scenario 3.3 (Exception) - Order cancellation](#scenario-33-exception---order-cancellation)
+    - [Use case 4, UC4 - Supplier management](#use-case-4-uc4---supplier-management)
+      - [Scenario 4.1 - Adding a new supplier](#scenario-41---adding-a-new-supplier)
+      - [Scenario 4.2 - Supplier information update](#scenario-42---supplier-information-update)
+      - [Scenario 4.3 (Exception) - Duplicate supplier entry](#scenario-43-exception---duplicate-supplier-entry)
+    - [Use case 5, UC5 - Accounting report management](#use-case-5-uc5---accounting-report-management)
+      - [Scenario 5.1 - Report creation](#scenario-51---report-creation)
+      - [Scenario 5.2 (Variant) - Manual expense inclusion](#scenario-52-variant---manual-expense-inclusion)
+      - [Scenario 5.3 (Variant) - Empty report](#scenario-53-variant---empty-report)
+      - [Scenario 5.4 (Exception) - OS failure to create report file](#scenario-54-exception---os-failure-to-create-report-file)
+    - [Use case 6, UC6 - Account management and authentication](#use-case-6-uc6---account-management-and-authentication)
+      - [Scenario 6.1 - Account authentication (Login)](#scenario-61---account-authentication-login)
+      - [Scenario 6.2 (Exception) - Authentication failed](#scenario-62-exception---authentication-failed)
+      - [Scenario 6.3 - Logout](#scenario-63---logout)
+      - [Scenario 6.4 - Create account](#scenario-64---create-account)
+      - [Scenario 6.5 (Exception) - Duplicate account creation](#scenario-65-exception---duplicate-account-creation)
+      - [Scenario 6.6 - Change account permissions](#scenario-66---change-account-permissions)
+      - [Scenario 6.7 (Variant) - Change permissions for shop-owner own account](#scenario-67-variant---change-permissions-for-shop-owner-own-account)
+      - [Scenario 6.8 - Change account password](#scenario-68---change-account-password)
+      - [Scenario 6.9 - Remove account](#scenario-69---remove-account)
+      - [Scenario 6.10 (Exception) - Remove shop-owner account](#scenario-610-exception---remove-shop-owner-account)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Hardware Software architecture](#Hardware-software-architecture)
@@ -96,7 +128,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Cashier  | Monitor, mouse e keyboard / monitor touch | GUI |
 | Logistic operator| Monitor, mouse e keyboard / monitor touch | GUI |
 | Accountant  | Monitor, mouse e keyboard / monitor touch | GUI |
-| Cash station  | Ethernet cable / Bluetooth / USB cable / WiFi | Cash station driver |
+| Cash station  | Ethernet cable / Bluetooth / USB cable / WiFi | Cashmatic Selfpay API: (integration tools and APIs are available [here](https://cashmatic.it/prodotti/selfpay/?gclid=Cj0KCQjwgpzIBhCOARIsABZm7vFn1HBO9fjzIP3ga-uvUXyKMNdOeX9g5ZvEqUyeSzf5ZBjQxBBWzq8aAj3jEALw_wcB)) |
 | POS station  | Ethernet cable / Bluetooth / USB cable / WiFi | myPOS API: (integration tools and APIs are available [here](https://developers.mypos.com/en)) |
 | Barcode scanner |  Bluetooth / USB cable | Operating System API for scanners |
 | Receipt printer | Bluetooth / USB cable | Operating System API for printers |
@@ -105,8 +137,6 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 # Functional and non functional requirements
 
 ## Functional Requirements
-
-# TODO: find some link for cash station driver
 
 |  ID   | Name | Description |
 | :---: | :--------- | :--------- |
