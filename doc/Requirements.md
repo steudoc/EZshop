@@ -379,14 +379,126 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | :------------ | :------------------------------------------------------------------------ |:---|
 |The logistic operator attempts to select the option to change or remove product information.|The system checks the status of the Sales module. Detecting that a sale is currently in progress, it blocks the operation and displays an error message (e.g., "Cannot modify inventory during active sale").|FR2.2|
 
-..
+## Use case 3, UC3 - Inventory management
 
-### Use case x, UCx
+|Use case 3||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Logistic operator |
+| Nominal Scenario | 3.1 |
+|     Variants     | 3.2 |
+|    Exceptions    | 3.3 |
 
-..
+
+### Scenario 3.1 -  Order creation and receipt
+
+|Scenario 3.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The logistic operator has a valid account and is logged in.  | 
+| Post condition |  The order is correctly recorded and updated; in stock and incoming quantities for the involved products are updated properly.  |
 
 
-## Use case 5, UC4 - Accounting report management
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator identifies low inventory levels or other replenishment needs, then contacts the supplier and arranges delivery of one or more products. |  | FR3.2 |
+| The logistic operator opens the inventory tab and selects the "Add new order" option. | The system displays the form for creating a new order. | FR3.4 |
+| The logistics operator enters the order data | The order is recorded in the database with the following details: product, supplier, order date, total quantity, total cost and order status. | FR3.4  |
+| Once the order is delivered to the store, the logistic operator opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.5 |
+| The logistics operator updates the order status | Order and products information are updated in the database. | FR3.5 |
+
+### Scenario 3.2 (Variant) - Manual adjustment of stock quantity
+
+|Scenario 3.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 3.1  | 
+| Post condition |  The in stock quantity of the selected product is successfully updated.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The ogistic operator opens the inventory tab and selects the "Update product" option. | The system displays the form to update the product. | FR3.1 |
+|  The logistic operator adjusts the stock value to ensure the inventory accurately reflects the actual quantity available in storage. |  Product information are updated in the database. | FR3.1 |
+
+
+### Scenario 3.3 (Exception) - Order cancellation
+
+|Scenario 3.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 3.1; an order in-progress needs to be canceled  | 
+| Post condition |  For each product, the incoming quantities are updated and the order status is adjusted accordingly.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  The expected delivery of one or more products is cancelled. |  |  |
+| The logistics operator notifies the system, then opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.4 |
+| The logistic operator update the order status | The system updates the incoming quantity for each product included in the cancelled purchase order | FR3.4|
+
+
+
+## Use case 4, UC4 - Supplier management
+
+|Use case 4||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Logistic operator |
+| Nominal Scenario | 4.1 |
+|     Variants     | 4.2 |
+|    Exceptions    | 4.3 |
+
+
+### Scenario 4.1 -  Adding a new supplier
+|Scenario 4.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  | The Logistic Operator has a valid account and is logged in. | 
+| Post condition |  A new supplier is added to the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the "Add new supplier" option. | The system displays the form for creating a new supplier. | FR3.3 |
+| The logistics operator enters the supplier data | The supplier is recorded in the database with the following details: name, contact information. | FR3.3 |
+
+
+### Scenario 4.2 (Variant) -  Supplier information update
+
+|Scenario 4.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 4.1; the supplier already exists in the system.  | 
+| Post condition |  Supplier information is updated. |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the "Update supplier" option. | The system displays the form to update a supplier. | FR3.3 |
+| The logistics operator reports new information regarding the supplier | The system stores the new information in the database. | FR3.3 |
+
+### Scenario 4.3 (Exception) -  Duplicate supplier entry
+
+|Scenario 4.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  Same as Scenario 4.1; the supplier already exists in the system.  | 
+| Post condition |  The supplier list remains unchanged.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+| The logistic operator opens the inventory tab and selects the "Add new supplier" option. | The system displays the form for creating a new supplier. | FR3.3 |
+| The logistics operator enters the data to add a new supplier. | The system detects that it already has this supplier in the database. | FR3.3 |
+|| The system does not update the database. | FR3.3 |
+
+
+## Use case 5, UC5 - Accounting report management
 |Use case 5||
 | :--------------: | :------------------------------------------------------------------ |
 | Actors involved | Accountant |
@@ -454,6 +566,143 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | :------------ | :------------------------------------------------------------------------ |:---|
 |Accountant opens the accounting tab of the system, selects a date range and a certain time granularity (e.g. date, week, month, quarter) | The system gathers all expenses, sales and inventory costs data for the specified date range. | FR4.1, FR4.2
 |The accountant specifies the report name and a destination folder on the pc, chooses to finalize the report for the selected date range| An error message is displayed to the screen with details about why the report file could not be created. The selected date range and all the other data (including manual expenses) are still present in the report creation tab, but no report is created yet. If the OS failure is resolved, the application should then be able to create the report as in 5.1. | 
+
+
+## Use case 6, UC6 - Account management
+
+
+|Use case 6||
+| :--------------: | :------------------------------------------------------------------ |
+| Actors involved | Shop owner, cashier, accountant, logistic operator from 6.1 to 6.3; Shop owner from 6.4 to 6.8 |
+| Nominal Scenario | 6.1, 6.2, 6.3, 6.4, 6.5, 6.6 |
+|     Variants     |     |
+|    Exceptions    | 6.7, 6.8 |
+
+
+### Scenario 6.1 - Account authentication (Login)
+
+|Scenario 6.1 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The system is operational. The user has a valid EZshop account.  | 
+| Post condition |  The user is authenticated in the system and has access to functionalities defined by their permissions.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+### Scenario 6.2 - Logout
+
+|Scenario 6.2 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  A user is authenticated in the system.  | 
+| Post condition |  The user's session is terminated, and the system returns to the login interface.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+
+### Scenario 6.3 - Remove account
+
+|Scenario 6.3 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is authenticated in the system  | 
+| Post condition |  The selected EZshop account is removed from the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+### Scenario 6.4 - Create account
+
+|Scenario 6.4 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is authenticated in the system and has administrator privileges.  | 
+| Post condition |  A new EZshop account is created and saved in the system.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+### Scenario 6.5 - Change account permissions
+
+|Scenario 6.5 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is authenticated in the system.  | 
+| Post condition |  The permissions for the selected account are updated.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+
+### Scenario 6.6 - Change account password
+
+|Scenario 6.6 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner is authenticated in the system and has administrator privileges.  | 
+| Post condition |  The password for an account is successfully changed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+
+### Scenario 6.7 (Exception) - Authentication failed
+
+|Scenario 6.7 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  A user attempts to log in (Scenario 5.1).  | 
+| Post condition |  Access to the system is denied. An error message is displayed.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
+
+### Scenario 6.8 (Exception) - Duplicate account creation
+
+|Scenario 6.8 |  |
+| :------------: | :------------------------------------------------------------------------ |
+|  Precondition  |  The Shop owner attempts to create a new account (Scenario 5.2).  | 
+| Post condition |  The new account is not created. The Shop owner receives an error message.  |
+
+
+### Steps
+
+| Actor's action  |  System action | FR needed |
+| :------------ | :------------------------------------------------------------------------ |:---|
+|  |  |  |
+|  |  |  |
+
 
 
 # Glossary
