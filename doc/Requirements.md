@@ -213,7 +213,6 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 6: Account management and authentication | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
 ## Use case diagram
-# TODO: update UC diagram (if needed)
 
 ![Use case diagram for EZshop project](./images/UseCaseDiagram.png)
 
