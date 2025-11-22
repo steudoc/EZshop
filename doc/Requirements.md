@@ -47,7 +47,7 @@ Version: 1.0.0
       - [Scenario 3.2 - Manual adjustment of stock quantity](#scenario-32---manual-adjustment-of-stock-quantity)
       - [Scenario 3.3 (Exception) - Order cancellation](#scenario-33-exception---order-cancellation)
     - [Use case 4, UC4 - Supplier management](#use-case-4-uc4---supplier-management)
-      - [Scenario 4.1 - Adding a new supplier](#scenario-41---adding-a-new-supplier)
+      - [Scenario 4.1 - Add a new supplier](#scenario-41---add-a-new-supplier)
       - [Scenario 4.2 - Supplier information update](#scenario-42---supplier-information-update)
       - [Scenario 4.3 (Exception) - Duplicate supplier entry](#scenario-43-exception---duplicate-supplier-entry)
     - [Use case 5, UC5 - Accounting report management](#use-case-5-uc5---accounting-report-management)
@@ -89,7 +89,7 @@ Consider that the document should be delivered to another team (unknown to you)
 # Business Model
 
 ### Customer Segment:
-The target customer segment for EZshop is composed of owners of small shops who require a reliable, easy-to-use system to manage everyday store activities. The primary users include the owner and store employees, particularly cashiers, logistic operators and accountants.
+The target customer segment for EZshop is composed of owners of small shops who require a reliable, easy-to-use system to manage everyday shop activities. The primary users include the owner and shop employees, particularly cashiers, logistic operators and accountants.
 
 ### Value Proposition:
 EZshop provides a desktop application for managing the main shop activities: sales processing, inventory tracking, suppliers and orders management and basic accounting.
@@ -194,8 +194,9 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Cashier | X | | | | |
 | Shop owner | X | X | X | X | X | 
 | Logistic operator | | X | X | |   |
-| Cash station | | | | X | |
-| Pos station | | | | | |
+| Accountant | | | | X | |
+| Cash station | | | | | |
+| POS station | | | | | |
 | Barcode scanner | | | | | | 
 | Receipt printer | | | | | |
 
@@ -208,7 +209,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | 2: Product management | Define and update product information | Logistic operators can add new products, specify various information (e.g. discount, price, taxes...) and update products information when needed
 | 3: Inventory management | Track and update products quantities in the shop, manage orders to suppliers | Logistic operators can track orders to suppliers, including the involved products and suppliers; the inventory quantities for each product get automatically updated once an order is confirmed as delivered
 | 4: Supplier management | Define and update various product suppliers information | Logistic operators can add new product suppliers into the system, specifying some contact information and with the ability to update each supplier information if needed
-| 5: Accounting report management | Generate financial report about sales revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
+| 5: Accounting report management | Generate financial report about sales, revenue and expenses during a specific time-frame | Accountants can select a time-frame and generate a financial report that displays sales, expenses (also manually added ones) insided the selected time-frame
 6: Account management and authentication | Define and manage permissions to use various EZshop functionalities | Shop owner can create, modify and remove EZshop accounts for various employees and edit the permissions associated with each account
 
 ## Use case diagram
@@ -470,7 +471,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | The logistic operator identifies low inventory levels or other replenishment needs, then contacts the supplier and arranges delivery of one or more products. |  | FR3.2 |
 | The logistic operator opens the inventory tab and selects the "Add new order" option. | The system displays the form for creating a new order. | FR3.4 |
 | The logistics operator enters the order data | The order is recorded in the database with the following details: product, supplier, order date, total quantity, total cost and order status. | FR3.4  |
-| Once the order is delivered to the store, the logistic operator opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.5 |
+| Once the order is delivered to the shop, the logistic operator opens the inventory tab and selects the "Update order" option. | The system displays the form to update the order. | FR3.5 |
 | The logistics operator updates the order status | Order and products information are updated in the database. | FR3.5 |
 
 ### Scenario 3.2 - Manual adjustment of stock quantity
@@ -517,7 +518,7 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 |    Exceptions    | 4.3 |
 
 
-### Scenario 4.1 -  Adding a new supplier
+### Scenario 4.1 - Add a new supplier
 |Scenario 4.1 |  |
 | :------------: | :------------------------------------------------------------------------ |
 |  Precondition  | The Logistic Operator has a valid account and is logged in. | 
@@ -807,19 +808,18 @@ The shop owner pays an initial fee that covers the software licence(s) and insta
 | Term | Description |
 | :--: | :--------- |
 | Sale | Economical transaction between a customer and the shop, involving one or more products. A transaction is opened when scanning the first product and it is closed only when the customer pays the total amount of money defined in the transaction. |
-| Customer | Person buying product. |
-| Product | Exchange good that can be purchased at the store by customers. |
-| Supplier | Company that supplies products to the store. They define the bar-code for every product they supply. |
+| Customer | Person that purchases products at the shop. |
+| Product | Exchange good that can be purchased at the shop by customers. |
+| Supplier | Company that supplies products to the shop. They define the bar-code for every product they supply. |
 | Barcode | Numerical code printed as a series of vertical dashes on a label. |
 | Discount | Percentage of product price to be subtracted to the retail price, during a sale. |
 | Order | A series of information about a product supply from a specific supplier to the shop.  |
 | Accounting report | Financial report containing information about incoming and outcoming money flow of the shop. It includes revenue generated by transactions and money spent for supplies (also electrical bills, heat bills, employees salary and other expenses can be added manually). |
-| Receipt | Printed sheet of paper produced by a dedicated printer. It contains information such as a list of purchased products, the price and taxes for each product, the total cost and taxes of the sale, the sale date, and personalized store information. |
+| Receipt | Printed sheet of paper produced by a dedicated printer. It contains information such as a list of purchased products, the price and taxes for each product, the total cost and taxes of the sale, the sale date, and personalized shop information. |
 | EZshop account | Profile assigned to a shop employee to access some of the EZshop application functionalities. Also referred to as "account" |
 | Permission | Access to a specific functionality of the EZshop application (such as accounting, inventory management and Accounts management). |
 | Cash station | Hardware and software system that allows customers to pay with cash. It automatically handles transactions and provides cash change. |
 | POS station | Hardware and software system that allows customers to pay with credit cards. It automatically handles transactions with credit card circuits. |
-| Receipt | Printed sheet of paper produced by a dedicated printer. It contains information such as a list of purchased products, the price and taxes for each product, the total cost and taxes of the sale, the sale date, and personalized store information. |
 | User | Any person interacting with the EZshop system using an EZshop account, including cashiers, shop owners, logistic operators, and accountants. |
 
 ![Glossary for EZshop project](./images/Glossary.png)
