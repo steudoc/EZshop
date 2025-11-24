@@ -1,0 +1,14 @@
+fastapi>=0.95
+uvicorn[standard]>=0.22
+pydantic>=2.10
+openapi-spec-validator>=0.4
+pytest>=7.0
+httpx>=0.24
+sqlalchemy
+aiosqlite
+pytest-asyncio
+pytest-cov
+pytest
+pytest-asyncio
+httpx
+PyJWT

@@ -1,0 +1,3250 @@
+openapi: 3.0.3
+info:
+  title: EZShop Back End Application API
+  version: 1.0.0
+  description: 'OpenAPI definition for the EZShop back end application.
+
+
+    Assumptions:
+
+    - Backend implemented in Python (e.g., FastAPI/Flask), stateless JWT auth.
+
+    - Entities inferred from EZShopInterface.java: User, ProductType, Customer, Order,
+    SaleTransaction, ReturnTransaction, BalanceOperation, TicketEntry, LoyaltyCard.
+
+    - Some fields are inferred; adjust to match your domain models.
+
+    '
+servers:
+- url: http://127.0.0.1:8000/api/v1
+  description: Local dev
+- url: https://api.ezshop.example.com
+  description: Production
+security:
+  - bearerAuth: []
+tags:
+- name: general
+- name: users
+- name: products
+- name: orders
+- name: customers
+- name: sales
+- name: returns
+- name: accounting
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserType:
+      type: string
+      enum:
+        - Administrator
+        - Cashier
+        - ShopManager
+      description: User type in the system
+      example: "Administrator"
+    
+    UserLoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 5
+          description: Unique username for the user
+          example: "admin"
+        password:
+          type: string
+          minLength: 5
+          description: User password (mandatory field)
+          example: "admin"
+    UserCreateRequest:
+      type: object
+      required:
+        - username
+        - password
+        - type
+      properties:
+        username:
+          type: string
+          minLength: 5
+          description: Unique username for the user
+          example: "admin_user"
+        password:
+          type: string
+          minLength: 5
+          format: password
+          description: User password (mandatory field)
+          example: "SecurePass123!"
+        type:
+          $ref: '#/components/schemas/UserType'
+    UserUpdateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 5
+          description: New username for the user
+          example: "updated_username"
+        password:
+          type: string
+          minLength: 5
+          format: password
+          description: New password for the user
+          example: "NewSecurePass789!"
+        type:
+          $ref: '#/components/schemas/UserType'
+    UserResponse:
+      type: object
+      required:
+        - id
+        - username
+        - type
+      properties:
+        id:
+          type: integer
+          description: Unique user ID
+          example: 1
+        username:
+          type: string
+          description: Username
+          example: "admin_user"
+        type:
+          $ref: '#/components/schemas/UserType'
+      description: Complete user representation (without password)
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+        - name
+      properties:
+        code: 
+          type: integer
+          description: HTTP status code of the error
+          example : 400
+        message:
+          type: string
+          description: message of the error
+          example: Conflict
+        name:
+          type: string
+          description: Descriptive error message
+          example: "User not found"
+      description: Standard structure for error responses
+    TokenResponse:
+      type: object
+      required:
+      - token
+      properties:
+        token:
+          type: string
+    ProductType:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+          minLength: 1
+        productCode:
+          type: string
+          minLength: 1          
+        pricePerUnit:
+          type: number
+        note:
+          type: string
+          minLength: 1
+        quantity:
+          type: integer
+        position:
+          type: string
+      required:
+        - description
+        - productCode
+        - pricePerUnit
+    BooleanResponse:
+      type: object
+      properties:
+        success: 
+          type: boolean
+      required: [success]
+    
+    OrderStatus:
+      type: string
+      enum: [ISSUED, PAID, COMPLETED]
+      description: Current status of the order
+    Order:
+      type: object
+      required:
+        - productTypeBarcode
+        - quantity
+        - pricePerUnit
+        - status
+      properties:
+        id:
+          type: integer
+          example: 1
+        productTypeBarcode:
+          type: string
+          example: "0123456789012"
+        quantity:
+          type: integer
+          example: 100
+        pricePerUnit:
+          type: number
+          format: float
+          example: 10.5
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        issue_date:
+          type: string
+          format: date-time
+          example: "2025-10-30T12:34:56Z"
+    CustomerCard:
+      type: object
+      properties:
+        cardId:
+          type: string
+          description: Unique ID of the customer card
+          example: "123"
+        points:
+          type: integer
+          description: Current points on the card
+          example: 120
+    Customer:
+      type: object
+      required:
+        - name
+        - card
+      properties:
+        id:
+          type: integer
+          example: 5
+        name:
+          type: string
+          example: "Mario Rossi"
+        card:
+          $ref: '#/components/schemas/CustomerCard'
+    SaleStatus:
+      type: string
+      enum: [OPEN, PENDING, PAID]
+      description: Current status of the sale
+    SaleLine:
+      type: object
+      required:
+        - sale_id
+        - productBarcode
+        - quantity
+        - pricePerUnit
+        - discountRate
+      properties:
+        id:
+          type: integer
+          example: 1
+        sale_id:
+          type: integer
+          example: 10
+        productBarcode:
+          type: string
+          example: "0123456789"
+        quantity:
+          type: integer
+          example: 2
+        pricePerUnit:
+          type: number
+          format: float
+          example: 5.5
+        discountRate:
+          type: number
+          format: float
+          example: 0.1
+    Sale:
+      type: object
+      required:
+        - status
+        - discountRate
+      properties:
+        id:
+          type: integer
+          example: 10
+        status:
+          $ref: '#/components/schemas/SaleStatus'
+        discountRate:
+          type: number
+          format: float
+          example: 0.05
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-30T12:34:56Z"
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2025-10-31T12:34:56Z"
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleLine'
+    ReturnStatus:
+      type: string
+      enum: [OPEN, CLOSED, REIMBURSED]
+      description: Status of a return transaction
+    ReturnLine:
+      type: object
+      required:
+        - return_id
+        - productBarcode
+        - quantity
+        - pricePerUnit
+      properties:
+        id:
+          type: integer
+          example: 1
+        return_id:
+          type: integer
+          example: 5
+        productBarcode:
+          type: string
+          example: "0123456789012"
+        quantity:
+          type: integer
+          example: 2
+        pricePerUnit:
+          type: number
+          format: float
+          example: 9.99
+    Return:
+      type: object
+      required:
+        - sale_id
+        - status
+      properties:
+        id:
+          type: integer
+          example: 3
+        sale_id:
+          type: integer
+          example: 1
+        status:
+          $ref: '#/components/schemas/ReturnStatus'
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-03T12:30:00Z"
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2025-11-04T09:45:00Z"
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReturnLine'
+paths:
+  /auth:
+    post:
+      tags:
+      - general
+      summary: Login and obtain a JWT token
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+            example:
+              username: "admin_user"
+              password: "SecurePass123!"
+      responses:
+        '200':
+          description: Login successful, JWT token returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_password:
+                  summary: Invalid password
+                  value:
+                    code: 401
+                    message: "Invalid password"
+                    name: "UnauthorizedError"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Entity not found"
+                name: "NotFoundError"
+  /users:
+    post:
+      tags:
+        - users
+      summary: Create a new user
+      description: Creates a new user in the system. Requires authentication as **Administrator**. 
+        The success response is the user with its assigned ID.
+      operationId: createUser
+      security:
+        - bearerAuth: [Administrator]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+            examples:
+              administrator:
+                summary: Create administrator
+                value:
+                  username: "admin_user"
+                  password: "SecurePass123!"
+                  type: "Administrator"
+              standard_user:
+                summary: Create standard user
+                value:
+                  username: "standard_user"
+                  password: "UserPass456!"
+                  type: "Standard"
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                id: 1
+                username: "admin_user"
+                type: "Administrator"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_password:
+                  summary: Missing password
+                  value:
+                    detail: "Password is a mandatory field"
+                missing_type:
+                  summary: Missing user type
+                  value:
+                    detail: "User type is a mandatory field"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "User with username 'admin_user' already exists"
+    get:
+      tags:
+        - users
+      summary: List all users
+      description: Retrieves the list of all registered users. Requires authentication as **Administrator**.
+      operationId: listUsers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+              example:
+                - id: 1
+                  username: "admin_user"
+                  type: "Administrator"
+                - id: 2
+                  username: "standard_user"
+                  type: "Standard"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/{user_id}:
+    get:
+      tags:
+        - users
+      summary: Get a specific user
+      description: Retrieves the details of a user by ID. Requires authentication as **Administrator**.
+      operationId: getUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID of the user to retrieve
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                id: 1
+                username: "admin_user"
+                type: "Administrator"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "User not found"
+                name: "NotFoundError"
+    put:
+      tags:
+        - users
+      summary: Update a user
+      description: Updates the information of an existing user. Requires authentication as **Administrator**. 
+        The new username must be unique. This operation can update the UserType and password as well.
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID of the user to update
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+            example:
+              username: "updated_username"
+              password: "NewSecurePass789!"
+              type: "Administrator"
+      responses:
+        '201':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                id: 1
+                username: "updated_username"
+                type: "Administrator"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "User not found"
+                name: "NotFoundError"
+        '409':
+          description: Conflict - Username already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 409
+                message: "User with username 'updated_username' already exists"
+                name: "ConflictError"
+    delete:
+      tags:
+        - users
+      summary: Delete a user
+      description: Deletes a user from the system. Requires authentication as **Administrator**.
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        '204':
+          description: User deleted successfully (no content)
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "User not found"
+                
+  /products:
+    post:
+      tags:
+      - products
+      summary: Create a new product type
+      operationId: createProductType
+      security:
+        - bearerAuth: []
+      description: Create a new Product Type. Requires **Administrator** or **ShopManager** role. The success response is the product with its assigned ID.
+        The barcode must be a string of 12-14 digits. Description and price per unit must be present.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductType'
+            
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductType'
+              example:
+                id: 1
+                description: 'Chocolate Bar'
+                productCode: '0123456780'
+                pricePerUnit: 2.99
+                note: 'Imported from Belgium'
+                quantity: 0
+                position: '1-A-3'
+        '400':
+          description: Invalid input data (barcode must be a string of 12-14 digits). Description and price per unit must be present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '409':
+          description: Product with same barcode already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+                
+    get:
+      tags: 
+      - products
+      summary: List all product types
+      security:
+      - bearerAuth: []
+      description: Returns all the product type present in the shop. Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      responses:
+        '200':
+          description: List of product types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductType'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+  /products/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - products
+      summary: Get product type by ID
+      security:
+        - bearerAuth: []
+      description: Return a product type by its ID. Requires **Administrator**, **ShopManager**, or **Cashier** role. 
+      operationId: getProductType
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductType'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+    put:
+      tags:
+      - products
+      summary: Update product type by ID
+      operationId: updateProduct
+      security:
+        - bearerAuth: []
+      description: Update product type by ID. Requires **Administrator**, **ShopManager** role. 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductType'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid input data (barcode must be a string of 12-14 digits). 
+            Description and price per unit must be present. Product Id must be a valid product id ( > 0 ).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+        '409':
+          description: Barcode already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 409
+                message: "Barcode already in use"
+                name: "Conflict error"
+    delete:
+      tags:
+      - products
+      summary: Delete product type by ID
+      operationId: deleteProductType
+      security:
+        - bearerAuth: []
+      description: Delete product type by ID. Requires **Administrator**, **ShopManager** role.
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Invalid product id ( < 0 )
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid product id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+  /products/barcode/{barcode}:
+    parameters:
+    - name: barcode
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - products
+      summary: Get product by barcode
+      security:
+        - bearerAuth: []
+      description: Return product by barcode. Requires **Administrator** or **ShopManager** role.
+      operationId: getProductTypeByBarCode
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductType'
+        '400':
+          description: Invalid barcode or barcode format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid product code"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+  /products/search:
+    get:
+      tags:
+      - products
+      summary: Search product types by description
+      operationId: getProductTypesByDescription
+      security:
+        - bearerAuth: []
+      description: Search product types by description. Requires **Administrator** or **ShopManager** role.
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Partial description to filter products
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductType'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+  /products/{id}/position:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      tags:
+      - products
+      summary: Assign or clear shelf position (aisle-shelf-level).
+      operationId: updatePosition
+      security:
+        - bearerAuth: []
+      description: Requires **Administrator** or **ShopManager** role.  
+        The position must match pattern **<digits>-<letters>-<digits>**. To clear the position, send an empty string.
+      parameters:
+        - name: position
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "2-B-1"
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid product id or invalid position string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid product id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+        '409':
+          description: Position conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /products/{id}/quantity:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      tags:
+      - products
+      summary: Increase/decrease available quantity. 
+      description: Modify the available quantity. A negative number decrease the available quantity. Requires **Administrator** or **ShopManager** role.
+      operationId: updateQuantity
+      parameters:
+        - name: quantity
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Updated quantity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid product id, invalid or insufficient quantity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid product id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+  
+  /orders:
+    post:
+      tags:
+        - orders
+      summary: Issue a new order
+      description: Creates a new order for a given product. Requires **Administrator** or **ShopManager** role. 
+        The new order is in the **ISSUED** state.
+      operationId: issueOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Order successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Bad request (missing or invalid parameters)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Basrcode is required"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Product Type not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+    get:
+      tags:
+        - orders
+      summary: List all orders
+      description: Returns all orders in the system. Requires **Administrator**, **ShopManager** role.
+      operationId: listOrders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of all orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+  /orders/payfor:
+    post:
+      tags:
+        - orders
+      summary: Create and pay an order for a product
+      description: |
+        Creates a new order and immediately pays for it. Requires **Administrator** or **ShopManager** role. 
+        The new order is in the **PAID** state. The balance is updated accordingly.
+      operationId: payOrderFor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Order successfully paid and created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Bad request (missing parameters)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Barcode is required"
+                name: "BadRequestError"
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Order not found"
+                name: "NotFoundError"
+        '421':
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 421
+                message: "Insufficient balance for the operation"
+                name: "BalanceError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+
+  /orders/{order_id}/pay:
+    patch:
+      tags:
+        - orders
+      summary: Pay for an existing issued order
+      description: |
+        Pays an existing ISSUED order. Requires **Administrator** or **ShopManager** role. 
+        The order state is now **PAID**. The balance is updated accordingly.
+      operationId: payOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order successfully paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid order ID or bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid order id"
+                name: "BadRequestError"
+        '404':
+          description: Order not found or insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Order not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid order state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Order was not Issued"
+                name: "InvalidOrderStateError"
+        '421':
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 421
+                message: "Insufficient balance for the operation"
+                name: "BalanceError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+  /orders/{order_id}/arrival:
+    patch:
+      tags:
+        - orders
+      summary: Record the arrival of an order
+      description: Marks a **PAID** order as **COMPLETED** and updates product quantities. 
+        Requires **Administrator** or **ShopManager** role.
+      operationId: recordOrderArrival
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Order successfully marked as completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid order ID or bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid order id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '404':
+          description: Order or product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Order not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid order state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "order is not paid"
+                name: "InvalidOrderStateError"
+        '500':
+          description: General Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 500
+                message: "Position must be set for an order before its arrival"
+                name: "GeneralError"
+  /customers:
+    post:
+      tags:
+        - customers
+      summary: Create a new customer
+      description: Creates a new customer. Returns the created customer with assigned ID.
+        Requires authentication as **Administrator**, **Cashier**, or **ShopManager**.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Customer successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid customer input (e.g. empty or missing name)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Customer name is required"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    get:
+      tags:
+        - customers
+      summary: List all customers
+      description: Retrieves all customers in the system. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /customers/{customer_id}:
+    get:
+      tags:
+        - customers
+      summary: Get a customer by ID
+      description: Retrieve customer information by their ID. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid customer id 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid customer ID"
+                name: "BadRequestError"
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Customer not found"
+                name: "NotFoundError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    put:
+      tags:
+        - customers
+      summary: Update an existing customer
+      description: Updates customer details, including optional attached card. 
+        If the customer card is None or null (not present) it means that we don't want to update the cardNumber. 
+        If it is an empty object, then the card previously associated must be detached from the customer and deleted. 
+        Requires **Administrator**, **ShopManager** or **Cashier** role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Customer successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid customer input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Customer name cannot be empty"
+                name: "BadRequestError"
+        '404':
+          description: Customer or card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Customer not found"
+                name: "NotFoundError"
+        '409':
+          description: Conflict (e.g., duplicate customer name or card conflict)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 409
+                message: "Card with id '123' is already attached to a customer"
+                name: "ConflictError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    delete:
+      tags:
+        - customers
+      summary: Delete a customer
+      description: Deletes a customer by ID. If a card is attached, the card is deleted as well. 
+        Requires **Administrator**, **ShopManager** or **Cashier** role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: customer deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Customer not found"
+                name: "NotFoundError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /customers/cards:
+    post:
+      tags:
+        - customers
+      summary: Create a new customer card
+      description: Creates a new customer (loyalty) card with 0 points. The card is returned with its generated ID.
+        Requires **Administrator**, **ShopManager** or **Cashier** role. 
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Customer card successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerCard'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /customers/{customer_id}/attach-card/{card_id}:
+    patch:
+      tags:
+        - customers
+      summary: Attach a card to a customer
+      description: Associates a customer (loyalty) card to a specific customer. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: card_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Card successfully attached to customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid or empty IDs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Card ID must be an integer string"
+                name: "BadRequestError"
+        '404':
+          description: Customer or card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Customer or Card not found"
+                name: "NotFoundError"
+        '409':
+          description: Card already attached to another customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 409
+                message: "Card with id '123' is already attached to a customer"
+                name: "ConflictError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /customers/cards/{card_id}:
+    patch:
+      tags:
+        - customers
+      summary: Modify points of a customer card
+      description: Add or remove points from a loyalty card. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: card_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: points
+          in: query
+          required: true
+          schema:
+            type: integer
+            description: Positive or negative integer representing points to add or remove
+      responses:
+        '200':
+          description: Customer card points successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerCard'
+        '400':
+          description: Invalid card ID or insufficient points
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Card ID must be an integer string"
+                name: "BadRequestError"
+        '500':
+          description: Insufficient points on the card
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                  code: 400
+                  message: "Insufficient points on the card"
+                  name: "CustomerCardError"
+        '404':
+          description: Customer card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Customer Card not found"
+                name: "NotFoundError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  
+  /sales:
+    post:
+      tags: [sales]
+      summary: Start a new sale transaction
+      description: |
+        Starts a new sale transaction with initial status **OPEN**.
+        Requires authentication as **Administrator**, **ShopManager**, or **Cashier**.
+      operationId: startSale
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Sale successfully started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    get:
+      tags: [sales]
+      summary: Get all sale transactions
+      description: |
+        Returns all sale transactions.
+        Requires authentication as **Administrator**, **ShopManager**, or **Cashier**.
+      operationId: getAllSale
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of Sales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sale'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /sales/{sale_id}:
+    get:
+      tags: [sales]
+      summary: Get a sale by its ID
+      description: Retrieve details of a specific sale. Requires authentication as **Administrator**, **ShopManager**, or **Cashier**.
+      operationId: getSale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sale found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    delete:
+      tags: [sales]
+      summary: Delete a sale by its ID
+      description: | 
+        Deletes a sale unless it has been **PAID**. 
+        The quantity of all the products associated with that sale is returned to the shelf (the inventory) for the other customers to buy. 
+        Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: deleteSale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sale successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid sale ID or sale cannot be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+
+  /sales/{sale_id}/items:
+    post:
+      tags: [sales]
+      summary: Add a product to the sale with a specified quantity
+      description: | 
+        Adds a product to an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
+        The quantity of the product added to a sale is deducted from the shelf (the inventory) for the other customers to buy.
+      operationId: addProductToSale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: barcode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Product added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid input or insufficient stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid id"
+                name: "NotFoundError"
+        '404':
+          description: Sale or product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Product not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot modify a closed sale"
+                name: "InvalidStateError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    delete:
+      tags: [sales]
+      summary: Remove a product from a sale
+      description: | 
+        Decreases or removes the quantity of a product in an **OPEN** sale. 
+        The quantity of the product removed from a sale is placed again in the shelf (the inventory) for the other customers to buy. 
+        Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: removeProductFromSale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: barcode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid quantity or sale ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid id"
+                name: "NotFoundError"
+        '404':
+          description: Sale or product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '420':
+          description: Invalid sale status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot modify closed sale"
+                name: "InvalidStateError"
+  /sales/{sale_id}/discount:
+    patch:
+      tags: [sales]
+      summary: Apply a discount to the entire sale
+      description: Sets a discount rate for all items in an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: discountSale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: discountRate
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0.0
+            maximum: 1.0
+      responses:
+        '200':
+          description: Discount applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid sale ID or discount rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "invalid id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot modify closed sale"
+                name: "InvalidStateError"
+  /sales/{sale_id}/items/{product_barcode}/discount:
+    patch:
+      tags: [sales]
+      summary: Apply a discount to a specific product in a sale
+      description: Applies a discount rate to a single product in an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: discountProduct
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: product_barcode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: discountRate
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0.0
+            maximum: 1.0
+      responses:
+        '200':
+          description: Product discount applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid input or discount rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "invalid id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot modify closed sale"
+                name: "InvalidStateError"
+  /sales/{sale_id}/close:
+    patch:
+      tags: [sales]
+      summary: Close a sale transaction
+      description: Closes an **OPEN** sale, changing its status to **PENDING**, waiting for the payment. 
+        Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: closeSale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sale closed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
+        '400':
+          description: Invalid input or discount rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "invalid id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
+        '420':
+          description: Sales already closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot modify closed sale"
+                name: "InvalidStateError"
+  /sales/{sale_id}/pay:
+    patch:
+      tags: [sales]
+      summary: Pay a sale in cash
+      description: |
+        Pays for a **PENDING** sale, mark the sale as **PAID** and updates the system balance. 
+        The functions returns the change to be provided based on the amount of cash received.
+        Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: paySale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cash_amount
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: Sale paid successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  change:
+                    type: number
+                    format: float
+                    example: 5.0
+        '400':
+          description: Invalid input or discount rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "invalid id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
+        '420':
+          description: Sale must be closed before payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Sale must be closed before payment"
+                name: "InvalidStateError"
+  /sales/{sale_id}/points:
+    get:
+      tags: [sales]
+      summary: Compute loyalty points for a sale
+      description: Returns the loyalty points earned from a paid sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      operationId: computePoints
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Points computed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  points:
+                    type: integer
+                    example: 15
+        '400':
+          description: Invalid input or discount rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "invalid id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
+        '420':
+          description: Sale must be paid before computing points
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Sale must be paid before computing points"
+                name: "InvalidStateError"
+  /returns:
+    post:
+      tags:
+      - returns
+      summary: Start a return transaction for a sale
+      description: | 
+        Creates a new return transaction for a given **CLOSED** sale. 
+        Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: startReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Return transaction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+        '400':
+          description: Invalid sale ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "invalid id"
+                name: "BadRequestError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale state for return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Return allowed only on closed and paid sales"
+                name: "InvalidStateError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+    get:
+      tags:
+        - returns
+      summary: Get all return transactions
+      description: Retrieves all return transactions. Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: getAllReturns
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of all return transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Return'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /returns/{return_id}:
+    get:
+      tags:
+        - returns
+      summary: Get a return transaction by ID
+      description: Retrieves details of a specific return transaction. Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: getReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: return_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Return transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Return'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+    delete:
+      tags:
+        - returns
+      summary: Delete a return transaction
+      description: | 
+        Deletes a return transaction if not already **REIMBURSED**. 
+        Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: deleteReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: return_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Return transaction deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid return id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+        '420':
+          description: Cannot delete a Reimbursed return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot delete a reimbursed return"
+                name: "InvalidStateError"
+  /returns/sale/{sale_id}:
+    get:
+      tags:
+        - returns
+      summary: Get returns for a specific sale
+      description: Retrieves all return transactions associated with a sale. 
+        Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: getReturnsBySale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of returns for the sale
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Return'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid return id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+  /returns/{return_id}/items:
+    post:
+      tags:
+        - returns
+      summary: Add a product to a return transaction
+      description: |
+        Adds a product and quantity to a return transaction.
+        Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: addProductToReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: return_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: barcode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Product successfully added to return
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid return id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale state for return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot modify a closed return"
+                name: "InvalidStateError"
+    delete:
+      tags:
+        - returns
+      summary: Remove a product from a return transaction
+      description: Decreases or removes a product line from a return transaction. 
+        Requires **Administrator**, **ShopManager**, or **Cashier** role.
+      operationId: removeProductFromReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: return_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: barcode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product successfully removed or decreased
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid return id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale state for return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot remove items from a closed return"
+                name: "InvalidStateError"
+  /returns/{return_id}/close:
+    patch:
+      tags:
+        - returns
+      summary: Close a return transaction
+      description: |
+        Closes an **OPEN** return transaction, setting it to **CLOSED** and restores product quantities to inventory. 
+        Requires **Administrator**, **ShopManager**, or **Cashier** role. 
+      operationId: closeReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: return_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Return closed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid return id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale state for return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Invalid Return state to be closed"
+                name: "InvalidStateError"
+  /returns/{return_id}/reimburse:
+    patch:
+      tags:
+        - returns
+      summary: Reimburse a return transaction
+      description: |
+        Marks a **CLOSED** return as **REIMBURSED** and updates system balance. 
+        Requires **Administrator** or **ShopManager** role.
+      operationId: reimburseReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: return_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Return successfully reimbursed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refund_amount:
+                    type: number
+                    format: float
+                    example: 25.5
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid return id"
+                name: "BadRequestError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Return not found"
+                name: "NotFoundError"
+        '420':
+          description: Invalid sale state for return
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Return must be closed before reimbursement"
+                name: "InvalidStateError"
+  /balance/reset:
+    post:
+      tags:
+        - accounting
+      summary: Reset the system balance to zero
+      description: Resets the balance value to 0. Accessible only by **Administrator** users.
+      operationId: balanceReset
+      security:
+        - bearerAuth: []
+      responses:
+        '205':
+          description: Balance successfully reset
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '500':
+          description: Internal server error during balance reset
+
+  /balance/set:
+    post:
+      tags:
+        - accounting
+      summary: Set the system balance to a specific amount
+      description: Sets the system balance to the provided amount. Accessible only by **Administrator** users.
+      operationId: balanceSet
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: amount
+          schema:
+            type: number
+            format: float
+          required: true
+          description: Amount to set as new balance
+      responses:
+        '201':
+          description: Balance successfully set
+        '421':
+          description: Bad Request (negative value)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 421
+                message: "Balance cannot be negative"
+                name: "BalanceError"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"
+        '500':
+          description: Internal server error during balance reset
+  /balance:
+    get:
+      tags:
+        - accounting
+      summary: Get the current system balance
+      description: Returns the current balance value of the system. Accessible only by **Administrator** users.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Current balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    format: float
+                    example: 1250.5
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: "Authorization header missing"
+                name: "UnauthorizedError"
+        '403':
+          description: Unauthorized (insufficient role)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 403
+                message: "Insufficient rights"
+                name: "ForbiddenError"

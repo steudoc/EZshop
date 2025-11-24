@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+*/__pycache__/
+app/data/*
+*sqlite
+app/data/database.sqlite
+.codelens
+*/.vscode/
+.coverage
