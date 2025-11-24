@@ -2,19 +2,50 @@ openapi: 3.0.3
 info:
   title: EZShop Back End Application API
   version: 1.0.0
-  description: 'OpenAPI definition for the EZShop back end application.
+  description: |
+    OpenAPI definition for the EZShop backend server application.
 
+    **EZShop Description**
 
-    Assumptions:
+    EZShop is a retail management system designed to handle the end-to-end operations of a small to medium-sized shop, integrating user management, inventory control, sales, orders, and accounting functions into a single platform.
+    EZShop defines a set of business operations that orchestrates user interactions, product lifecycle, and financial transactions.
 
-    - Backend implemented in Python (e.g., FastAPI/Flask), stateless JWT auth.
+    In a Python-based reimplementation using FastAPI, EZShop would act as a RESTful backend service, exposing endpoints to manage authentication, product catalog, sales transactions, customer information, and payments.
+    Authentication would rely on JWT-based bearer tokens, with access permissions differentiated by user roles (Administrator, ShopManager, Cashier).
+    
+    **Hierarchical Structure and Components**
 
-    - Entities inferred from EZShopInterface.java: User, ProductType, Customer, Order,
-    SaleTransaction, ReturnTransaction, BalanceOperation, TicketEntry, LoyaltyCard.
+    The system architecture is logically divided into four layers:
 
-    - Some fields are inferred; adjust to match your domain models.
+    1. Users and Authentication Layer
+       - Manages user accounts and roles (Administrator, Cashier, ShopManager).
+       - Provides endpoints for login, logout, and user CRUD operations.
+       - Handles session security and authorization for all operations.
 
-    '
+    2. Inventory and Product Management Layer
+       - Handles product types, quantities, and barcodes (with optional RFID tracking).
+       - Allows creation, modification, and removal of products and inventory records.
+       - Manages order issuance, arrivals, and restocking of products.
+
+    3. Sales and Customer Operations Layer
+       - Manages sales transactions, product additions/removals from sales, and returns.
+       - Handles payment via cash, generating receipts and managing returns.
+       - Tracks customers, their loyalty cards, and discounts.
+
+    4. Accounting and Reporting Layer
+       - Manages shop balance.
+      
+    In required FastAPI implementation, all these layers would be implemented as routers and controllers, connected through repository classes for database operations (using SQLAlchemy models connecting to a SQLite database).
+    
+    **Main Functionalities**
+
+    - User Management: Create, authenticate, modify, and delete user accounts with specific roles and permissions.
+    - Product Management: Add, update, remove, and track products by barcode, including stock management and reordering.
+    - Order Management: Issue and record supplier orders, manage their arrival and restocking in the inventory.
+    - Sales Transactions: Start, modify, and finalize sales; manage returns; handle payments in cash.
+    - Customer Management: Register customers, assign loyalty cards, manage points and discounts.
+    - Accounting: compute balance updates.
+
 servers:
 - url: http://127.0.0.1:8000/api/v1
   description: Local dev

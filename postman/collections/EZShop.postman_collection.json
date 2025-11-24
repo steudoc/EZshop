@@ -1,0 +1,1373 @@
+{
+  "info": {
+    "_postman_id": "c6db0f65-8142-4739-8d34-4c6a23fec0e8",
+    "name": "EZShop",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17024259"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Delete User",
+          "id": "11e42a14-851a-4542-9ef7-ca4848e18939",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all users",
+          "id": "7702fb6b-9e5b-4437-86b8-a93ff9afe7d8",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modify User",
+          "id": "1ffdc770-e012-438c-8837-70db2e3719e6",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"Barbero\",\r\n  \"password\": \"WilMedioevo\",\r\n  \"type\":\"Cashier\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user",
+          "id": "f8f1425b-ad2b-43d5-9866-34a6b3517cbf",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "id": "264a35e3-1711-4075-8710-c27b3ae410ae",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": " {\r\n        \"username\": \"Cashier\",\r\n        \"password\": \"Cashier\",\r\n        \"type\": \"Cashier\"\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "9a8f449a-0b80-461e-a184-0fdbf323b313"
+    },
+    {
+      "name": "Product Type",
+      "item": [
+        {
+          "name": "Create a Product type",
+          "id": "f37baec4-fdb3-4374-9e29-4720484e2926",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 5.5,\r\n    \"note\" : \"Black Coffee\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all products type",
+          "id": "adfbddee-9196-40cd-93b8-d0d7b02390a9",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 0.5,\r\n    \"note\" : \"Black Coffee\" \r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get product type by description",
+          "id": "6c111b32-af2a-410a-b50d-f5f03e7ed2b1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/search?query=coffee",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "coffee"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get product type by barcode",
+          "id": "1d38f99c-c58e-461e-b05f-074199b4fa7d",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/barcode/0000000010",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "barcode",
+                "0000000010"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get product type by ID",
+          "id": "99a6929d-bbff-471f-9dae-7f6ced63844d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 0.5,\r\n    \"note\" : \"Black Coffee\" \r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Prodcut type",
+          "id": "b05620d1-d8e4-4f2c-937d-960ad8caac00",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Caffe buono\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 1.2,\r\n    \"note\" : \"Black Coffee, very good\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a product type",
+          "id": "e093e5fc-4f5d-4b74-ad7c-2befdeccc672",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Caffe\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 1.2,\r\n    \"note\" : \"Black Coffee, very good\" \r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update product quantity",
+          "id": "bbc531c8-a697-4d85-b4e4-0fdfaff58309",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 0.5,\r\n    \"note\" : \"Black Coffee\" \r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/1/quantity?quantity=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1",
+                "quantity"
+              ],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product position",
+          "id": "cec4aa88-fcb7-485e-84e8-dbe417ff4a8f",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 0.5,\r\n    \"note\" : \"Black Coffee\" \r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/1/position?position=9-B-8",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "1",
+                "position"
+              ],
+              "query": [
+                {
+                  "key": "position",
+                  "value": "9-B-8"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "a15debc0-0b3f-46e7-9a36-76162b2aa5d0"
+    },
+    {
+      "name": "Customer",
+      "item": [
+        {
+          "name": "Get customers",
+          "id": "84307ec2-d89a-4176-8fa1-84c0e76a4b83",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Customer",
+          "id": "b9f0906f-f7e0-4a3a-bb44-2d68e1623cd0",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Elisa\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get customer",
+          "id": "d13a5d4c-f27b-4e7f-83f8-a15a82fe1310",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Elisa\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete customer",
+          "id": "c6cf072b-6f80-4977-aa9e-fab983267cd7",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Elisa\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Customer Card",
+          "id": "f94b4f34-5e40-4d9d-b706-3dcbc828d5fa",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers/cards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "cards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Attach card to a customer",
+          "id": "463f7a32-10ee-4cc8-bfe1-ca3d133d68a7",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers/1/attach-card/0000000001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "1",
+                "attach-card",
+                "0000000001"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Customer",
+          "id": "9f7fbc76-9c10-4101-b8fc-401ecd68d5b4",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Alessia\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update card points",
+          "id": "b0d47480-e40d-4f2f-8a94-1e18240ce527",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/customers/cards/2?points=30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "customers",
+                "cards",
+                "2"
+              ],
+              "query": [
+                {
+                  "key": "points",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "e8b20cae-1111-4b12-b33d-16f1b2153e46"
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get all orders",
+          "id": "1c082bd1-a83e-4b9f-b475-be2ede1949f9",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Issue Order",
+          "id": "5d292a12-694a-4f02-9d22-24b6989d15b5",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create an order and pay for it",
+          "id": "67330b70-d9e6-4900-af14-94e1b26bf47e",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/payfor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "payfor"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pay order",
+          "id": "058da74e-a9de-481e-8d94-062138dfdb81",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "1",
+                "pay"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Record arrival",
+          "id": "35f2e32f-6608-4318-808d-c01bc3670402",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/arrival",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "1",
+                "arrival"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "ef812ca5-8993-4996-a0d4-dbb69a47bf93"
+    },
+    {
+      "name": "Sales",
+      "item": [
+        {
+          "name": "Start Sale",
+          "id": "2e4af51c-a1ef-40d1-ac90-6995f3cf31be",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add product to sale",
+          "id": "45e2accd-f0c9-4bc8-98c5-f00175336b1a",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/items?barcode=0000000010&amount=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "barcode",
+                  "value": "0000000010"
+                },
+                {
+                  "key": "amount",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get a sale transaction",
+          "id": "a7ed75a1-bfde-46a9-a305-b2f93638648f",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Sale",
+          "id": "f208d4c4-df5a-444a-bb93-5e85ca6e0772",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove produt line from sales",
+          "id": "36ca90ec-09d6-41f7-88c7-804e45a20eba",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/items?barcode=0000000010&amount=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "barcode",
+                  "value": "0000000010"
+                },
+                {
+                  "key": "amount",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all sales",
+          "id": "ff3bd8f9-8fab-43ad-89cd-2397b162e60d",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sales/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Compute points for a sale",
+          "id": "e8bc2f69-8bf8-4d4e-95bb-b819467f54cb",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/points",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "points"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Discount a product in the sale",
+          "id": "640c3027-8d36-48b8-941c-e71048e0d642",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/items/0000000010/discount?discountRate=0.1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "items",
+                "0000000010",
+                "discount"
+              ],
+              "query": [
+                {
+                  "key": "discountRate",
+                  "value": "0.1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close a sale Transaction",
+          "id": "3c0a5a4f-15a5-44ce-857d-3542116adcee",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/close",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "close"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Discount a sale",
+          "id": "2f2ae6c1-ef97-4a20-a39c-6f5338bd5fd4",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/discount?discountRate=0.1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "discount"
+              ],
+              "query": [
+                {
+                  "key": "discountRate",
+                  "value": "0.1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pay sale",
+          "id": "b1ddfa0e-b682-4531-8e9b-64a21fba9389",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sales/1/pay?cash_amount=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sales",
+                "1",
+                "pay"
+              ],
+              "query": [
+                {
+                  "key": "cash_amount",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "d5bb1e47-db20-43dc-9049-13c161f1edc0"
+    },
+    {
+      "name": "Returns",
+      "item": [
+        {
+          "name": "Start a return",
+          "id": "6b1b5ebc-9c38-4cc8-a938-104597307b9d",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/?sale_id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "sale_id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get a return",
+          "id": "7b9b855b-8e9f-405e-9640-c67f7e7de657",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add a product to return",
+          "id": "247f9524-d162-4002-92ca-c096d2afcf34",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/2/items?barcode=0000000010&amount=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "2",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "barcode",
+                  "value": "0000000010"
+                },
+                {
+                  "key": "amount",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a product from return",
+          "id": "17350cdc-c47e-4037-8b1a-cbcd0a9ec92e",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/1/items?barcode=0000000010&amount=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "1",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "barcode",
+                  "value": "0000000010"
+                },
+                {
+                  "key": "amount",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close a return transaction",
+          "id": "0b779811-bd2e-4efa-8450-0b34ad4e8d64",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/1/close",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "1",
+                "close"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reimburse a sale",
+          "id": "fdb746d2-8cb6-4efe-b977-0cbaa867a4aa",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/1/reimburse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "1",
+                "reimburse"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all returns",
+          "id": "c760058e-d363-4a21-a3a5-40d8d8d954f6",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a return transaction",
+          "id": "fdc53044-2858-4cff-bc43-612bfb6879ea",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all returns for a specific sale",
+          "id": "fde3681a-a754-47cf-85dc-c8ca8fc02689",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/returns/sale/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "returns",
+                "sale",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "400813c2-53a9-40be-8f49-5c8481ef3969"
+    },
+    {
+      "name": "Set Balance",
+      "id": "3c0bd7c2-3b6b-46c3-a307-c98bebd428b6",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "",
+            "value": "",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/balance/set?amount=100",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "balance",
+            "set"
+          ],
+          "query": [
+            {
+              "key": "amount",
+              "value": "100"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get balance",
+      "id": "35294ffe-b6a1-472b-8c43-c6c29a0b266c",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "amount",
+            "value": "100",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/balance",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "balance"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Reset Balance",
+      "id": "ad44a901-c976-4824-8ff0-2a893cbf7ba1",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/balance/reset",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "balance",
+            "reset"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Authenticate",
+      "id": "1342a2bd-43b7-4ebb-82f6-a50cf330143b",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzYzNjY0NzgyfQ.6YZN_HVVeBoox5EouwNpfCGz2CwW9NWp8u7oZC4dmD8",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "6edece9f-0cac-439d-8598-2bd8973f060f",
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "a603234e-d4c8-4f7e-9eb6-56554ef27b46",
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "9599c323-c0b8-429a-a375-e5a71e9ce608",
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "id": "8234bb0c-e6ce-4637-8c9e-0e72e8018359",
+      "key": "username",
+      "value": ""
+    },
+    {
+      "id": "88c4223d-82f7-499c-ae1f-633af9ea1bc8",
+      "key": "password",
+      "value": ""
+    },
+    {
+      "id": "92b39a50-6899-455d-af6e-0b695eef87d8",
+      "key": "other_user",
+      "value": ""
+    },
+    {
+      "id": "2cdc48cb-706a-4933-ab09-289eccf6ba67",
+      "key": "other_password",
+      "value": ""
+    }
+  ]
+}
