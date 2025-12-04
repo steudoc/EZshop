@@ -1,6 +1,7 @@
 from app.models.errors.app_error import AppError
 from app.models.errors.conflict_error import ConflictError
 from app.models.errors.notfound_error import NotFoundError
+from app.models.errors.bad_request import BadRequestError
 from typing import Optional, Callable, TypeVar, List
 
 T = TypeVar('T')
@@ -56,3 +57,13 @@ def throw_conflict_if_found(
         for item in items:
             if predicate(item):
                 raise ConflictError(error_message)
+			
+
+def throw_bad_request(message: str = "Bad request") -> None:
+	raise BadRequestError(message=message)
+
+def throw_not_found(message: str = "Not found") -> None:
+	raise NotFoundError(message=message)
+
+def throw_conflict(message: str = "Conflict error") -> None:
+	raise ConflictError(message=message)
