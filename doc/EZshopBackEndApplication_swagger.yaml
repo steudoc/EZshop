@@ -183,10 +183,10 @@ components:
         description:
           type: string
           minLength: 1
-        productCode:
+        barcode:
           type: string
           minLength: 1          
-        pricePerUnit:
+        price_per_unit:
           type: number
         note:
           type: string
@@ -197,8 +197,8 @@ components:
           type: string
       required:
         - description
-        - productCode
-        - pricePerUnit
+        - barcode
+        - price_per_unit
     BooleanResponse:
       type: object
       properties:
@@ -213,21 +213,21 @@ components:
     Order:
       type: object
       required:
-        - productTypeBarcode
+        - product_barcode
         - quantity
-        - pricePerUnit
+        - price_per_unit
         - status
       properties:
         id:
           type: integer
           example: 1
-        productTypeBarcode:
+        product_barcode:
           type: string
           example: "0123456789012"
         quantity:
           type: integer
           example: 100
-        pricePerUnit:
+        price_per_unit:
           type: number
           format: float
           example: 10.5
@@ -240,10 +240,10 @@ components:
     CustomerCard:
       type: object
       properties:
-        cardId:
+        card_id:
           type: string
-          description: Unique ID of the customer card
-          example: "123"
+          description: Unique ID of the customer card. It must be a string of 10 digits.
+          example: "0000000123"
         points:
           type: integer
           description: Current points on the card
@@ -270,10 +270,10 @@ components:
       type: object
       required:
         - sale_id
-        - productBarcode
+        - product_barcode
         - quantity
-        - pricePerUnit
-        - discountRate
+        - price_per_unit
+        - discount_rate
       properties:
         id:
           type: integer
@@ -281,17 +281,17 @@ components:
         sale_id:
           type: integer
           example: 10
-        productBarcode:
+        product_barcode:
           type: string
           example: "0123456789"
         quantity:
           type: integer
           example: 2
-        pricePerUnit:
+        price_per_unit:
           type: number
           format: float
           example: 5.5
-        discountRate:
+        discount_rate:
           type: number
           format: float
           example: 0.1
@@ -299,22 +299,22 @@ components:
       type: object
       required:
         - status
-        - discountRate
+        - discount_rate
       properties:
         id:
           type: integer
           example: 10
         status:
           $ref: '#/components/schemas/SaleStatus'
-        discountRate:
+        discount_rate:
           type: number
           format: float
           example: 0.05
-        createdAt:
+        created_at:
           type: string
           format: date-time
           example: "2025-10-30T12:34:56Z"
-        closedAt:
+        closed_at:
           type: string
           format: date-time
           nullable: true
@@ -331,9 +331,9 @@ components:
       type: object
       required:
         - return_id
-        - productBarcode
+        - product_barcode
         - quantity
-        - pricePerUnit
+        - price_per_unit
       properties:
         id:
           type: integer
@@ -341,13 +341,13 @@ components:
         return_id:
           type: integer
           example: 5
-        productBarcode:
+        product_barcode:
           type: string
           example: "0123456789012"
         quantity:
           type: integer
           example: 2
-        pricePerUnit:
+        price_per_unit:
           type: number
           format: float
           example: 9.99
@@ -365,11 +365,11 @@ components:
           example: 1
         status:
           $ref: '#/components/schemas/ReturnStatus'
-        createdAt:
+        created_at:
           type: string
           format: date-time
           example: "2025-11-03T12:30:00Z"
-        closedAt:
+        closed_at:
           type: string
           format: date-time
           nullable: true
@@ -567,6 +567,16 @@ paths:
                 id: 1
                 username: "admin_user"
                 type: "Administrator"
+        '400':
+          description: Invalid or missing id. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
         '401':
           description: Unauthenticated
           content:
@@ -736,7 +746,7 @@ paths:
       security:
         - bearerAuth: []
       description: Create a new Product Type. Requires **Administrator** or **ShopManager** role. The success response is the product with its assigned ID.
-        The barcode must be a string of 12-14 digits. Description and price per unit must be present.
+        The barcode must be a string of 12-14 digits. Description and price per unit must be present. Price must be > 0.
       requestBody:
         required: true
         content:
@@ -754,8 +764,8 @@ paths:
               example:
                 id: 1
                 description: 'Chocolate Bar'
-                productCode: '0123456780'
-                pricePerUnit: 2.99
+                barcode: '0123456780'
+                price_per_unit: 2.99
                 note: 'Imported from Belgium'
                 quantity: 0
                 position: '1-A-3'
@@ -826,16 +836,6 @@ paths:
                 code: 401
                 message: "Authorization header missing"
                 name: "UnauthorizedError"
-        '403':
-          description: Unauthorized (insufficient role)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                code: 403
-                message: "Insufficient rights"
-                name: "ForbiddenError"
   /products/{id}:
     parameters:
     - name: id
@@ -858,6 +858,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductType'
+        '400':
+          description: |
+            Missing id or invalid id. ID must be a positive integer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
         '401':
           description: Unauthenticated
           content:
@@ -895,9 +906,18 @@ paths:
       operationId: updateProduct
       security:
         - bearerAuth: []
-      description: Update product type by ID. Requires **Administrator**, **ShopManager** role. 
+      description: |
+        Update product type by ID. Requires **Administrator**, **ShopManager** role. Price and quantity must be > 0.
+        A product type barcode can be updated only if there are no order, sales and returns associated with that products and it is not already assigned to another product type.
+        Barcode can be updated only if: 
+          - The product has NO sales associated with it. 
+          - The product has NO orders associated with it.
+          - The product has NO returns associated with it.
+
+        In case the price is updated in product type, the eventual open sale will not be affected, as it will count the "old" price. 
+        Return amount will refer to the paid amount (so the one in the sale), not the current price of product type.
       requestBody:
-        required: true
+        requi1red: true
         content:
           application/json:
             schema:
@@ -910,8 +930,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/BooleanResponse'
         '400':
-          description: Invalid input data (barcode must be a string of 12-14 digits). 
-            Description and price per unit must be present. Product Id must be a valid product id ( > 0 ).
+          description: |
+            Invalid input data (barcode must be a string of 12-14 digits). 
+            Description and price per unit must be present. Product Id must be a valid product id ( > 0 ). 
+            In case the product has associated orders, sales or returns, the barcode cannot be updated and error 400 is returned.
           content:
             application/json:
               schema:
@@ -959,7 +981,17 @@ paths:
               example:
                 code: 409
                 message: "Barcode already in use"
-                name: "Conflict error"
+                name: "ConflictError"
+        '420':
+          description: Invalid order/sale/return state prevents barcode update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Invalid sale state"
+                name: "InvalidStateError"
     delete:
       tags:
       - products
@@ -967,7 +999,11 @@ paths:
       operationId: deleteProductType
       security:
         - bearerAuth: []
-      description: Delete product type by ID. Requires **Administrator**, **ShopManager** role.
+      description: |
+        Delete product type by ID. Requires **Administrator**, **ShopManager** role.
+        A product in a sale (OPEN or PENDING or PAID) cannot be deleted.
+        A product in an order (ISSUED or PAID or COMPLETED) cannot be deleted.
+        A product in a return (OPEN or CLOSED or REIMBURSED) cannot be deleted.
       responses:
         '204':
           description: Deleted
@@ -1011,6 +1047,16 @@ paths:
                 code: 404
                 message: "Product not found"
                 name: "NotFoundError"
+        '420':
+          description: Invalid order/sale/return state prevents deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Invalid sale state"
+                name: "InvalidStateError"
   /products/barcode/{barcode}:
     parameters:
     - name: barcode
@@ -1041,7 +1087,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 400
-                message: "Invalid product code"
+                message: "Invalid barccode"
                 name: "BadRequestError"
         '401':
           description: Unauthenticated
@@ -1490,7 +1536,7 @@ paths:
               example:
                 code: 420
                 message: "Order was not Issued"
-                name: "InvalidOrderStateError"
+                name: "InvalidStateError"
         '421':
           description: Insufficient balance
           content:
@@ -1593,7 +1639,7 @@ paths:
               example:
                 code: 420
                 message: "order is not paid"
-                name: "InvalidOrderStateError"
+                name: "InvalidStateError"
         '500':
           description: General Error
           content:
@@ -1773,7 +1819,7 @@ paths:
                 message: "Customer not found"
                 name: "NotFoundError"
         '409':
-          description: Conflict (e.g., duplicate customer name or card conflict)
+          description: Conflict (e.g. Card conflict)
           content:
             application/json:
               schema:
@@ -2069,6 +2115,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sale'
+        '400':
+          description: Invalid or missing id. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
         '404':
           description: Sale not found
           content:
@@ -2132,6 +2188,7 @@ paths:
       description: | 
         Adds a product to an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
         The quantity of the product added to a sale is deducted from the shelf (the inventory) for the other customers to buy.
+        The quantity must be a positive number and cannot be greater than the available quantity on the shelf.
       operationId: addProductToSale
       security:
         - bearerAuth: []
@@ -2275,7 +2332,7 @@ paths:
     patch:
       tags: [sales]
       summary: Apply a discount to the entire sale
-      description: Sets a discount rate for all items in an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      description: Sets a discount rate (a floating point number 0 >= discount > 1) for the entire **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
       operationId: discountSale
       security:
         - bearerAuth: []
@@ -2285,7 +2342,7 @@ paths:
           required: true
           schema:
             type: integer
-        - name: discountRate
+        - name: discount_rate
           in: query
           required: true
           schema:
@@ -2344,7 +2401,7 @@ paths:
     patch:
       tags: [sales]
       summary: Apply a discount to a specific product in a sale
-      description: Applies a discount rate to a single product in an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
+      description: Applies a discount rate (a floating point number 0 >= discount > 1) to a single product in an **OPEN** sale. Requires **Administrator**, **ShopManager** or **Cashier** role.
       operationId: discountProduct
       security:
         - bearerAuth: []
@@ -2359,7 +2416,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: discountRate
+        - name: discount_rate
           in: query
           required: true
           schema:
@@ -2729,6 +2786,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Return'
+        '400':
+          description: Invalid or missing id. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Bad request"
+                name: "BadRequestError"
         '401':
           description: Unauthenticated
           content:
@@ -2842,7 +2909,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Return'
         '400':
-          description: Bad Request
+          description: Invalid or missing id
           content:
             application/json:
               schema:
@@ -2868,6 +2935,7 @@ paths:
       summary: Add a product to a return transaction
       description: |
         Adds a product and quantity to a return transaction.
+        Returned quantity must be positive and cannot exceed the quantity sold.
         Requires **Administrator**, **ShopManager**, or **Cashier** role.
       operationId: addProductToReturn
       security:
