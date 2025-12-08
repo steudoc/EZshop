@@ -3,6 +3,7 @@ from app.models.errors.conflict_error import ConflictError
 from app.models.errors.notfound_error import NotFoundError
 from app.models.errors.bad_request import BadRequestError
 from app.models.errors.invalidstate_error import InvalidStateError
+from app.models.errors.customer_card_error import CustomerCardError
 from typing import Optional, Callable, TypeVar, List
 
 T = TypeVar('T')
@@ -71,3 +72,6 @@ def throw_conflict(message: str = "Conflict error") -> None:
 
 def throw_invalid_state(message: str = "Invalid state") -> None:
 	raise InvalidStateError(message=message)
+
+def throw_customer_card_error(message: str = "Customer card error") -> None:
+	raise CustomerCardError(message=message)
