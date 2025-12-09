@@ -46,6 +46,8 @@ info:
     - Customer Management: Register customers, assign loyalty cards, manage points and discounts.
     - Accounting: compute balance updates.
 
+    A constraint affecting all the endpoint is that numeric identifiers (IDs) must be positive integers (> 0).
+
 servers:
 - url: http://127.0.0.1:8000/api/v1
   description: Local dev
@@ -158,15 +160,12 @@ components:
         code: 
           type: integer
           description: HTTP status code of the error
-          example : 400
         message:
           type: string
           description: message of the error
-          example: Conflict
         name:
           type: string
           description: Descriptive error message
-          example: "User not found"
       description: Standard structure for error responses
     TokenResponse:
       type: object
@@ -175,6 +174,26 @@ components:
       properties:
         token:
           type: string
+    ProductTypeUpdate:
+      type: object
+      properties:
+        description:
+          type: string
+          minLength: 1
+        barcode:
+          type: string
+          minLength: 1          
+        price_per_unit:
+          type: number
+        note:
+          type: string
+          minLength: 1
+        quantity:
+          type: integer
+        position:
+          type: string
+      required:
+        - barcode
     ProductType:
       type: object
       properties:
@@ -806,9 +825,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                code: 403
+                code: 409
                 message: "Insufficient rights"
-                name: "ForbiddenError"
+                name: "ConflictError"
                 
     get:
       tags: 
@@ -907,8 +926,8 @@ paths:
       security:
         - bearerAuth: []
       description: |
-        Update product type by ID. Requires **Administrator**, **ShopManager** role. Price and quantity must be > 0.
-        A product type barcode can be updated only if there are no order, sales and returns associated with that products and it is not already assigned to another product type.
+        Update product type by ID. Requires **Administrator**, **ShopManager** role. Price and quantity, if present, must be > 0.
+        A product type barcode cannot be updated if the new value is already assigned to another product type.
         Barcode can be updated only if: 
           - The product has NO sales associated with it. 
           - The product has NO orders associated with it.
@@ -921,9 +940,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProductType'
+              $ref: '#/components/schemas/ProductTypeUpdate'
       responses:
-        '200':
+        '201':
           description: Updated
           content:
             application/json:
@@ -932,8 +951,8 @@ paths:
         '400':
           description: |
             Invalid input data (barcode must be a string of 12-14 digits). 
-            Description and price per unit must be present. Product Id must be a valid product id ( > 0 ). 
-            In case the product has associated orders, sales or returns, the barcode cannot be updated and error 400 is returned.
+            Quantity and price per unit, if present, must be positive number.
+            Product Id must be a valid product id ( > 0 ). 
           content:
             application/json:
               schema:
@@ -973,7 +992,7 @@ paths:
                 message: "Product not found"
                 name: "NotFoundError"
         '409':
-          description: Barcode already in use
+          description: Barcode/position already in use
           content:
             application/json:
               schema:
@@ -1188,7 +1207,7 @@ paths:
             type: string
             example: "2-B-1"
       responses:
-        '200':
+        '201':
           description: Updated
           content:
             application/json:
@@ -1240,6 +1259,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 409
+                message: "Position conflict"
+                name: "ConflictError"
   /products/{id}/quantity:
     parameters:
     - name: id
@@ -1261,7 +1284,7 @@ paths:
             type: integer
             example: 5
       responses:
-        '200':
+        '201':
           description: Updated quantity
           content:
             application/json:
@@ -1501,7 +1524,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        '201':
           description: Order successfully paid
           content:
             application/json:
@@ -1584,7 +1607,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        '201':
           description: Order successfully marked as completed
           content:
             application/json:
@@ -1855,10 +1878,6 @@ paths:
       responses:
         '204':
           description: customer deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BooleanResponse'
         '404':
           description: Customer not found
           content:
@@ -1889,7 +1908,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        '201':
           description: Customer card successfully created
           content:
             application/json:
@@ -1992,7 +2011,7 @@ paths:
             type: integer
             description: Positive or negative integer representing points to add or remove
       responses:
-        '200':
+        '201':
           description: Customer card points successfully updated
           content:
             application/json:
@@ -2131,6 +2150,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
         '401':
           description: Unauthenticated
           content:
@@ -2158,18 +2181,18 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        '204':
           description: Sale successfully deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BooleanResponse'
         '400':
           description: Invalid sale ID or sale cannot be deleted
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: "Invalid id"
+                name: "BadRequestError"
         '401':
           description: Unauthenticated
           content:
@@ -2180,7 +2203,16 @@ paths:
                 code: 401
                 message: "Authorization header missing"
                 name: "UnauthorizedError"
-
+        '404':
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: "Sale not found"
+                name: "NotFoundError"
   /sales/{sale_id}/items:
     post:
       tags: [sales]
@@ -2224,7 +2256,7 @@ paths:
               example:
                 code: 400
                 message: "Invalid id"
-                name: "NotFoundError"
+                name: "BadRequestError"
         '404':
           description: Sale or product not found
           content:
@@ -2243,7 +2275,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Cannot modify a closed sale"
+                message: "Cannot modify the sale"
                 name: "InvalidStateError"
         '401':
           description: Unauthenticated
@@ -2282,7 +2314,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        '202':
           description: Product removed successfully
           content:
             application/json:
@@ -2326,7 +2358,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Cannot modify closed sale"
+                message: "Cannot modify sale"
                 name: "InvalidStateError"
   /sales/{sale_id}/discount:
     patch:
@@ -2395,7 +2427,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Cannot modify closed sale"
+                message: "Cannot modify sale"
                 name: "InvalidStateError"
   /sales/{sale_id}/items/{product_barcode}/discount:
     patch:
@@ -2469,7 +2501,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Cannot modify closed sale"
+                message: "Cannot modify sale"
                 name: "InvalidStateError"
   /sales/{sale_id}/close:
     patch:
@@ -2494,7 +2526,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BooleanResponse'
         '400':
-          description: Invalid input or discount rate
+          description: Invalid input
           content:
             application/json:
               schema:
@@ -2531,7 +2563,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Cannot modify closed sale"
+                message: "Cannot modify sale"
                 name: "InvalidStateError"
   /sales/{sale_id}/pay:
     patch:
@@ -2599,14 +2631,14 @@ paths:
                 message: "Sale not found"
                 name: "NotFoundError"
         '420':
-          description: Sale must be closed before payment
+          description: Sale must be pending to perform the payment
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Sale must be closed before payment"
+                message: "Invalid state error"
                 name: "InvalidStateError"
   /sales/{sale_id}/points:
     get:
@@ -2679,7 +2711,7 @@ paths:
       - returns
       summary: Start a return transaction for a sale
       description: | 
-        Creates a new return transaction for a given **CLOSED** sale. 
+        Creates a new return transaction for a given **PAID** sale. 
         Requires **Administrator**, **ShopManager**, or **Cashier** role.
       operationId: startReturn
       security:
@@ -2725,7 +2757,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 code: 420
-                message: "Return allowed only on closed and paid sales"
+                message: "Return allowed only on paid sales"
                 name: "InvalidStateError"
         '401':
           description: Unauthenticated
@@ -2833,16 +2865,8 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
-          description: Return transaction deleted successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
+        '204':
+          description: Return transaction was deleted successfully
         '400':
           description: Bad Request
           content:
@@ -3033,7 +3057,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        '202':
           description: Product successfully removed or decreased
           content:
             application/json:
