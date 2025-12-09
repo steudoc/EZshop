@@ -1027,7 +1027,7 @@ paths:
         '204':
           description: Deleted
         '400':
-          description: Invalid product id ( < 0 )
+          description: Invalid product id ( <= 0 )
           content:
             application/json:
               schema:
@@ -2507,7 +2507,9 @@ paths:
     patch:
       tags: [sales]
       summary: Close a sale transaction
-      description: Closes an **OPEN** sale, changing its status to **PENDING**, waiting for the payment. 
+      description: |
+        Closes an **OPEN** sale, changing its status to **PENDING**, waiting for the payment.
+        **Whenever is invoked on an EMPTY OPEN sale (so, just created with 0 products inside) the sale has to be deleted from the database.** 
         Requires **Administrator**, **ShopManager** or **Cashier** role.
       operationId: closeSale
       security:
@@ -2986,11 +2988,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
+                $ref: '#/components/schemas/BooleanResponse'
         '400':
           description: Bad Request
           content:
@@ -3113,7 +3111,8 @@ paths:
         - returns
       summary: Close a return transaction
       description: |
-        Closes an **OPEN** return transaction, setting it to **CLOSED** and restores product quantities to inventory. 
+        Closes an **OPEN** return transaction, setting it to **CLOSED** and restores product quantities to inventory.
+        **Whenever is invoked on an EMPTY OPEN return (so, just created with 0 products inside) the return has to be deleted from the database.** 
         Requires **Administrator**, **ShopManager**, or **Cashier** role. 
       operationId: closeReturn
       security:
@@ -3299,6 +3298,10 @@ paths:
       responses:
         '201':
           description: Balance successfully set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanResponse'
         '421':
           description: Bad Request (negative value)
           content:
