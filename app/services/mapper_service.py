@@ -1,5 +1,7 @@
 from app.models.DAO.user_dao import UserDAO
+from app.models.DAO.product_dao import ProductDAO
 from app.models.DTO.user_dto import UserDTO
+from app.models.DTO.product_dto import ProductDTO
 from app.models.DTO.token_dto import TokenDTO
 from app.models.DTO.error_dto import ErrorDTO
 from app.models.DAO.system_dao import SystemInfoDAO
@@ -38,3 +40,33 @@ def systemdao_to_responsedto(system_info_dao: SystemInfoDAO) -> SystemInfoRespon
     return SystemInfoResponseDTO(
         balance=system_info_dao.balance
     )
+
+def productdao_to_dto(product_dao: ProductDAO) -> ProductDTO:
+    return ProductDTO(
+        id=product_dao.id,
+        description=product_dao.description,
+        barcode=product_dao.barcode,
+        price_per_unit=product_dao.price_per_unit,
+        note=product_dao.note,
+        quantity=product_dao.quantity,
+        position=product_dao.position
+    )
+
+def update_productdao_from_partial_dto(product_dao: ProductDAO, product_dto: ProductDTO) -> None:
+    if (product_dto.barcode is not None):
+        product_dao.barcode = product_dto.barcode
+
+    if (product_dto.description is not None):
+        product_dao.description = product_dto.description
+
+    if (product_dto.price_per_unit is not None):
+        product_dao.price_per_unit = product_dto.price_per_unit
+
+    if (product_dto.note is not None):
+        product_dao.note = product_dto.note
+        
+    if (product_dto.position is not None):
+        product_dao.position = product_dto.position
+        
+    if (product_dto.quantity is not None):
+        product_dao.quantity = product_dto.quantity
