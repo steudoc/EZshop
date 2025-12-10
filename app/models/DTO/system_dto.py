@@ -6,5 +6,4 @@ class SystemInfoDTO(BaseModel):
     balance: float
 
 class SystemInfoResponseDTO(BaseModel):
-    id: Optional[int] = None
     balance: float
