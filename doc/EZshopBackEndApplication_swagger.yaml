@@ -224,7 +224,6 @@ components:
         success: 
           type: boolean
       required: [success]
-    
     OrderStatus:
       type: string
       enum: [ISSUED, PAID, COMPLETED]
@@ -271,7 +270,6 @@ components:
       type: object
       required:
         - name
-        - card
       properties:
         id:
           type: integer
