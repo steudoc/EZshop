@@ -5,22 +5,14 @@ from app.models.DAO.system_dao import SystemInfoDAO
 from app.database.database import AsyncSessionLocal
 
 class SystemRepository:
-    _instance: Optional["SystemRepository"] = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(SystemRepository, cls).__new__(cls)
-        return cls._instance
 
     def __init__(self, session: Optional[AsyncSession] = None):
-        if not hasattr(self, "_initialized"):
-            self._session = session
-            self._initialized = True
+        self._session = session
 
     async def _get_session(self) -> AsyncSession:
         return self._session or AsyncSessionLocal()
 
-    async def get_last_system_info(self) -> SystemInfoDAO:
+    async def get_last_system_info(self) -> SystemInfoDAO | None:
         """
         Retrieve the most recent system information entry.
 

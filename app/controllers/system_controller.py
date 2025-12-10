@@ -8,7 +8,7 @@ class SystemController:
     def __init__(self):
         self.repo = SystemRepository()
 
-    async def create_system_info(self, system_info_dto: SystemInfoDTO) -> SystemInfoDTO: 
+    async def _create_system_info(self, system_info_dto: SystemInfoDTO) -> SystemInfoDTO: 
         """Create system info"""
         created = await self.repo.create_system_info(system_info_dto.balance)
         return systemdao_to_dto(created)
@@ -17,7 +17,7 @@ class SystemController:
         """Sets the system balance to the provided amount"""
         if amount < 0: 
             raise BalanceError('Balance cannot be negative')
-        await self.create_system_info(
+        await self._create_system_info(
             SystemInfoDTO(
                 balance=amount
             )
@@ -25,7 +25,7 @@ class SystemController:
     
     async def reset_balance(self): 
         """Resets the balance value to 0"""
-        await self.create_system_info(
+        await self._create_system_info(
             SystemInfoDTO(
                 balance=0.0
             )
