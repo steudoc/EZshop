@@ -79,7 +79,7 @@ class ProductRepository:
         if (not self.is_product_data_valid(barcode, description, price_per_unit, quantity, position)):
             throw_bad_request()
 
-        sameBarcodeProduct = self.get_product_by_barcode(barcode)
+        sameBarcodeProduct = await self.get_product_by_barcode(barcode)
         
         async with await self._get_session() as session:
             result = await session.execute(select(ProductDAO).filter(ProductDAO.barcode == barcode))
