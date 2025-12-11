@@ -4,8 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.errors.app_error import AppError
-from app.middleware.error_middleware import error_handler   
-from app.routes import  user_route, auth_route, product_route
+from app.middleware.error_middleware import error_handler
+from app.routes import  user_route, auth_route, balance_route, product_route
 from contextlib import asynccontextmanager
 from app.database.database import engine, Base
 from logging import getLogger
@@ -34,6 +34,7 @@ app.add_middleware(
 # register routers
 app.include_router(auth_route.router)
 app.include_router(user_route.router)
+app.include_router(balance_route.router)
 app.include_router(product_route.router)
 
 app.add_exception_handler(AppError, error_handler)
