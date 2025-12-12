@@ -24,6 +24,13 @@ class ProductController:
 
         if (product_dto.quantity is None):
             product_dto.quantity = 0
+
+		# check that new position is reset position or free from other products
+        if (product_dto.position != ""):
+            position_free = await self.repo.is_position_free(product_dto.position)
+            if (not position_free):
+                throw_conflict()
+
         
         created = await self.repo.create_product(product_dto.barcode, 
                                                  product_dto.price_per_unit, product_dto.description,

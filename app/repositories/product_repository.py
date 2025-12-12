@@ -2,13 +2,14 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.DAO.product_dao import ProductDAO
+from app.repositories.base_repository import BaseRepository
 from app.utils import throw_bad_request, throw_not_found, throw_conflict, throw_invalid_state
 from app.database.database import AsyncSessionLocal
 from typing import Optional
 import re
 
 
-class ProductRepository:
+class ProductRepository(BaseRepository):
     _instance: Optional["ProductRepository"] = None
 
     def __init__(self, session: Optional[AsyncSession] = None):
@@ -20,7 +21,7 @@ class ProductRepository:
         return cls._instance
 
     async def _get_session(self) -> AsyncSession:
-        return self._session or AsyncSessionLocal()
+        return super().get_session()
 
     def is_barcode_valid(self, barcode: str) -> bool:
         # preliminary checks such as length and decimal chars format 
@@ -45,7 +46,7 @@ class ProductRepository:
     def is_position_valid(self, position: str) -> bool:
         # check that position is either an empty string or
         # it matches the format <digits>-<letters>-<digits> from requirements
-        return (position is None or position == "" or re.match("\d+-\w+-\d+", position))
+        return (position is None or position == "" or re.match(r"\d+-\w+-\d+", position))
 
     def is_product_data_valid(self, barcode, description, price_per_unit, quantity, position) -> bool:
         #check barcode format (12-14 digits)
@@ -71,6 +72,7 @@ class ProductRepository:
         # if all conditions pass, then the data is valid
         return True
 
+
     async def create_product(self, barcode: str, price_per_unit: float, description: str, quantity: int, position: str = None, note: str = None) -> ProductDAO:
         """
         Create product or throw ConflictError if barcode exists, throw BadRequestError if parameters are not valid
@@ -90,7 +92,7 @@ class ProductRepository:
 
             product = ProductDAO(barcode=barcode, price_per_unit=price_per_unit, quantity=quantity, position=position, description=description, note=note)
             session.add(product)
-            await session.commit()
+            await session.flush()
             await session.refresh(product)
             return product	
         
@@ -144,6 +146,9 @@ class ProductRepository:
             if (db_product is None):
                throw_not_found("Product not found")
 
+             # check that product to update is found
+            same_pos = await session.execute(select(ProductDAO).filter(ProductDAO.barcode == product.barcode).filter(ProductDAO.id != product.id))
+
             # if the barcode changed, perform some additional checks
             if (product.barcode != db_product.barcode):
 
@@ -152,7 +157,7 @@ class ProductRepository:
                     throw_invalid_state("Invalid sale state")
 
                 # get products with same barcode and different id (expected: 0)
-                result_conflict = await session.execute(select(ProductDAO).filter(ProductDAO.barcode == product.barcode and ProductDAO.id != product.id))
+                result_conflict = await session.execute(select(ProductDAO).filter(ProductDAO.barcode == product.barcode).filter(ProductDAO.id != product.id))
                 (confilicting_products) = result_conflict.scalars().all()
 
                 if ((confilicting_products)):
@@ -167,7 +172,7 @@ class ProductRepository:
             db_product.quantity = product.quantity 
             db_product.involvedOperations = product.involvedOperations
 
-            await session.commit()
+            await session.flush()
             await session.refresh(db_product)
             return db_product
         
@@ -189,7 +194,7 @@ class ProductRepository:
                     throw_invalid_state("Invalid sale state")
 
             await session.delete(db_product)
-            await session.commit()
+            await session.flush()
 
 
     async def is_position_free(self, position: str) -> bool:
@@ -206,3 +211,30 @@ class ProductRepository:
             result = await session.execute(select(ProductDAO).filter(ProductDAO.position == position))
             productOrNone = result.scalars().first()
             return (productOrNone is None)
+
+
+    async def include_product_in_op(self, product_id: int, include: bool) -> None:
+        """
+        Include or exclude product from shop operation. 
+        Will throw NotFoundError if product with given id is not found, will throw
+        BadRequestError if the product cannot be excluded from any shop operation when
+        trying to do so
+        """
+
+        async with await self._get_session() as session:
+            # get product from db
+            product = await session.get(ProductDAO, product_id)
+
+            # check that product is present
+            if (product is None):
+                throw_not_found()
+
+            # check that involved operations can be decremented
+            if (not include and product.involvedOperations < 1):
+                throw_bad_request()
+
+            # update number of operations in which product is involved and update db (+-1)
+            product.involvedOperations += (1 if include else -1)
+            await session.flush()
+
+        
