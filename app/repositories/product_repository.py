@@ -15,7 +15,7 @@ class ProductRepository(BaseRepository):
     def __init__(self, session: Optional[AsyncSession] = None):
         self._session = session
 
-    def __new__(cls):
+    def __new__(cls, session: Optional[AsyncSession] = None):
         if cls._instance is None:
             cls._instance = super(ProductRepository, cls).__new__(cls)
         return cls._instance
@@ -24,6 +24,12 @@ class ProductRepository(BaseRepository):
         return super().get_session()
 
     def is_barcode_valid(self, barcode: str) -> bool:
+        '''
+        Returns True if the given barcode string is a valid barcode, False otherwise.
+        Given barcode must be a digits-only string of 12 to 14 digits, matching the 
+        GTIN checksum algorithm
+        '''
+
         # preliminary checks such as length and decimal chars format 
         if (barcode == None or len(barcode) < 12 or 
             len(barcode) > 14 or not barcode.isdecimal()):
@@ -43,12 +49,28 @@ class ProductRepository(BaseRepository):
         # if all conditions pass, then the barcode is valid
         return True
     
-    def is_position_valid(self, position: str) -> bool:
-        # check that position is either an empty string or
-        # it matches the format <digits>-<letters>-<digits> from requirements
-        return (position is None or position == "" or re.match(r"\d+-\w+-\d+", position))
+    def is_position_valid(self, position: str, allow_unassigned: bool = True) -> bool:
+        '''
+        Returns True if the given position string is a valid position, False otherwise.
+        If an unassigned position is allowed (default behaviour), then None and empty string
+        will be considered valid positions
+        '''
+
+        # if allowed, check that position is an empty string or None
+        if (allow_unassigned and (position is None or position == "")):
+            return True
+        # check that position matches the format <digits>-<letters>-<digits> from requirements
+        else:
+            return re.match(r"\d+-\w+-\d+", position)
 
     def is_product_data_valid(self, barcode, description, price_per_unit, quantity, position) -> bool:
+        '''
+        Returns True if the given product data is valid, False otherwise.
+        barcode must be valid, description must be present (min 1 char), 
+        price_per_unit must be >= 0, quantity must be >= 0, position must be 
+        either not present (None or empty string) or it must be of the correct format 
+        '''
+
         #check barcode format (12-14 digits)
         if (not self.is_barcode_valid(barcode)):
             return False
@@ -71,6 +93,22 @@ class ProductRepository(BaseRepository):
         
         # if all conditions pass, then the data is valid
         return True
+
+
+    async def is_position_free(self, position: str) -> bool:
+        """
+        Check if position is free. Will throw BadRequestError if position is not valid,
+        """
+        
+        # check position format
+        if (not self.is_position_valid(position)):
+            throw_bad_request()
+
+        # check if other products have occupied the position
+        async with await self._get_session() as session:
+            result = await session.execute(select(ProductDAO).filter(ProductDAO.position == position))
+            productOrNone = result.scalars().first()
+            return (productOrNone is None)
 
 
     async def create_product(self, barcode: str, price_per_unit: float, description: str, quantity: int, position: str = None, note: str = None) -> ProductDAO:
@@ -197,20 +235,7 @@ class ProductRepository(BaseRepository):
             await session.flush()
 
 
-    async def is_position_free(self, position: str) -> bool:
-        """
-        Check if position is free. Will throw BadRequestError if position is not valid,
-        """
-        
-        # check position format
-        if (not self.is_position_valid(position)):
-            throw_bad_request()
-
-        # check if other products have occupied the position
-        async with await self._get_session() as session:
-            result = await session.execute(select(ProductDAO).filter(ProductDAO.position == position))
-            productOrNone = result.scalars().first()
-            return (productOrNone is None)
+    
 
 
     async def include_product_in_op(self, product_id: int, include: bool) -> None:

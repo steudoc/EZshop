@@ -26,6 +26,7 @@ URL_USERS = "/users"
 URL_RETURNS = "/returns"
 URL_BALANCE = "/balance"
 URL_PRODUCTS= "/products"
+URL_ORDERS = "/orders"
 
 ROUTES = {
     "V1_AUTH": APP_V1_BASE_URL + URL_AUTH,
@@ -34,6 +35,7 @@ ROUTES = {
     
     "V1_BALANCE": APP_V1_BASE_URL + URL_BALANCE,
     "V1_PRODUCTS": APP_V1_BASE_URL + URL_PRODUCTS,
+    "V1_ORDERS": APP_V1_BASE_URL + URL_ORDERS,
 
     "V1_GENERAL": APP_V1_BASE_URL,
 }
