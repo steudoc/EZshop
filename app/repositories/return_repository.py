@@ -171,15 +171,6 @@ class ReturnRepository:
             await session.refresh(return_tx)
             return return_tx
 
-    # --- helper for sale transaction ---
-    async def get_sale_by_id(self, sale_id: int) -> Optional[object]:
-        """Retrieve a sale transaction by its ID"""
-        from app.models.DAO.sale_dao import SaleStubDAO
-        async with await self._get_session() as session:
-            result = await session.execute(select(SaleStubDAO).filter(SaleStubDAO.id == sale_id))
-            sale = result.scalars().first()
-            return sale
-
 
 
 

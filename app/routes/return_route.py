@@ -28,7 +28,7 @@ async def create_return_transaction(sale_id: Optional[str] = Query(None)):
     - Query parameter: sale_id (ID of the sale to return)
     - Returns: Created return as ReturnResponseDTO
     - Raises:
-      - BadRequestError: when mandatory fields (sale_id) are missing or invalid
+      - BadRequestError: when sale_id is missing or invalid
     - Status code: 201 Created
     """
     if not sale_id:
