@@ -17,71 +17,82 @@ from app.models.errors.return_errors import (
     PaymentFailedError
 )
 from app.services.return_service import ReturnService
+from app.controllers.system_controller import SystemController
 from typing import List, Optional
 from app.services.mapper_service import returndao_to_responsedto
 
 class ReturnController:
     def __init__(self):
         self.repo = ReturnRepository()
+        self.system_controller = SystemController()
 
     async def start_return(self, sale_id: int) -> ReturnDTO: 
         """Create return transaction - throws BadRequestError if sale invalid or not closed/paid"""
         created = await self.repo.start_return(sale_id)
         return returndao_to_responsedto(created)
     
-    @staticmethod
-    async def get_all_returns():
-        return await ReturnRepository.get_all_returns()
+    async def get_all_returns(self) -> List[ReturnDTO]:
+        """Get all return transactions"""
+        daos = await self.repo.get_all_returns()
+        return [returndao_to_responsedto(dao) for dao in daos]
+    
+    async def get_return_by_id(self, return_id: int) -> Optional[ReturnDTO]:
+        """Get return by return id - throws NotFoundError if not found"""
+        dao = await self.repo.get_return_by_id(return_id)
+        return returndao_to_responsedto(dao) if dao else None
+        
+    async def delete_return(self, return_id: int) -> bool:
+        """Delete return - throws NotFoundError if not found"""
+        return await self.repo.delete_return(return_id)
 
-    @staticmethod
-    async def get_return_by_id(return_id: int):
-        return_tx = await ReturnRepository.get_return_by_id(return_id)
+    async def get_returns_by_sale(self, sale_id: int) -> List[ReturnDTO]:
+        """Get all returns by sale id"""
+        daos = await self.repo.get_returns_by_sale(sale_id)
+        return [returndao_to_responsedto(dao) for dao in daos]
+
+    async def add_item(self, return_id: int, item: ReturnItemDTO) -> ReturnDTO:
+        """Add item to return - throws NotFoundError if return or product not found, InvalidStateError if return not open"""
+        updated = await self.repo.add_item(return_id, item)
+        return returndao_to_responsedto(updated)
+
+    async def remove_item(self, return_id: int, product_barcode: str) -> ReturnDTO:
+        """Remove item from return - throws NotFoundError if return or product not found, InvalidStateError if return not open"""
+        return await self.repo.remove_item(return_id, product_barcode)
+
+    async def close_return(self, return_id: int):
+        """Close return - throws NotFoundError if return not found, InvalidStateError if return not open
+        If return is empty (has no items), it will be deleted instead of closed"""
+        return_tx = await self.repo.get_return_by_id(return_id)
         if not return_tx:
             raise NotFoundError("Return not found")
-        return return_tx
+        
+        # If return is empty (no items), delete it instead of closing
+        if not return_tx.lines or len(return_tx.lines) == 0:
+            await self.repo.delete_return(return_id)
+            return None
+        
+        # Otherwise, close the return normally
+        return await self.repo.close_return(return_id)
 
-    @staticmethod
-    async def delete_return(return_id: int):
-        deleted = await ReturnRepository.delete_return(return_id)
-        if not deleted:
-            raise NotFoundError("Return not found")
-
-    @staticmethod
-    async def get_returns_by_sale(sale_id: int):
-        return await ReturnRepository.get_returns_by_sale(sale_id)
-
-    @staticmethod
-    async def add_item_to_return(return_id: int, item: ReturnItemDTO):
-        return await ReturnRepository.add_item(return_id, item)
-
-    @staticmethod
-    async def remove_item_from_return(return_id: int, item: ReturnItemDTO):
-        return await ReturnRepository.remove_item(return_id, item)
-
-    @staticmethod
-    async def close_return(return_id: int, data: ReturnCloseDTO):
-        return await ReturnRepository.close_return(return_id, data)
-
-    @staticmethod
-    async def reimburse_return(return_id: int, data: ReturnReimburseDTO):
+    async def reimburse_return(self, return_id: int) -> ReturnReimburseDTO:
         # Find return transaction
-        return_tx = await ReturnRepository.get_return_by_id(return_id)
+        return_tx = await self.repo.get_return_by_id(return_id)
         if not return_tx:
             raise NotFoundError("Return not found")
 
         # Compute refund amount
         amount = ReturnService.calculate_refund(return_tx)
 
-        # Manage payment
-        if data.payment_type == "cash":
-            ReturnService.process_cash_refund(amount)
-        elif data.payment_type == "credit_card":
-            if not ReturnService.validate_credit_card(data.credit_card_number):
-                raise PaymentFailedError("Invalid credit card")
-            ReturnService.process_card_refund(amount, data.credit_card_number)
-        else:
-            raise BadRequestError("Invalid payment type")
-
         # Update return transaction status
-        return await ReturnRepository.reimburse_return(return_id, amount)
+        await self.repo.reimburse_return(return_id)
+
+        # Update system balance by deducting the refund amount
+        current_balance = await self.system_controller.get_balance()
+        new_balance = current_balance.balance - amount
+        await self.system_controller.set_balance(new_balance)
+
+        reimburse_dto = ReturnReimburseDTO(
+            refund_amount=amount 
+        )
+        return reimburse_dto
 

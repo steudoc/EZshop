@@ -12,10 +12,8 @@ class ReturnDAO(Base):
     status = Column(String, default="OPEN", nullable=False)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     closed_at = Column(DateTime, nullable=True)
-
-    # relationships with return lines
-    lines = relationship("ReturnLineDAO", back_populates="return_tx", cascade="all, delete-orphan")
-
+    lines = relationship("ReturnLineDAO", back_populates="return_tx", cascade="all, delete-orphan", lazy="selectin")    
+    
 class ReturnLineDAO(Base):
     __tablename__ = "return_lines"
 
@@ -24,8 +22,6 @@ class ReturnLineDAO(Base):
     product_barcode = Column(String, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     price_per_unit = Column(Float, nullable=False)
-
-    # relationship back to return transaction
     return_tx = relationship("ReturnDAO", back_populates="lines")
 
 

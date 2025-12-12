@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.models.DAO.return_dao import ReturnDAO, ReturnLineDAO
 from app.models.DAO.sale_dao import SaleDAO
 from app.models.DTO.return_dto import ReturnItemDTO
-from app.utils import throw_conflict_if_found, find_or_throw_not_found
+from app.utils import throw_conflict_if_found, find_or_throw_not_found, throw_not_found, throw_invalid_state, throw_bad_request
 from app.database.database import AsyncSessionLocal
 from app.models.errors.invalidstate_error import InvalidStateError
 from app.models.errors.notfound_error import NotFoundError
@@ -32,7 +33,7 @@ class ReturnRepository:
             
             # Check if sale is closed and paid
             if sale.status != "CLOSED":
-                raise InvalidStateError("Return allowed only on closed and paid sales")
+                raise InvalidStateError("Return allowed only on paid sales")
 
             return_transaction = ReturnDAO(
                 sale_id=sale_id,
@@ -47,27 +48,25 @@ class ReturnRepository:
     async def get_return_by_id(self, return_id: int) -> ReturnDAO | None:
         """
         Get return transaction by id or throw NotFoundError if not found
+        Eagerly loads the return lines
         """
         async with await self._get_session() as session:
-            return_transaction = await session.get(ReturnDAO, return_id)
+            query = select(ReturnDAO).where(ReturnDAO.id == return_id).options(selectinload(ReturnDAO.lines))
+            result = await session.execute(query)
+            return_transaction = result.scalars().first()
             return find_or_throw_not_found(
                 [return_transaction] if return_transaction else [],
                 lambda _: True,
-                f"Return transaction with id '{return_id}' not found"
+                "Return not found"
             )
         
-    async def get_returns_by_sale(self, sale_id: int) -> ReturnDAO | None:
+    async def get_returns_by_sale(self, sale_id: int) -> list[ReturnDAO]:
         """
-        Get return transactions by sale_id or throw NotFoundError if not found
+        Get all return transactions associated with a sale id
         """
         async with await self._get_session() as session:
             result = await session.execute(select(ReturnDAO).filter(ReturnDAO.sale_id == sale_id))
-            return_transaction = result.scalars().all()
-            return find_or_throw_not_found(
-                return_transaction,
-                lambda _: True,
-                f"Return transaction with sale_id '{return_transaction}' not found"
-            )
+            return result.scalars().all()
     
     async def get_all_returns(self) -> list[ReturnDAO]:
         """Get all return transactions"""
@@ -96,6 +95,7 @@ class ReturnRepository:
     async def delete_return(self, return_id: int) -> bool:
         """
         Delete return by id. Will throw NotFoundError if return doesn't exist
+        or InvalidStateError if return is reimbursed
         """
         async with await self._get_session() as session:
             return_transaction = await session.get(ReturnDAO, return_id)
@@ -103,8 +103,12 @@ class ReturnRepository:
             find_or_throw_not_found(
                 [return_transaction] if return_transaction else [],
                 lambda _: True,
-                f"Return transaction with id '{return_id}' not found"
+                f"Return not found"
             )
+
+            # Check if return is reimbursed
+            if return_transaction.status == "REIMBURSED":
+                raise InvalidStateError("Cannot delete a reimbursed return")
 
             await session.delete(return_transaction)
             await session.commit()
@@ -113,7 +117,7 @@ class ReturnRepository:
     async def add_item(self, return_id: int, item: ReturnItemDTO) -> ReturnDAO | None:
         """Add a product to a return transaction"""
         async with await self._get_session() as session:
-            return_tx = await ReturnRepository.get_return_by_id(return_id)
+            return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
             if not return_tx:
                 return None
             new_line = ReturnLineDAO(
@@ -122,18 +126,18 @@ class ReturnRepository:
                 quantity=item.quantity,
                 price_per_unit=item.price_per_unit
             )
-            await session.add(new_line)
+            session.add(new_line)
             await session.commit()
             await session.refresh(return_tx)
             return return_tx
 
-    async def remove_item(self, return_id: int, item: ReturnItemDTO) -> ReturnDAO | None:
+    async def remove_item(self, return_id: int, product_barcode: str) -> ReturnDAO | None:
         """Remove a product from a return transaction"""
         async with await self._get_session() as session:
             result = await session.execute(
                 select(ReturnLineDAO).where(
                     ReturnLineDAO.return_id == return_id,
-                    ReturnLineDAO.product_barcode == item.product_barcode
+                    ReturnLineDAO.product_barcode == product_barcode
                 )
             )
             line = result.scalars().first()
@@ -141,7 +145,8 @@ class ReturnRepository:
                 return None
             await session.delete(line)
             await session.commit()
-            return await ReturnRepository.get_return_by_id(return_id)
+            return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
+            return return_tx
 
     async def close_return(self, return_id: int) -> ReturnDAO | None:
         """Close a return transaction"""
@@ -155,7 +160,7 @@ class ReturnRepository:
             await session.refresh(return_tx)
             return return_tx
 
-    async def reimburse_return(self, return_id: int, amount: float) -> ReturnDAO | None:
+    async def reimburse_return(self, return_id: int) -> ReturnDAO | None:
         """Update a return transaction as reimbursed"""
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id)

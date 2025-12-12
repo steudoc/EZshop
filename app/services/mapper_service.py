@@ -4,7 +4,7 @@ from app.models.DTO.user_dto import UserDTO
 from app.models.DTO.product_dto import ProductDTO
 from app.models.DTO.token_dto import TokenDTO
 from app.models.DTO.error_dto import ErrorDTO
-from app.models.DTO.return_dto import ReturnDTO
+from app.models.DTO.return_dto import ReturnDTO, ReturnLineDTO
 from app.models.DAO.system_dao import SystemInfoDAO
 from app.models.DTO.system_dto import SystemInfoDTO, SystemInfoResponseDTO
 
@@ -39,13 +39,23 @@ def returndao_to_dto(return_dao) -> ReturnDTO:
         created_at=return_dao.created_at
     )
 
-def returndao_to_responsedto(return_dao) -> ReturnDTO:
+def returndao_to_responsedto(return_dao) -> ReturnDTO:    
+    lines = []
+    for line_dao in return_dao.lines:
+        lines.append(ReturnLineDTO(
+            id=line_dao.id,
+            return_id=line_dao.return_id,
+            product_barcode=line_dao.product_barcode,
+            quantity=line_dao.quantity,
+            price_per_unit=line_dao.price_per_unit
+        ))
     return ReturnDTO(
         id=return_dao.id,
         sale_id=return_dao.sale_id,
         status=return_dao.status,
         created_at=return_dao.created_at,
-        closed_at=return_dao.closed_at
+        closed_at=return_dao.closed_at,
+        lines=lines
     )
 def systemdao_to_dto(system_info_dao: SystemInfoDAO) -> SystemInfoDTO:
     return SystemInfoDTO(

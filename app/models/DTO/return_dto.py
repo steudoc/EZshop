@@ -36,9 +36,7 @@ class ReturnCloseDTO(BaseModel):
 
 class ReturnReimburseDTO(BaseModel):
     """Used to reimburse a return transaction"""
-    payment_type: str = Field(..., description="Tipo di rimborso: 'cash' o 'credit_card'")
-    credit_card_number: Optional[str] = Field(None, description="Numero carta (se pagamento con carta)")
-
+    refund_amount: float = Field(..., description="Amount to reimburse for the return transaction")
 
 # --- Response DTOs ---
 
@@ -58,7 +56,7 @@ class ReturnResponseDTO(BaseModel):
     status: str
     created_at: datetime
     closed_at: Optional[datetime]
-    lines: List[ReturnLineDTO] = []
+    lines: List[ReturnLineDTO] = Field([], description="List of return line items")
 
 
 
