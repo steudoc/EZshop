@@ -817,7 +817,7 @@ paths:
                 message: "Insufficient rights"
                 name: "ForbiddenError"
         '409':
-          description: Product with same barcode already exists
+          description: Product with same barcode or ID already exists
           content:
             application/json:
               schema:
@@ -1676,7 +1676,10 @@ paths:
       tags:
         - customers
       summary: Create a new customer
-      description: Creates a new customer. Returns the created customer with assigned ID.
+      description: |
+        Creates a new customer. Returns the created customer with assigned ID.
+        If a card is attached, it has to be validated (valid and existing card) and must not be already assigned to another customer.
+        Its points are not set, they are maintained. If the request received points as part of the paramenters, they are ignored.
         Requires authentication as **Administrator**, **Cashier**, or **ShopManager**.
       security:
         - bearerAuth: []
@@ -2211,6 +2214,16 @@ paths:
                 code: 404
                 message: "Sale not found"
                 name: "NotFoundError"
+        '420':
+          description: Invalid sale status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 420
+                message: "Cannot delete a paid sale"
+                name: "InvalidStateError"
   /sales/{sale_id}/items:
     post:
       tags: [sales]
