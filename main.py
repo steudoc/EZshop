@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.errors.app_error import AppError
 from app.middleware.error_middleware import error_handler   
-from app.routes import  user_route, auth_route, card_route
+from app.routes import  user_route, auth_route, card_route, customer_route
 from contextlib import asynccontextmanager
 from app.database.database import engine, Base
 from logging import getLogger
@@ -35,6 +35,7 @@ app.add_middleware(
 app.include_router(auth_route.router)
 app.include_router(user_route.router)
 app.include_router(card_route.router)
+app.include_router(customer_route.router)
 
 app.add_exception_handler(AppError, error_handler)
 app.add_exception_handler(Exception, error_handler)

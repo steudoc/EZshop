@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.models.DAO.card_dao import CardDAO
 from app.database.database import AsyncSessionLocal
 from app.utils import find_or_throw_not_found
@@ -24,7 +25,6 @@ class CardRepository:
             await session.refresh(card)
             return card
     
-    #TODO
     async def get_card(self, card_id : int) -> CardDAO | None:
         """
         Get card given a card_id
@@ -52,3 +52,12 @@ class CardRepository:
             await session.commit()
             await session.refresh(db_card)
             return db_card
+
+    async def get_card_by_customer(self, customer_id: int) -> Optional[CardDAO]:
+
+        async with await self._get_session() as session:
+            stmt = select(CardDAO).filter_by(customer_id=customer_id)
+            result = await session.execute(stmt)
+            card = result.scalars().first()
+    
+            return card

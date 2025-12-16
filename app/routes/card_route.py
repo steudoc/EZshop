@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-from app.models.DTO.card_dto import CardResponseDTO
+from app.models.DTO.customer_dto import CardDTO
 from app.models.user_type import UserType
 from app.controllers.card_controller import CardController
 from app.middleware.auth_middleware import authenticate_user
@@ -12,7 +12,7 @@ router = APIRouter(prefix=ROUTES['V1_CUSTOMERS_CARDS'], tags=["Cards"])
 controller = CardController()
 
 @router.post("/", 
-    response_model=CardResponseDTO, 
+    response_model=CardDTO, 
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def create_card():
@@ -20,13 +20,13 @@ async def create_card():
     Create a new card with 0 points.
 
     - Permissions: Administrator, Shop manager, Cashier
-    - Returns: Created card as CardResponseDTO
+    - Returns: Created card as CardDTO
     - Status code: 201 Created
     """
     return await controller.create_card()
 
 @router.patch("/{card_id}", 
-    response_model=CardResponseDTO, 
+    response_model=CardDTO, 
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def modify_points_card(
@@ -37,7 +37,7 @@ async def modify_points_card(
     Add or remove points from a loyalty card.
 
     - Permissions: Administrator, Shop manager, Cashier
-    - Returns: Created card as CardResponseDTO
+    - Returns: Created card as CardDTO
     - Status code: 200 Customer card points successfully updated
     """
 
