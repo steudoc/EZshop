@@ -43,14 +43,9 @@ async def customerdao_to_responsedto(customer_dao: CustomerDAO) -> CustomerDTO:
     card_repository = CardRepository()
     card_dao = await card_repository.get_card_by_customer(customer_dao.id)
     card_dto = carddao_to_response_dto(card_dao) if card_dao else None
-    if card_dto is not None:
-        return CustomerDTO(
-            id=customer_dao.id,
-            name=customer_dao.name,
-            card=card_dto
-        )
-    else:
-        return CustomerDTO(
-            id=customer_dao.id,
-            name=customer_dao.name
-        )
+    
+    return CustomerDTO(
+        id=customer_dao.id,
+        name=customer_dao.name,
+        card=card_dto
+    )

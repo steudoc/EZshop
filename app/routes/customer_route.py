@@ -1,11 +1,12 @@
 from app.models.errors.notfound_error import NotFoundError
 from fastapi import APIRouter, status, Depends, Response
-from app.models.DTO.customer_dto import CustomerDTO
+from app.models.DTO.customer_dto import CustomerDTO, UpdateCustomerDTO
 from app.models.user_type import UserType
 from app.controllers.customer_controller import CustomerController
 from app.middleware.auth_middleware import authenticate_user
 from app.config.config import ROUTES
 from app.utils import throw_bad_request
+from typing import List
 
 
 router = APIRouter(prefix=ROUTES['V1_CUSTOMERS'], tags=["Customers"])
@@ -87,3 +88,43 @@ async def get_customer(customer_id: int):
     if not customer:
         raise NotFoundError("Customer not found")
     return customer
+
+
+@router.get("/", response_model=List[CustomerDTO],
+            dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
+async def list_users():
+    """
+    List all customers.
+
+    - Permissions:  Administrator, Shop manager, Cashier
+    - Returns: List of CustomerDTO
+    - Status code: 200 OK
+    """
+    return await controller.list_customers()
+
+
+
+@router.put("/{customer_id}", response_model=CustomerDTO, 
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
+async def update_customer(customer_id: int, customer: UpdateCustomerDTO):
+    """
+    Update an existing customer.
+
+    - Permissions: Administrator, Shop manager, Cashier
+    - Path parameter: customer_id (int)
+    - Request body: CustomerDTO (fields to update)
+    - Returns: Updated customer as CustomerDTO
+    - Raises:
+      - NotFoundError: when the user to update does not exist
+      - BadRequestError: when the customer input is invalid
+      - ConflictError: when there is a conflict updating the customer
+    - Status code: 201 Created
+    """
+    if customer.name == "":
+        throw_bad_request("Customer name cannot be empty")
+
+    updated = await controller.update_customer(customer_id, customer)
+    if not updated:
+        raise NotFoundError("Customer not found")
+    return updated
