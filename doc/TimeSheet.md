@@ -13,10 +13,10 @@ These figures will not be used to evaluate neither the project nor the team, the
 | Oct 27 - Nov 2 |                      18 |        |        |              |                     |                    |                  |          1 |
 |   Nov 3 - 9    |                      19 |        |        |              |                     |                    |                  |            |
 |  Nov 10 - 16   |                      20 |     25 |        |              |                     |                    |                  |          1 |
-|  Nov 17 - 23   |              8             |     25   |        |              |                     |                    |                  |      4      |
-|  Nov 24 - 30   |                         |        |        |              |                     |                    |                  |            |
-|  Dec 1 - 7     |                         |        |        |              |                     |                    |                  |            |
-|  Dec 8 - 14    |                         |        |        |              |                     |                    |                  |            |
+|  Nov 17 - 23   |                       8 |     25 |        |              |                     |                    |                  |          4 |
+|  Nov 24 - 30   |                         |        |        |              |                     |                    |                  |          5 |
+|  Dec 1 - 7     |                         |        |     25 |              |                     |                    |                  |            |
+|  Dec 8 - 14    |                         |        |     43 |              |                     |                    |                  |          1 |
 |  Dec 15 - 21   |                         |        |        |              |                     |                    |                  |            |
 |  Dec 22 - 28   |                         |        |        |              |                     |                    |                  |            |
 | Dec 29 - Jan 4 |                         |        |        |              |                     |                    |                  |            |

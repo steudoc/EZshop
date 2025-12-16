@@ -2,8 +2,7 @@
   "info": {
     "_postman_id": "c6db0f65-8142-4739-8d34-4c6a23fec0e8",
     "name": "EZShop",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "17024259"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -15,6 +14,15 @@
           "request": {
             "method": "DELETE",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/users/1",
               "host": [
@@ -51,6 +59,9 @@
           "name": "Modify User",
           "id": "1ffdc770-e012-438c-8837-70db2e3719e6",
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "PUT",
             "header": [],
             "body": {
@@ -136,7 +147,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 5.5,\r\n    \"note\" : \"Black Coffee\" \r\n}",
+              "raw": "{\r\n    \"description\" : \"Coffee\",\r\n    \"barcode\" : {{prod_barcode_1}},\r\n    \"price_per_unit\" : 5.5,\r\n    \"note\" : \"Black Coffee\" \r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -261,7 +272,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"description\" : \"Caffe buono\",\r\n    \"productCode\" : \"0000000010\",\r\n    \"pricePerUnit\" : 1.2,\r\n    \"note\" : \"Black Coffee, very good\" \r\n}",
+              "raw": "{\r\n    \"description\" : \"Caffe buono\",\r\n    \"barcode\" : {{prod_barcode_2}},\r\n    \"price_per_unit\" : 1.2,\r\n    \"note\" : \"Black Coffee, very good\" \r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -397,7 +408,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\": \"Elisa\"\r\n}",
+              "raw": "{\r\n    \"name\": \"Mario Rossi\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -514,7 +525,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\": \"Alessia\"\r\n}\r\n",
+              "raw": "{\r\n    \"name\": \"Luigi Rossi\"\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -600,7 +611,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}",
+              "raw": "{\r\n    \"product_barcode\" : {{prod_barcode_1}},\r\n    \"quantity\" : 5,\r\n    \"price_per_unit\" : 2.5\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -628,7 +639,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}",
+              "raw": "{\r\n    \"product_barcode\" : {{prod_barcode_1}},\r\n    \"quantity\" : 5,\r\n    \"price_per_unit\" : 2.5\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -654,10 +665,6 @@
           "request": {
             "method": "PATCH",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"productTypeBarcode\" : \"0000000010\",\r\n    \"quantity\" : 5,\r\n    \"pricePerUnit\" : 2.5\r\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/orders/1/pay",
               "host": [
@@ -729,10 +736,15 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": ""
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
             },
             "url": {
-              "raw": "{{baseUrl}}/sales/1/items?barcode=0000000010&amount=2",
+              "raw": "{{baseUrl}}/sales/1/items?barcode={{prod_barcode_1}}&amount=2",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -744,7 +756,7 @@
               "query": [
                 {
                   "key": "barcode",
-                  "value": "0000000010"
+                  "value": "{{prod_barcode_1}}"
                 },
                 {
                   "key": "amount",
@@ -812,10 +824,15 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": ""
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
             },
             "url": {
-              "raw": "{{baseUrl}}/sales/1/items?barcode=0000000010&amount=1",
+              "raw": "{{baseUrl}}/sales/1/items?barcode={{prod_barcode_1}}&amount=1",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -827,7 +844,7 @@
               "query": [
                 {
                   "key": "barcode",
-                  "value": "0000000010"
+                  "value": "{{prod_barcode_1}}"
                 },
                 {
                   "key": "amount",
@@ -884,7 +901,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/sales/1/items/0000000010/discount?discountRate=0.1",
+              "raw": "{{baseUrl}}/sales/1/items/0000000010/discount?discount_rate=0.1",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -897,7 +914,7 @@
               ],
               "query": [
                 {
-                  "key": "discountRate",
+                  "key": "discount_rate",
                   "value": "0.1"
                 }
               ]
@@ -936,7 +953,7 @@
             "method": "PATCH",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/sales/1/discount?discountRate=0.1",
+              "raw": "{{baseUrl}}/sales/1/discount?discount_rate=0.1",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -947,7 +964,7 @@
               ],
               "query": [
                 {
-                  "key": "discountRate",
+                  "key": "discount_rate",
                   "value": "0.1"
                 }
               ]
@@ -1038,7 +1055,7 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/returns/2/items?barcode=0000000010&amount=2",
+              "raw": "{{baseUrl}}/returns/2/items?barcode={{prod_barcode_1}}&amount=2",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1050,7 +1067,7 @@
               "query": [
                 {
                   "key": "barcode",
-                  "value": "0000000010"
+                  "value": "{{prod_barcode_1}}"
                 },
                 {
                   "key": "amount",
@@ -1068,7 +1085,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/returns/1/items?barcode=0000000010&amount=2",
+              "raw": "{{baseUrl}}/returns/1/items?barcode={{prod_barcode_1}}&amount=2",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1080,7 +1097,7 @@
               "query": [
                 {
                   "key": "barcode",
-                  "value": "0000000010"
+                  "value": "{{prod_barcode_1}}"
                 },
                 {
                   "key": "amount",
@@ -1312,61 +1329,45 @@
     "bearer": [
       {
         "key": "token",
-        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzYzNjY0NzgyfQ.6YZN_HVVeBoox5EouwNpfCGz2CwW9NWp8u7oZC4dmD8",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzY1MzczMTUyfQ.WlcA6fnuNkjVMsTiDVm7l4rRhcaCFynuVAYHghM2dYY",
         "type": "string"
       }
     ]
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "id": "6edece9f-0cac-439d-8598-2bd8973f060f",
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "id": "a603234e-d4c8-4f7e-9eb6-56554ef27b46",
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
   "variable": [
     {
-      "id": "9599c323-c0b8-429a-a375-e5a71e9ce608",
+      "id": "59579f57-d102-4562-bf80-4a10d3111c83",
       "key": "baseUrl",
       "value": ""
     },
     {
-      "id": "8234bb0c-e6ce-4637-8c9e-0e72e8018359",
+      "id": "7339512b-6afc-453c-a633-1e967b7bafe4",
       "key": "username",
       "value": ""
     },
     {
-      "id": "88c4223d-82f7-499c-ae1f-633af9ea1bc8",
+      "id": "89f82838-6e49-4549-a117-7ed798cf8263",
       "key": "password",
       "value": ""
     },
     {
-      "id": "92b39a50-6899-455d-af6e-0b695eef87d8",
+      "id": "ba71c170-c3aa-446a-ac47-e6f412c9bce2",
       "key": "other_user",
       "value": ""
     },
     {
-      "id": "2cdc48cb-706a-4933-ab09-289eccf6ba67",
+      "id": "bcb65c5e-6d72-4ff2-a3f2-e6041953e358",
       "key": "other_password",
+      "value": ""
+    },
+    {
+      "id": "360234df-d1e3-4c09-9338-90ced4f83bc1",
+      "key": "prod_barcode_1",
+      "value": ""
+    },
+    {
+      "id": "400cfb1d-65ac-4bc9-9569-975aa6753b32",
+      "key": "prod_barcode_2",
       "value": ""
     }
   ]
