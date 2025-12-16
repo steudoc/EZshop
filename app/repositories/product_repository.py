@@ -10,15 +10,9 @@ import re
 
 
 class ProductRepository(BaseRepository):
-    _instance: Optional["ProductRepository"] = None
 
     def __init__(self, session: Optional[AsyncSession] = None):
         self._session = session
-
-    def __new__(cls, session: Optional[AsyncSession] = None):
-        if cls._instance is None:
-            cls._instance = super(ProductRepository, cls).__new__(cls)
-        return cls._instance
 
     async def _get_session(self) -> AsyncSession:
         return super().get_session()

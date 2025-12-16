@@ -6,15 +6,10 @@ from app.utils import throw_conflict, throw_not_found, throw_bad_request
 
 
 class ProductController:
-    _instance: Optional["ProductController"] = None
 
     def __init__(self):
         self.repo = ProductRepository()
-        
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(ProductController, cls).__new__(cls)
-        return cls._instance
+
 
     async def create_product(self, product_dto: ProductDTO) -> ProductDTO: 
         """Create product - throws ConflictError if barcode exists, throws BadRequestError if parameters are not valid"""
