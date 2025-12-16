@@ -13,11 +13,11 @@ class OrderController:
     async def _create_order(self, order_dto: OrderDTO) -> OrderDTO: 
         """Creates a new order for a given product"""
         if (
-            (order_dto.product_barcode is None)
-            or (order_dto.quantity is None or order_dto.quantity<0)
-            or (order_dto.price_per_unit is None or order_dto.price_per_unit<=0)
+            (order_dto.id is not None and order_dto.id<=0)
+            or (order_dto.quantity<=0)
+            or (order_dto.price_per_unit<=0)
         ): 
-            raise BadRequestError('Barcode is required')
+            raise BadRequestError('Incorrect parameters')
         created = await self.repo.create_order(order_dto.id, order_dto.product_barcode, order_dto.quantity, order_dto.price_per_unit, order_dto.status, order_dto.issue_date)
         return orderdao_to_dto(created)
 

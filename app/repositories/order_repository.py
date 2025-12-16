@@ -11,6 +11,7 @@ from app.models.errors.notfound_error import NotFoundError
 from app.models.errors.balance_error import BalanceError
 from app.models.errors.invalidstate_error import InvalidStateError
 from app.models.errors.general_error import GeneralError
+from app.models.errors.conflict_error import ConflictError
 from app.repositories.base_repository import BaseRepository
 
 
@@ -48,6 +49,12 @@ class OrderRepository(BaseRepository):
         async with self.get_session() as session:
 
             product_repository = ProductRepository(session)
+
+            # check order
+            if id is not None:
+                order = await session.get(OrderDAO, id)
+                if order is not None:
+                    raise ConflictError(f'An order with id={id} already exists')
 
             # check product
             product = await product_repository.get_product_by_barcode(product_barcode)
