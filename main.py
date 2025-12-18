@@ -3,9 +3,9 @@ os.environ["TESTING"] = "0"  # normal run
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.models.errors.app_error import AppError  
-from app.middleware.error_middleware import error_handler
-from app.routes import  user_route, auth_route, balance_route, product_route, order_route, return_route
+from app.models.errors.app_error import AppError
+from app.middleware.error_middleware import error_handler   
+from app.routes import  user_route, auth_route, balance_route, product_route, order_route, return_route, card_route, customer_route
 from contextlib import asynccontextmanager
 from app.database.database import engine, Base, _import_all_daos
 from logging import getLogger
@@ -39,7 +39,8 @@ app.include_router(return_route.router)
 app.include_router(balance_route.router)
 app.include_router(product_route.router)
 app.include_router(order_route.router)
-
+app.include_router(card_route.router)
+app.include_router(customer_route.router)
 app.add_exception_handler(AppError, error_handler)
 app.add_exception_handler(Exception, error_handler)
 

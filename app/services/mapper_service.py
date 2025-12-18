@@ -1,15 +1,19 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.DAO.user_dao import UserDAO
 from app.models.DAO.product_dao import ProductDAO
+from app.models.DAO.card_dao import CardDAO
+from app.models.DAO.customer_dao import CustomerDAO
+from app.models.DAO.system_dao import SystemInfoDAO
+from app.models.DAO.order_dao import OrderDAO
 from app.models.DTO.user_dto import UserDTO
 from app.models.DTO.product_dto import ProductDTO
 from app.models.DTO.token_dto import TokenDTO
 from app.models.DTO.error_dto import ErrorDTO
 from app.models.DTO.return_dto import ReturnDTO, ReturnLineDTO
-from app.models.DAO.order_dao import OrderDAO
 from app.models.DTO.order_dto import OrderDTO
-from app.models.DAO.system_dao import SystemInfoDAO
 from app.models.DTO.system_dto import SystemInfoDTO, SystemInfoResponseDTO
-
+from app.models.DTO.customer_dto import CustomerDTO, CardDTO
+from app.repositories.card_repository import CardRepository
 
 def create_error_dto(code: int, message: str, name: str) -> ErrorDTO:
     """Create an ErrorDTO instance"""
@@ -110,3 +114,23 @@ def update_productdao_from_partial_dto(product_dao: ProductDAO, product_dto: Pro
         
     if (product_dto.quantity is not None):
         product_dao.quantity = product_dto.quantity
+
+
+
+def carddao_to_response_dto(card_dao: CardDAO) -> CardDTO:
+    return CardDTO(
+        cardId = card_dao.cardId,
+        points = card_dao.points
+    )
+
+
+async def customerdao_to_responsedto(customer_dao: CustomerDAO) -> CustomerDTO:
+    card_repository = CardRepository()
+    card_dao = await card_repository.get_card_by_customer(customer_dao.id)
+    card_dto = carddao_to_response_dto(card_dao) if card_dao else None
+    
+    return CustomerDTO(
+        id=customer_dao.id,
+        name=customer_dao.name,
+        card=card_dto
+    )
