@@ -3,7 +3,7 @@ stages:
 
 test-all:
   stage: test
-  image: python:3.12
+  image: python:3.13
   tags:
     - geocontrol
   before_script:
@@ -14,6 +14,6 @@ test-all:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: always
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "delivery"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "QA"'
       when: always
   allow_failure: false
