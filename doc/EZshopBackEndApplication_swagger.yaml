@@ -234,7 +234,6 @@ components:
         - product_barcode
         - quantity
         - price_per_unit
-        - status
       properties:
         id:
           type: integer
@@ -762,8 +761,10 @@ paths:
       operationId: createProductType
       security:
         - bearerAuth: []
-      description: Create a new Product Type. Requires **Administrator** or **ShopManager** role. The success response is the product with its assigned ID.
-        The barcode must be a string of 12-14 digits. Description and price per unit must be present. Price must be > 0.
+      description: |
+        Create a new Product Type. Requires **Administrator** or **ShopManager** role. The success response is the product with its assigned ID.
+        The barcode must be a string of 12-14 digits. Description and price per unit must be present. 
+        Price must be > 0. If an id is provided in the request, it will be ignored.
       requestBody:
         required: true
         content:
@@ -817,7 +818,7 @@ paths:
                 message: "Insufficient rights"
                 name: "ForbiddenError"
         '409':
-          description: Product with same barcode or ID already exists
+          description: Product with same barcode already exists
           content:
             application/json:
               schema:
@@ -1335,7 +1336,7 @@ paths:
         - orders
       summary: Issue a new order
       description: Creates a new order for a given product. Requires **Administrator** or **ShopManager** role. 
-        The new order is in the **ISSUED** state.
+        The new order is in the **ISSUED** state. If an id is provided in the request, it will be ignored.
       operationId: issueOrder
       security:
         - bearerAuth: []
@@ -1437,6 +1438,7 @@ paths:
       description: |
         Creates a new order and immediately pays for it. Requires **Administrator** or **ShopManager** role. 
         The new order is in the **PAID** state. The balance is updated accordingly.
+        If an id is provided in the request, it will be ignored.
       operationId: payOrderFor
       security:
         - bearerAuth: []
@@ -1679,8 +1681,9 @@ paths:
       description: |
         Creates a new customer. Returns the created customer with assigned ID.
         If a card is attached, it has to be validated (valid and existing card) and must not be already assigned to another customer.
+        If an id is provided in the request, it will be ignored.
         Its points are not set, they are maintained. If the request received points as part of the paramenters, they are ignored.
-        Requires authentication as **Administrator**, **Cashier**, or **ShopManager**.
+        Requires authentication as **Administrator**, **Cashier**, or **ShopManager**. 
       security:
         - bearerAuth: []
       requestBody:
@@ -2185,7 +2188,7 @@ paths:
         '204':
           description: Sale successfully deleted
         '400':
-          description: Invalid sale ID or sale cannot be deleted
+          description: Invalid sale ID
           content:
             application/json:
               schema:

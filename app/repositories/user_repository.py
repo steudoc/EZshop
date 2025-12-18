@@ -75,7 +75,7 @@ class UserRepository:
             if not db_user:
                 return None
 
-            result_conflict = await session.execute(select(UserDAO).filter(UserDAO.username == updated_username))
+            result_conflict = await session.execute(select(UserDAO).filter(UserDAO.id != db_user.id).filter(UserDAO.username == updated_username))
             conflicting_username = result_conflict.scalars().all()
             throw_conflict_if_found(
                 conflicting_username,
