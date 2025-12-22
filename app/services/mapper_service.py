@@ -1,11 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.DAO.user_dao import UserDAO
 from app.models.DAO.product_dao import ProductDAO
+from app.models.DTO.user_dto import UserDTO
 from app.models.DAO.card_dao import CardDAO
 from app.models.DAO.customer_dao import CustomerDAO
 from app.models.DAO.system_dao import SystemInfoDAO
 from app.models.DAO.order_dao import OrderDAO
-from app.models.DTO.user_dto import UserDTO
+from app.models.DTO.sale_dto import SaleDTO, SaleLineDTO
+from app.models.DAO.sale_dao import SaleDAO
 from app.models.DTO.product_dto import ProductDTO
 from app.models.DTO.token_dto import TokenDTO
 from app.models.DTO.error_dto import ErrorDTO
@@ -116,15 +118,15 @@ def update_productdao_from_partial_dto(product_dao: ProductDAO, product_dto: Pro
         product_dao.quantity = product_dto.quantity
 
 
-
 def carddao_to_response_dto(card_dao: CardDAO) -> CardDTO:
     return CardDTO(
         cardId = card_dao.cardId,
         points = card_dao.points
     )
 
-
 async def customerdao_to_responsedto(customer_dao: CustomerDAO) -> CustomerDTO:
+    # Nota: Istanziare un repository dentro un mapper non è ideale (rischio circular import),
+    # ma se viene da develop lo manteniamo così per ora.
     card_repository = CardRepository()
     card_dao = await card_repository.get_card_by_customer(customer_dao.id)
     card_dto = carddao_to_response_dto(card_dao) if card_dao else None
@@ -134,3 +136,26 @@ async def customerdao_to_responsedto(customer_dao: CustomerDAO) -> CustomerDTO:
         name=customer_dao.name,
         card=card_dto
     )
+
+def sale_dao_to_dto(sale_dao) -> SaleDTO:
+    if not sale_dao:
+        return None
+    
+    sale_dto = SaleDTO(
+        id=sale_dao.id,
+        created_at=sale_dao.created_at,
+        closed_at=sale_dao.closed_at,
+        status=sale_dao.status,
+        discount_rate=sale_dao.discount_rate,
+        lines=[
+            SaleLineDTO(
+                id=line.id,
+                sale_id=line.sale_id,
+                product_barcode=line.product_barcode,
+                quantity=line.quantity,
+                price_per_unit=line.price_per_unit,
+                discount_rate=line.discount_rate
+            ) for line in sale_dao.lines
+        ]
+    )
+    return sale_dto
