@@ -51,10 +51,10 @@ class OrderRepository(BaseRepository):
             product_repository = ProductRepository(session)
 
             # check order
-            if id is not None:
-                order = await session.get(OrderDAO, id)
-                if order is not None:
-                    raise ConflictError(f'An order with id={id} already exists')
+            #if id is not None:
+            #    order = await session.get(OrderDAO, id)
+            #    if order is not None:
+            #        raise ConflictError(f'An order with id={id} already exists')
 
             # check product
             product = await product_repository.get_product_by_barcode(product_barcode)
