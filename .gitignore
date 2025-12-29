@@ -8,3 +8,4 @@ app/data/database.sqlite
 */.vscode/
 .coverage
 reports/
+.venv
