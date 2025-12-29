@@ -59,7 +59,7 @@ class ReturnController:
         """Remove item from return - throws NotFoundError if return or product not found, InvalidStateError if return not open"""
         return await self.repo.remove_item(return_id, product_barcode)
 
-    async def close_return(self, return_id: int):
+    async def close_return(self, return_id: int) -> Optional[bool]:
         """Close return - throws NotFoundError if return not found, InvalidStateError if return not open
         If return is empty (has no items), it will be deleted instead of closed"""
         return_tx = await self.repo.get_return_by_id(return_id)
