@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 from app.models.DAO.return_dao import ReturnDAO, ReturnLineDAO
 from app.models.DAO.sale_dao import SaleDAO
 from app.models.DTO.return_dto import ReturnItemDTO
-from app.utils import throw_conflict_if_found, find_or_throw_not_found, throw_not_found, throw_invalid_state, throw_bad_request
+from app.utils import find_or_throw_not_found
 from app.database.database import AsyncSessionLocal
 from app.models.errors.invalidstate_error import InvalidStateError
 from app.models.errors.notfound_error import NotFoundError

@@ -4,7 +4,7 @@ from app.models.DAO.return_dao import ReturnDAO
 from app.models.errors.invalidstate_error import InvalidStateError
 from app.models.errors.notfound_error import NotFoundError
 from app.repositories.return_repository import ReturnRepository
-
+from app.models.sale_status import SaleStatus
 
 @pytest.mark.asyncio
 async def test_start_return_invalid_sale():
@@ -54,7 +54,7 @@ async def test_start_return_success():
     mock_session.add = MagicMock()
 
     sale = MagicMock()
-    sale.status = "CLOSED"
+    sale.status = SaleStatus.PAID
     
     mock_session.get.return_value = sale
     mock_session.__aenter__.return_value = mock_session
