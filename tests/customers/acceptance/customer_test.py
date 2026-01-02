@@ -224,21 +224,21 @@ def test_list_customers_success_as_manager(client, auth_tokens):
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
 
-def test_list_customers_empty(client):
+def test_list_customers_empty(client, auth_tokens):
     resp = client.get(BASE_URL + "/customers", headers=auth_header(auth_tokens, "admin"))
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
-    assert resp.data == []
+    assert resp.json() == []
 
-def test_list_customers_not_empty(client):
-    customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin")).data
-    customer_1 = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_1, headers=auth_header(auth_tokens, "admin")).data
+def test_list_customers_not_empty(client, auth_tokens):
+    customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin")).json()
+    customer_1 = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_1, headers=auth_header(auth_tokens, "admin")).json()
 
     resp = client.get(BASE_URL + "/customers", headers=auth_header(auth_tokens, "admin"))
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
-    assert customer in resp.data
-    assert customer_1 in resp.data
+    assert customer in resp.json()
+    assert customer_1 in resp.json()
 
 def test_list_customers_unauthenticated(client):
     resp = client.get(BASE_URL + "/customers")
@@ -322,24 +322,54 @@ def test_get_customer_unauthenticated(client):
 # ---------------------------
 # TODO
 
-# def test_delete_user_success(client, auth_tokens):
-#     resp = client.delete(BASE_URL + "/users/1", headers=auth_header(auth_tokens, "admin"))
-#     assert resp.status_code in (204, 404)
+def test_delete_customer_success_as_admin(client, auth_tokens):
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin"))
+    customer = customer_resp.json()
+
+    resp = client.delete(BASE_URL + f"/customers/{customer["id"]}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 204
+    
+
+def test_delete_customer_success_as_cashier(client, auth_tokens):
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "cashier"))
+    customer = customer_resp.json()
+
+    resp = client.delete(BASE_URL + f"/customers/{customer["id"]}", headers=auth_header(auth_tokens, "cashier"))
+    assert resp.status_code == 204
+    
+
+def test_delete_customer_success_as_manager(client, auth_tokens):
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "manager"))
+    customer = customer_resp.json()
+
+    resp = client.delete(BASE_URL + f"/customers/{customer["id"]}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 204
 
 
-# def test_delete_user_unauthenticated(client):
-#     resp = client.delete(BASE_URL + "/users/1")
-#     assert resp.status_code == 401
+def test_delete_customer_not_found(client, auth_tokens):
+    resp = client.delete(BASE_URL + "/customers/1", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 404
+    
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "manager"))
+    customer = customer_resp.json()
+
+    resp = client.delete(BASE_URL + f"/customers/{customer["id"] + 1}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 404
 
 
-# def test_delete_user_forbidden_as_cashier(client, auth_tokens):
-#     resp = client.delete(BASE_URL + "/users/1", headers=auth_header(auth_tokens, "cashier"))
-#     assert resp.status_code == 403
+def test_delete_customer_unauthenticated(client):
+    resp = client.delete(BASE_URL + "/customers/1")
+    assert resp.status_code == 401
 
 
-# def test_delete_user_not_found(client, auth_tokens):
-#     resp = client.delete(BASE_URL + "/users/9999", headers=auth_header(auth_tokens, "admin"))
-#     assert resp.status_code == 404
+# ---------------------------
+# ATTACH CARD TESTS
+# ---------------------------
+# TODO
 
 
-# TODO: attach card and modify points tests
+# ---------------------------
+# MODIFY CARD POINTS TESTS
+# ---------------------------
+
+# TODO
