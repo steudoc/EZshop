@@ -84,6 +84,8 @@ async def get_customer(customer_id: int):
       - NotFoundError: when the customer does not exist
     - Status code: 200 OK
     """
+    if customer_id<0:
+        throw_bad_request("Customer ID must be a positive integer")
     customer = await controller.get_customer(customer_id)
     if not customer:
         raise NotFoundError("Customer not found")

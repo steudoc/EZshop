@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class CardDTO(BaseModel):
-    cardId: Optional[int] = None
+    card_id: Optional[int] = None
     points: int
 
 
