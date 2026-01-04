@@ -61,8 +61,8 @@ def auth_header(tokens, role: str):
     return {"Authorization": tokens[role]}
 
 
-@pytest.fixture(scope="function", autouse=True)
-def paid_sales_creation(client, auth_tokens):
+@pytest.fixture
+def return_creation(client, auth_tokens):
 
     # Reset balance
     balance_resp = client.post(
@@ -119,30 +119,44 @@ def paid_sales_creation(client, auth_tokens):
     )
     # Assert response
     assert ret_creation_resp.status_code == 201
-
+    return int(sale_id)
 
 # ---------------------------
-# GET ALL TRANSACTION TESTS 
+# GET TRANSACTION BY SALE TESTS 
 # ---------------------------
 
-def test_get_all_returns_success_authorized_users(client, auth_tokens):
+def test_get_returns_by_sale_success_authorized_users(client, auth_tokens,return_creation):
     for role in ["admin", "manager", "cashier"]:
-        # Get return
+        # Get returns
         resp = client.get(
-            BASE_URL + "/returns",
+            BASE_URL + f"/returns/sale/{return_creation}",
             headers=auth_header(auth_tokens, role)
         )
+
+        print(return_creation)
+        print(resp.json())
         # Assert response
         assert resp.status_code == 200
         assert isinstance(resp.json(), list)
         assert len(resp.json()) == 1
     
 
-def test_start_return_unauthenticated(client, auth_tokens):
-    # Create return
+def test_get_returns_by_sale_unauthenticated(client, auth_tokens,return_creation):
+    # Get returns
     resp = client.get(
-        BASE_URL + "/returns",
+        BASE_URL + f"/returns/sale/{return_creation}",
         headers=auth_header(auth_tokens, "unauthorized")
     )
     # Assert response
     assert resp.status_code == 401
+
+def test_get_returns_by_sale_invalid_id(client, auth_tokens):
+    for role in ["admin", "manager", "cashier"]:
+        # Get returns
+        resp = client.get(
+            BASE_URL + "/returns/sale/-2",
+            headers=auth_header(auth_tokens, role)
+        )
+        # Assert response
+        assert resp.status_code == 400
+

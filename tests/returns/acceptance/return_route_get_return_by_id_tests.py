@@ -14,7 +14,7 @@ chocolate_bar = {
     "barcode": "0123456789012",
     "price_per_unit": 2.99,
     "note": "Imported from Belgium",
-    "quantity": 2
+    "quantity": 200
 }
 
 
@@ -61,8 +61,8 @@ def auth_header(tokens, role: str):
     return {"Authorization": tokens[role]}
 
 
-@pytest.fixture(scope="function", autouse=True)
-def paid_sales_creation(client, auth_tokens):
+@pytest.fixture
+def returns_creation(client, auth_tokens):
 
     # Reset balance
     balance_resp = client.post(
@@ -71,14 +71,14 @@ def paid_sales_creation(client, auth_tokens):
     )
     assert balance_resp.status_code == 205
 
-    # Add product
-    product_resp = client.post(
+    # Add products
+    product_resp1 = client.post(
         BASE_URL + "/products",
         headers=auth_header(auth_tokens, "admin"),
         json=chocolate_bar
     )
-    assert product_resp.status_code == 201
-    product_barcode = product_resp.json()["barcode"]
+    assert product_resp1.status_code == 201
+    product_barcode1 = product_resp1.json()["barcode"]
 
     # Create sale
     sale_resp = client.post(
@@ -88,11 +88,11 @@ def paid_sales_creation(client, auth_tokens):
     assert sale_resp.status_code == 201
     sale_id = sale_resp.json()["id"]
 
-    # Add product to sale
+    # Add products to sale
     add_prod_resp = client.post(
         BASE_URL + f"/sales/{sale_id}/items",
         headers=auth_header(auth_tokens, "admin"),
-        params={ "barcode": product_barcode, "amount": 2 }
+        params={ "barcode": product_barcode1, "amount": 2 }
     )
 
     assert add_prod_resp.status_code == 201
@@ -108,10 +108,11 @@ def paid_sales_creation(client, auth_tokens):
     pay_sale_resp = client.patch(
         BASE_URL + f"/sales/{sale_id}/pay",
         headers=auth_header(auth_tokens, "admin"),
-        params={ "cash_amount": 6.0}
+        params={ "cash_amount": 20}
     )    
     assert pay_sale_resp.status_code == 200
 
+    #Create return
     ret_creation_resp = client.post(
         BASE_URL + "/returns",
         params={"sale_id": sale_id},
@@ -119,30 +120,89 @@ def paid_sales_creation(client, auth_tokens):
     )
     # Assert response
     assert ret_creation_resp.status_code == 201
+    ret_id = ret_creation_resp.json()["id"]
 
+    # Add product to return transaction
+    add_resp = client.post(
+        BASE_URL + f"/returns/{ret_id}/items",
+        params={"barcode": chocolate_bar["barcode"], "amount":1},
+        headers=auth_header(auth_tokens, "admin")
+    )  
+
+    # Assert response
+    assert add_resp.status_code == 201
+
+    return ret_id
 
 # ---------------------------
-# GET ALL TRANSACTION TESTS 
+# GET TRANSACTION TESTS 
 # ---------------------------
 
-def test_get_all_returns_success_authorized_users(client, auth_tokens):
+def test_get_return_by_id_success_authorized_users(client, auth_tokens,returns_creation):
     for role in ["admin", "manager", "cashier"]:
         # Get return
         resp = client.get(
-            BASE_URL + "/returns",
+            BASE_URL + f"/returns/{returns_creation}",
             headers=auth_header(auth_tokens, role)
         )
         # Assert response
         assert resp.status_code == 200
-        assert isinstance(resp.json(), list)
-        assert len(resp.json()) == 1
+
+        body = resp.json()
+        assert body["id"] == returns_creation
+        assert body["status"] == "OPEN"
+        assert len(body["lines"]) == 1
     
 
-def test_start_return_unauthenticated(client, auth_tokens):
-    # Create return
+def test_get_return_by_id_unauthenticated(client, auth_tokens):
+    # Get return
     resp = client.get(
-        BASE_URL + "/returns",
+        BASE_URL + f"/returns/{returns_creation}",
         headers=auth_header(auth_tokens, "unauthorized")
     )
+
     # Assert response
     assert resp.status_code == 401
+
+
+def test_get_return_by_id_invalid_or_missing_id(client, auth_tokens):
+    for role in ["admin", "manager", "cashier"]:
+        # Get return
+        resp = client.get(
+            BASE_URL + "/returns/-2",
+            headers=auth_header(auth_tokens, role)
+        )
+
+        # Assert response
+        assert resp.status_code == 400
+
+        # Get return
+        resp = client.get(
+            BASE_URL + "/returns/0",
+            headers=auth_header(auth_tokens, role)
+        )
+
+        # Assert response
+        assert resp.status_code == 400
+
+        # Get return
+        resp = client.get(
+            BASE_URL + "/returns/",
+            headers=auth_header(auth_tokens, role)
+        )
+
+        # Assert response
+        assert resp.status_code == 400
+
+
+
+def test_get_return_by_id_not_found(client, auth_tokens):
+    for role in ["admin", "manager", "cashier"]:
+        # Get return
+        resp = client.get(
+            BASE_URL + "/returns/3444",
+            headers=auth_header(auth_tokens, role)
+        )
+
+        # Assert response
+        assert resp.status_code == 404
