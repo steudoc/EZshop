@@ -119,14 +119,24 @@ class ReturnRepository:
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
             if not return_tx:
-                return None
-            new_line = ReturnLineDAO(
-                return_id=return_id,
-                product_barcode=item.product_barcode,
-                quantity=item.quantity,
-                price_per_unit=item.price_per_unit
-            )
-            session.add(new_line)
+                raise NotFoundError(f"Return with id '{return_id}' not found")
+            
+            # Check if line with same barcode already exists
+            existing_line = next((line for line in return_tx.lines if line.product_barcode == item.product_barcode), None)
+            
+            if existing_line:
+                # Increase quantity of existing line
+                existing_line.quantity += item.quantity
+            else:
+                # Create new line
+                new_line = ReturnLineDAO(
+                    return_id=return_id,
+                    product_barcode=item.product_barcode,
+                    quantity=item.quantity,
+                    price_per_unit=item.price_per_unit
+                )
+                session.add(new_line)
+            
             await session.commit()
             await session.refresh(return_tx)
             return return_tx
