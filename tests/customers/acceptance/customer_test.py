@@ -190,7 +190,31 @@ def test_create_customer_with_card(client, auth_tokens):
     assert data["card"]["points"] == 0
 
 
+def test_create_customer_with_invalid_card(client, auth_tokens):
+	# create a customer with a card that doesn't exist
+    customer_json = CUSTOMER_SAMPLE_WITH_CARD.copy()
+    customer_json["card"]["card_id"] = -1
+
+
+    resp = client.post(BASE_URL + "/customers", json=customer_json, 
+                       headers=auth_header(auth_tokens, "admin"))
+    
+    assert resp.status_code == 400
+    
+
 def test_create_customer_with_wrong_card(client, auth_tokens):
+	# create a customer with a card that doesn't exist
+    customer_json = CUSTOMER_SAMPLE_WITH_CARD.copy()
+    customer_json["card"]["card_id"] = 9999
+
+
+    resp = client.post(BASE_URL + "/customers", json=customer_json, 
+                       headers=auth_header(auth_tokens, "admin"))
+    
+    assert resp.status_code == 400
+    
+
+def test_create_customer_card_conflict(client, auth_tokens):
     # create a card
     card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "manager"))
     card = card_resp.json()
@@ -307,7 +331,7 @@ def test_update_customer_success_as_admin(client, auth_tokens):
                     headers=auth_header(auth_tokens, "admin"))
     
 	assert resp.status_code == 201
-	assert resp.json()["name"] == CUSTOMER_SAMPLE["name"]
+	assert resp.json()["name"] == CUSTOMER_UPDATED_SAMPLE["name"]
     
 
 def test_update_customer_success_as_cashier(client, auth_tokens):
@@ -320,7 +344,7 @@ def test_update_customer_success_as_cashier(client, auth_tokens):
                     headers=auth_header(auth_tokens, "cashier"))
     
 	assert resp.status_code == 201
-	assert resp.json()["name"] == CUSTOMER_SAMPLE["name"]
+	assert resp.json()["name"] == CUSTOMER_UPDATED_SAMPLE["name"]
 
 
 def test_update_customer_success_as_manager(client, auth_tokens):
@@ -333,7 +357,7 @@ def test_update_customer_success_as_manager(client, auth_tokens):
                     headers=auth_header(auth_tokens, "manager"))
     
 	assert resp.status_code == 201
-	assert resp.json()["name"] == CUSTOMER_SAMPLE["name"]
+	assert resp.json()["name"] == CUSTOMER_UPDATED_SAMPLE["name"]
 
 
 def test_update_customer_not_found(client, auth_tokens):
@@ -351,10 +375,68 @@ def test_update_customer_card_not_found(client, auth_tokens):
 	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=CUSTOMER_UPDATED_SAMPLE_WITH_CARD,
                     headers=auth_header(auth_tokens, "admin"))
 	assert resp.status_code == 404
+    
+
+def test_update_customer_empty_card(client, auth_tokens):
+	# create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_WITH_CARD, 
+                        headers=auth_header(auth_tokens, "admin")).json()
+    
+	# update customer with an empty card, so its card should be deleted
+	updated_customer = copy.deepcopy(CUSTOMER_UPDATED_SAMPLE)
+	updated_customer["card"] = {} 
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=updated_customer,
+                    headers=auth_header(auth_tokens, "admin"))
+	assert resp.status_code == 201
+	actual_updated_customer = resp.json()
+	assert actual_updated_customer["name"] == updated_customer["name"] 
+	assert "card" not in actual_updated_customer or actual_updated_customer["card"] is None
+    
+
+def test_update_customer_empty_card_1(client, auth_tokens):
+	# create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_WITH_CARD, 
+                        headers=auth_header(auth_tokens, "admin")).json()
+    
+	# update customer with an empty card, so its card should be deleted
+	updated_customer = copy.deepcopy(CUSTOMER_UPDATED_SAMPLE)
+	updated_customer["card"] = None
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=updated_customer,
+                    headers=auth_header(auth_tokens, "admin"))
+	assert resp.status_code == 201
+	actual_updated_customer = resp.json()
+	assert actual_updated_customer["name"] == updated_customer["name"] 
+	assert "card" not in actual_updated_customer or actual_updated_customer["card"] is None
+    
+
+def test_update_customer_invalid_card(client, auth_tokens):
+	# create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_WITH_CARD, 
+                        headers=auth_header(auth_tokens, "admin")).json()
+    
+	# update customer with an invalid card
+	updated_customer = copy.deepcopy(CUSTOMER_UPDATED_SAMPLE_WITH_CARD)
+	updated_customer["card"]["card_id"] = -1
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=updated_customer,
+                    headers=auth_header(auth_tokens, "admin"))
+	assert resp.status_code == 400
 
 
-# TODO: test empty card, test card update with same code, test card update with other card,
-# test card update conflict, test card update with negative points
+def test_update_customer_with_card(client, auth_tokens):
+	# create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_WITH_CARD, 
+                        headers=auth_header(auth_tokens, "admin")).json()
+    
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=CUSTOMER_UPDATED_SAMPLE_WITH_CARD,
+                    headers=auth_header(auth_tokens, "admin"))
+	assert resp.status_code == 201
+	updated_customer = resp.json()
+	assert updated_customer["name"] == CUSTOMER_UPDATED_SAMPLE_WITH_CARD["name"]
+	assert updated_customer["card"]["card_id"] == CUSTOMER_UPDATED_SAMPLE_WITH_CARD["card"]["card_id"]
+	assert updated_customer["card"]["points"] == CUSTOMER_UPDATED_SAMPLE_WITH_CARD["card"]["points"]
+
+
+# TODO: test card update with other card, test card update conflict, test card update with negative points
 
 
 def test_update_customer_unauthenticated(client):
