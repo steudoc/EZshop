@@ -26,8 +26,6 @@ def setup_database(event_loop):
         await reset_db() # Dropp all tables
         await init_db() # Recreate all tables
     event_loop.run_until_complete(_reset())
-    yield
-    event_loop.run_until_complete(_reset())
 
 async def _get_session() -> AsyncSession:
         return AsyncSessionLocal()
