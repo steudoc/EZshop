@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 from app.models.DAO.return_dao import ReturnDAO, ReturnLineDAO
 from app.models.DAO.sale_dao import SaleDAO
 from app.models.DTO.return_dto import ReturnItemDTO
+from app.models.sale_status import SaleStatus
 from app.utils import find_or_throw_not_found
 from app.database.database import AsyncSessionLocal
 from app.models.errors.invalidstate_error import InvalidStateError
@@ -32,7 +33,7 @@ class ReturnRepository:
                 raise NotFoundError(f"Sale with id '{sale_id}' not found")
             
             # Check if sale is closed and paid
-            if sale.status != "CLOSED":
+            if sale.status != SaleStatus.PAID:
                 raise InvalidStateError("Return allowed only on paid sales")
 
             return_transaction = ReturnDAO(

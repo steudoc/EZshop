@@ -1,7 +1,7 @@
 import asyncio
 import pytest
 import pytest_asyncio
-from app.database.database import  AsyncSessionLocal, get_db, init_db, reset_db, AsyncSession
+from app.database.database import  AsyncSessionLocal, init_db, reset_db, AsyncSession
 from app.controllers.return_controller import ReturnController
 from app.models.DAO.sale_dao import SaleDAO
 from app.models.DAO.return_dao import ReturnDAO
@@ -22,8 +22,6 @@ def setup_database(event_loop):
     async def _reset():
         await reset_db() # Dropp all tables
         await init_db() # Recreate all tables
-    event_loop.run_until_complete(_reset())
-    yield
     event_loop.run_until_complete(_reset())
 
 async def _get_session() -> AsyncSession:
