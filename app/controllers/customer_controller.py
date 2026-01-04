@@ -18,7 +18,7 @@ class CustomerController:
             id=customer.id,
             name=customer.name,
             card=CardDTO(
-                cardId=card.cardId,
+                card_id=card.cardId,
                 points=card.points
                 )
             )
@@ -36,7 +36,7 @@ class CustomerController:
             id=customer.id,
             name=customer.name,
             card=CardDTO(
-                cardId=card.cardId,
+                card_id=card.cardId,
                 points=card.points
             )
         )
