@@ -1,4 +1,4 @@
-# tests/test_user_api.py
+# tests/test_customer_api.py
 import asyncio
 import pytest
 import copy
@@ -84,6 +84,18 @@ CUSTOMER_SAMPLE_WITH_CARD = {
     "card": {
         "card_id": "0000000123",
         "points": 120
+    }
+}
+
+CUSTOMER_UPDATED_SAMPLE = {
+    "name": "Mario Rossi Aggiornato"
+}
+
+CUSTOMER_UPDATED_SAMPLE_WITH_CARD = {
+    "name": "Roberto Verdi Aggiornato",
+    "card": {
+        "card_id": "0000000123",
+        "points": 230
     }
 }
 
@@ -284,37 +296,71 @@ def test_get_customer_unauthenticated(client):
 # ---------------------------
 # UPDATE CUSTOMER TESTS
 # ---------------------------
-# TODO
 
-# def test_update_user_success(client, auth_tokens):
-#     payload = USER_SAMPLE.copy()
-#     payload["username"] = "updated_user"
-#     resp = client.put(BASE_URL + "/users/1", json=payload, headers=auth_header(auth_tokens, "admin"))
-#     assert resp.status_code in (201, 404)
-#     if resp.status_code == 201:
-#         assert resp.json()["username"] == "updated_user"
+def test_update_customer_success_as_admin(client, auth_tokens):
+    # create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, 
+                        headers=auth_header(auth_tokens, "admin")).json()
+    
+	# update customer
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=CUSTOMER_UPDATED_SAMPLE,
+                    headers=auth_header(auth_tokens, "admin"))
+    
+	assert resp.status_code == 201
+	assert resp.json()["name"] == CUSTOMER_SAMPLE["name"]
+    
+
+def test_update_customer_success_as_cashier(client, auth_tokens):
+    # create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, 
+                        headers=auth_header(auth_tokens, "cashier")).json()
+    
+	# update customer
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=CUSTOMER_UPDATED_SAMPLE,
+                    headers=auth_header(auth_tokens, "cashier"))
+    
+	assert resp.status_code == 201
+	assert resp.json()["name"] == CUSTOMER_SAMPLE["name"]
 
 
-# def test_update_user_not_found(client, auth_tokens):
-#     payload = USER_SAMPLE.copy()
-#     resp = client.put(BASE_URL + "/users/9999", json=payload, headers=auth_header(auth_tokens, "admin"))
-#     assert resp.status_code == 404
+def test_update_customer_success_as_manager(client, auth_tokens):
+    # create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, 
+                        headers=auth_header(auth_tokens, "manager")).json()
+    
+	# update customer
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=CUSTOMER_UPDATED_SAMPLE,
+                    headers=auth_header(auth_tokens, "manager"))
+    
+	assert resp.status_code == 201
+	assert resp.json()["name"] == CUSTOMER_SAMPLE["name"]
 
 
-# def test_update_user_conflict(client, auth_tokens):
-#     payload = USER_ADMIN.copy()
-#     resp = client.put(BASE_URL + "/users/1", json=payload, headers=auth_header(auth_tokens, "admin"))
-#     if resp.status_code != 404:
-#         assert resp.status_code == 409
+def test_update_customer_not_found(client, auth_tokens):
+	# update a customer that doesn't exist
+    resp = client.put(BASE_URL + "/customers/9999", json=CUSTOMER_UPDATED_SAMPLE, headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 404
+    
 
-# def test_update_user_unauthenticated(client):
-#     resp = client.put(BASE_URL + "/users/1", json=USER_SAMPLE)
-#     assert resp.status_code == 401
+def test_update_customer_card_not_found(client, auth_tokens):
+	# create customer to update
+	customer = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, 
+                        headers=auth_header(auth_tokens, "admin")).json()
+    
+	# update customer with a card that doesn't exist
+	resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=CUSTOMER_UPDATED_SAMPLE_WITH_CARD,
+                    headers=auth_header(auth_tokens, "admin"))
+	assert resp.status_code == 404
 
 
-# def test_update_user_forbidden_as_cashier(client, auth_tokens):
-#     resp = client.put(BASE_URL + "/users/1", json=USER_SAMPLE, headers=auth_header(auth_tokens, "cashier"))
-#     assert resp.status_code == 403
+# TODO: test empty card, test card update with same code, test card update with other card,
+# test card update conflict, test card update with negative points
+
+
+def test_update_customer_unauthenticated(client):
+    resp = client.put(BASE_URL + "/customers/1", json=CUSTOMER_UPDATED_SAMPLE)
+    assert resp.status_code == 401
+
 
 
 # ---------------------------
@@ -469,7 +515,7 @@ def test_attach_card_to_customer_card_already_attached(client, auth_tokens):
     resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "manager"))
     assert resp.status_code == 201
 
-	resp = client.patch(BASE_URL + f"/customers/{customer_id_1}/attach-card/{card_id}", headers=auth_header(auth_tokens, "manager"))
+    resp = client.patch(BASE_URL + f"/customers/{customer_id_1}/attach-card/{card_id}", headers=auth_header(auth_tokens, "manager"))
     assert resp.status_code == 409
     
 
