@@ -320,7 +320,6 @@ def test_get_customer_unauthenticated(client):
 # ---------------------------
 # DELETE CUSTOMER TESTS
 # ---------------------------
-# TODO
 
 def test_delete_customer_success_as_admin(client, auth_tokens):
     customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin"))
@@ -365,11 +364,201 @@ def test_delete_customer_unauthenticated(client):
 # ---------------------------
 # ATTACH CARD TESTS
 # ---------------------------
-# TODO
+
+def test_attach_card_to_customer_success_as_admin(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "admin"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+    
+
+def test_attach_card_to_customer_success_as_cashier(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "cashier"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "cashier"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "cashier"))
+    assert resp.status_code == 201
+    
+
+def test_attach_card_to_customer_success_as_manager(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "manager"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "manager"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 201
+
+def test_attach_card_to_customer_invalid_customer_id(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "manager"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{-1}/attach-card/{card_id}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 400
+    
+
+def test_attach_card_to_customer_invalid_card_id(client, auth_tokens):
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "manager"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{-1}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 400
+
+
+def test_attach_card_to_customer_card_not_found(client, auth_tokens):
+
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/9999", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 404
+    
+
+def test_attach_card_to_customer_customer_not_found(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "manager"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{9999}/attach-card/{card_id}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 404
+
+
+def test_attach_card_to_customer_card_already_attached(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "manager"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+	# create a second customer
+    customer_resp_1 = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE_1, headers=auth_header(auth_tokens, "admin"))
+    customer_1 = customer_resp_1.json()
+    customer_id_1 = customer_1["id"]
+
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 201
+
+	resp = client.patch(BASE_URL + f"/customers/{customer_id_1}/attach-card/{card_id}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 409
+    
+
+def test_attach_card_to_customer_customer_unauthenticated(client):
+    resp = client.patch(BASE_URL + f"/customers/1/attach-card/1")
+    assert resp.status_code == 401
 
 
 # ---------------------------
 # MODIFY CARD POINTS TESTS
 # ---------------------------
 
-# TODO
+def test_modify_card_points_success_as_admin(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "admin"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# modify points a few times
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={100}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 100
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-90}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 10
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-10}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 0
+    
+
+def test_modify_card_points_success_as_cashier(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "cashier"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# modify points a few times
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={100}", headers=auth_header(auth_tokens, "cashier"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 100
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-90}", headers=auth_header(auth_tokens, "cashier"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 10
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-10}", headers=auth_header(auth_tokens, "cashier"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 0
+    
+
+def test_modify_card_points_success_as_manager(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "manager"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+	# modify points a few times
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={100}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 100
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-90}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 10
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-10}", headers=auth_header(auth_tokens, "manager"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 0
+    
+
+def test_modify_card_points_invalid_id(client, auth_tokens):
+    resp = client.patch(BASE_URL + f"/customers/cards/{-1}?points={100}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 400
+
+
+def test_modify_card_points_card_not_found(client, auth_tokens):
+    resp = client.patch(BASE_URL + f"/customers/cards/{9999}?points={100}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 404
+
+
+def test_modify_card_points_success_as_manager(client, auth_tokens):
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "admin"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={100}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+    assert resp.json()["points"] == 100
+    resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={-101}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 500
+
+
+def test_modify_card_points_success_unauthenticated(client):
+    resp = client.patch(BASE_URL + f"/customers/cards/1?points={100}")
+    assert resp.status_code == 401
