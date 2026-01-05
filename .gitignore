@@ -5,6 +5,7 @@ app/data/*
 *sqlite
 app/data/database.sqlite
 .codelens
+.vscode/
 */.vscode/
 .coverage
 reports/
