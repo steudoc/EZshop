@@ -120,7 +120,7 @@ def update_productdao_from_partial_dto(product_dao: ProductDAO, product_dto: Pro
 
 def carddao_to_response_dto(card_dao: CardDAO) -> CardDTO:
     return CardDTO(
-        cardId = card_dao.cardId,
+        card_id = card_dao.cardId,
         points = card_dao.points
     )
 

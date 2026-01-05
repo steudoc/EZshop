@@ -11,7 +11,7 @@ from app.utils import throw_not_found, throw_bad_request, throw_customer_card_er
 router = APIRouter(prefix=ROUTES['V1_CUSTOMERS_CARDS'], tags=["Cards"])
 controller = CardController()
 
-@router.post("/", 
+@router.post("", 
     response_model=CardDTO, 
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])

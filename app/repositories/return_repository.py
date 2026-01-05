@@ -4,7 +4,8 @@ from sqlalchemy.orm import selectinload
 from app.models.DAO.return_dao import ReturnDAO, ReturnLineDAO
 from app.models.DAO.sale_dao import SaleDAO
 from app.models.DTO.return_dto import ReturnItemDTO
-from app.utils import throw_conflict_if_found, find_or_throw_not_found, throw_not_found, throw_invalid_state, throw_bad_request
+from app.models.sale_status import SaleStatus
+from app.utils import find_or_throw_not_found
 from app.database.database import AsyncSessionLocal
 from app.models.errors.invalidstate_error import InvalidStateError
 from app.models.errors.notfound_error import NotFoundError
@@ -32,7 +33,7 @@ class ReturnRepository:
                 raise NotFoundError(f"Sale with id '{sale_id}' not found")
             
             # Check if sale is closed and paid
-            if sale.status != "CLOSED":
+            if sale.status != SaleStatus.PAID:
                 raise InvalidStateError("Return allowed only on paid sales")
 
             return_transaction = ReturnDAO(
@@ -45,7 +46,7 @@ class ReturnRepository:
             await session.refresh(return_transaction)
             return return_transaction
         
-    async def get_return_by_id(self, return_id: int) -> ReturnDAO | None:
+    async def get_return_by_id(self, return_id: int) -> Optional[ReturnDAO]:
         """
         Get return transaction by id or throw NotFoundError if not found
         Eagerly loads the return lines
@@ -74,7 +75,7 @@ class ReturnRepository:
             result = await session.execute(select(ReturnDAO))
             return result.scalars().all()
         
-    async def update_return(self, return_id: int, updated_sale_id: int, updated_status: int, updated_created_at: datetime, updated_closed_at: datetime) -> ReturnDAO | None:
+    async def update_return(self, return_id: int, updated_sale_id: int, updated_status: int, updated_created_at: datetime, updated_closed_at: datetime) -> Optional[ReturnDAO]:
         """
         Update return information. Throw NotFoundError if not found
         """
@@ -114,7 +115,7 @@ class ReturnRepository:
             await session.commit()
             return True
 
-    async def add_item(self, return_id: int, item: ReturnItemDTO) -> ReturnDAO | None:
+    async def add_item(self, return_id: int, item: ReturnItemDTO) -> Optional[ReturnDAO]:
         """Add a product to a return transaction"""
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
@@ -131,7 +132,7 @@ class ReturnRepository:
             await session.refresh(return_tx)
             return return_tx
 
-    async def remove_item(self, return_id: int, product_barcode: str) -> ReturnDAO | None:
+    async def remove_item(self, return_id: int, product_barcode: str) -> Optional[ReturnDAO]:
         """Remove a product from a return transaction"""
         async with await self._get_session() as session:
             result = await session.execute(
@@ -148,7 +149,7 @@ class ReturnRepository:
             return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
             return return_tx
 
-    async def close_return(self, return_id: int) -> ReturnDAO | None:
+    async def close_return(self, return_id: int) -> Optional[ReturnDAO]:
         """Close a return transaction"""
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id)
@@ -160,7 +161,7 @@ class ReturnRepository:
             await session.refresh(return_tx)
             return return_tx
 
-    async def reimburse_return(self, return_id: int) -> ReturnDAO | None:
+    async def reimburse_return(self, return_id: int) -> Optional[ReturnDAO]:
         """Update a return transaction as reimbursed"""
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id)
