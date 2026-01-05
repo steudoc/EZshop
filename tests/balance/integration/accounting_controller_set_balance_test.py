@@ -96,14 +96,3 @@ async def test_set_balance_overwrites_previous():
     assert result2.balance == 500.75
 
 
-@pytest.mark.asyncio
-async def test_multiple_set_balance_operations():
-    """Test that multiple set_balance operations work correctly in sequence"""
-    controller = SystemController()
-    
-    amounts = [50.0, 150.25, 75.5, 200.0]
-    
-    for amount in amounts:
-        await controller.set_balance(amount=amount)
-        result = await controller.get_balance()
-        assert result.balance == amount

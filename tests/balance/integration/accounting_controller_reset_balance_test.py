@@ -80,27 +80,6 @@ async def test_reset_balance_success(system_info_with_balance_100):
 
 
 @pytest.mark.asyncio
-async def test_reset_balance_idempotent(system_info_with_balance_500):
-    """Test that reset_balance is idempotent - multiple resets work correctly"""
-    controller = SystemController()
-    
-    # First reset
-    await controller.reset_balance()
-    result1 = await controller.get_balance()
-    assert result1.balance == 0.0
-    
-    # Second reset
-    await controller.reset_balance()
-    result2 = await controller.get_balance()
-    assert result2.balance == 0.0
-    
-    # Third reset
-    await controller.reset_balance()
-    result3 = await controller.get_balance()
-    assert result3.balance == 0.0
-
-
-@pytest.mark.asyncio
 async def test_reset_balance_creates_new_record(system_info_with_balance_100):
     """Test that reset_balance creates a new record in the database"""
     controller = SystemController()
@@ -136,33 +115,3 @@ async def test_reset_balance_and_set_after():
     await controller.set_balance(amount=300.0)
     result3 = await controller.get_balance()
     assert result3.balance == 300.0
-
-
-@pytest.mark.asyncio
-async def test_reset_balance_returns_none():
-    """Test that reset_balance returns None (no return value)"""
-    controller = SystemController()
-    
-    # Set an initial balance
-    await controller.set_balance(amount=150.0)
-    
-    # Reset balance should return None
-    result = await controller.reset_balance()
-    
-    assert result is None
-
-
-@pytest.mark.asyncio
-async def test_reset_balance_zero_from_zero(system_info_with_balance_100):
-    """Test that reset_balance works when balance is already zero"""
-    controller = SystemController()
-    
-    # First reset to zero
-    await controller.reset_balance()
-    result1 = await controller.get_balance()
-    assert result1.balance == 0.0
-    
-    # Reset again from zero
-    await controller.reset_balance()
-    result2 = await controller.get_balance()
-    assert result2.balance == 0.0

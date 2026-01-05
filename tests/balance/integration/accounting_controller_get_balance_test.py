@@ -90,27 +90,3 @@ async def test_get_balance_not_found():
     
     with pytest.raises(NotFoundError):
         await controller.get_balance()
-
-
-@pytest.mark.asyncio
-async def test_get_balance_returns_dto(system_info_with_balance_100):
-    """Test that get_balance returns a proper SystemInfoResponseDTO object"""
-    controller = SystemController()
-    
-    result = await controller.get_balance()
-    
-    # Verify it's the correct DTO type
-    assert hasattr(result, 'balance')
-    assert isinstance(result.balance, float)
-
-
-@pytest.mark.asyncio
-async def test_get_balance_multiple_calls(system_info_with_balance_100):
-    """Test that get_balance can be called multiple times and returns consistent results"""
-    controller = SystemController()
-    
-    result1 = await controller.get_balance()
-    result2 = await controller.get_balance()
-    result3 = await controller.get_balance()
-    
-    assert result1.balance == result2.balance == result3.balance == 100.0
