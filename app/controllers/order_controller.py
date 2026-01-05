@@ -13,8 +13,8 @@ class OrderController:
     async def _create_order(self, order_dto: OrderDTO) -> OrderDTO: 
         """Creates a new order for a given product"""
         if (
-            (order_dto.quantity<=0)
-            or (order_dto.price_per_unit<=0)
+            (order_dto.quantity<=0) or
+            (order_dto.price_per_unit<=0)
             # or (order_dto.id is not None and order_dto.id<=0)
         ): 
             raise BadRequestError('Incorrect parameters')
@@ -40,12 +40,12 @@ class OrderController:
         
     async def pay_order(self, order_id: int):
         """Pays an existing ISSUED order"""
-        if (not isinstance(order_id, int)) or (order_id<0):
+        if order_id<=0:
             raise BadRequestError("Invalid order id")
         await self.repo.update_issued_order(order_id)
     
     async def complete_order(self, order_id: int):
         """Marks a PAID order as COMPLETED and updates product quantities"""
-        if (not isinstance(order_id, int)) or (order_id<0):
+        if order_id<=0:
             raise BadRequestError("Invalid order id")
         await self.repo.update_paid_order(order_id)
