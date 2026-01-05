@@ -1,4 +1,3 @@
-# tests/test_customer_api.py
 import asyncio
 import pytest
 import copy
@@ -56,7 +55,7 @@ def auth_header(tokens, role: str):
 # ---------------------------
 
 @pytest.fixture(autouse=True)
-def run_before_and_after_tests(event_loop):
+def reset_db_but_keep_users(event_loop):
     """Fixture to execute asserts before and after a test is run"""
     # reset db and ensure users are back 
     event_loop.run_until_complete(reset())
