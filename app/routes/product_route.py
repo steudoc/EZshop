@@ -210,6 +210,10 @@ async def update_product(product_id: int, product: ProductDTO):
 	if (product.quantity is not None and product.quantity < 0):
 		throw_bad_request()
 
+	# barcode must be present
+	if (product.barcode is None):
+		throw_bad_request()
+
 	# try to update product
 	product.id = product_id
 	await controller.update_product(product)
