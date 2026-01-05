@@ -78,7 +78,7 @@ class CustomerRepository:
 
             return customer, card
         
-    async def delete_user(self, customer_id: int) -> bool: 
+    async def delete_customer(self, customer_id: int) -> bool: 
         """Delete a customer by customer_id, if a card is attached, the card will deleted as well"""
         async with await self._get_session() as session:
             customer = await session.get(CustomerDAO, customer_id)
@@ -165,7 +165,7 @@ class CustomerRepository:
                     else:
                         # the customer had not a card, attach the existing one
                         await cardRepository_instance.update_and_attach_card_to_customer(customer_id, updated_card.cardId, updated_card.points)
-                
+            
             db_customer.name = updated_name
             await session.flush()
             await session.commit()
