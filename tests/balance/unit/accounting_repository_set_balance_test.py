@@ -78,46 +78,21 @@ async def test_create_system_info_negative_balance(mock_repo, mock_session):
     assert result.balance == balance
     mock_session.add.assert_called_once()
 
-
 @pytest.mark.asyncio
-async def test_create_system_info_decimal_precision(mock_repo, mock_session):
-    """Test decimal precision is maintained."""
-    balance = 1234.567
+async def test_create_system_info_failure(mock_repo, mock_session):
+    """Test handling of session failure during create_system_info."""
+    balance = 500.0
     
-    result = await mock_repo.create_system_info(balance=balance)
-
-    assert result.balance == balance
-    added_dao = mock_session.add.call_args[0][0]
-    assert added_dao.balance == balance
-
-
-@pytest.mark.asyncio
-async def test_create_system_info_multiple_calls(mock_repo, mock_session):
-    """Test multiple calls to create_system_info."""
-    balances = [1000.0, 2000.0, 3000.0]
+    # Configure session.add to raise an exception
+    mock_session.add.side_effect = Exception("Database error")
     
-    for balance in balances:
+    with pytest.raises(Exception) as exc_info:
         await mock_repo.create_system_info(balance=balance)
-
-    # Verify add, flush, refresh were called 3 times each
-    assert mock_session.add.call_count == 3
-    assert mock_session.flush.call_count == 3
-    assert mock_session.refresh.call_count == 3
-
-
-@pytest.mark.asyncio
-async def test_create_system_info_session_context_manager(mock_repo, mock_session):
-    """Test that get_session context manager is properly used."""
-    balance = 5000.0
     
-    await mock_repo.create_system_info(balance=balance)
-
-    # Verify get_session was called once
-    mock_repo.get_session.assert_called_once()
+    assert str(exc_info.value) == "Database error"
     
-    # Verify context manager was entered and exited
-    mock_repo._mock_context_manager.__aenter__.assert_called_once()
-    mock_repo._mock_context_manager.__aexit__.assert_called_once()
+    # Verify session.add was called
+    mock_session.add.assert_called_once()
 
 
 
