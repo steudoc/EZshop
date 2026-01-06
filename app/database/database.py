@@ -3,7 +3,6 @@ from sqlalchemy.orm import declarative_base
 from app.config.config import DATABASE_URL
 import importlib
 import pkgutil
-import app.models.DAO as dao_package
 
 # --- Create the async engine ---
 engine = create_async_engine(
@@ -32,6 +31,8 @@ async def get_db():
 
 def _import_all_daos():
     """Importa dinamicamente tutti i moduli DAO."""
+    import app.models.DAO as dao_package
+
     package_path = dao_package.__path__
     package_name = dao_package.__name__
     for _, module_name, _ in pkgutil.iter_modules(package_path):
@@ -46,6 +47,7 @@ async def init_db():
 async def reset_db():
     """Drop all tables and recreate them (resets database to empty state)."""
     from app.models import DAO  # ensure all models imported
+    # import app.models.DAO
     async with engine.begin() as conn:
         # Drop all tables
         await conn.run_sync(Base.metadata.drop_all)
