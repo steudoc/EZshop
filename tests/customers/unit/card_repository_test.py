@@ -55,7 +55,11 @@ async def test_create_card():
 async def test_get_card():
 	repo = CardRepository()
 	# create a card to get
-	created_card = await repo.create_card()
+	created_card = None
+	async with await repo._get_session() as session:
+		created_card = CardDAO(points=0)
+		session.add(created_card)
+		await session.commit()
 
 	card = await repo.get_card(created_card.cardId)
 	
@@ -81,7 +85,11 @@ async def test_get_card():
 async def test_get_card_by_id():
 	repo = CardRepository()
 	# create a card to get
-	created_card = await repo.create_card()
+	created_card = None
+	async with await repo._get_session() as session:
+		created_card = CardDAO(points=0)
+		session.add(created_card)
+		await session.commit()
 
 	card = await repo.get_card_by_id(created_card.cardId)
 	
@@ -107,7 +115,11 @@ async def test_get_card_by_id():
 async def test_update_card():
 	repo = CardRepository()
 	# create a card to update
-	created_card = await repo.create_card()
+	created_card = None
+	async with await repo._get_session() as session:
+		created_card = CardDAO(points=0)
+		session.add(created_card)
+		await session.commit()
 
 	# update the card points a few times
 	card = await repo.update_card(created_card.cardId, 100)
@@ -135,7 +147,11 @@ async def test_update_card():
 async def test_update_card_without_sum():
 	repo = CardRepository()
 	# create a card to update
-	created_card = await repo.create_card()
+	created_card = None
+	async with await repo._get_session() as session:
+		created_card = CardDAO(points=0)
+		session.add(created_card)
+		await session.commit()
 
 	# update the card points a few times
 	card = await repo.update_card_without_sum(created_card.cardId, 100)
@@ -186,8 +202,13 @@ async def test_delete_card():
 @pytest.mark.asyncio
 async def test_update_and_attach_to_customer():
 	repo = CardRepository()
+	
 	# create a card to update
-	created_card = await repo.create_card()
+	created_card = None
+	async with await repo._get_session() as session:
+		created_card = CardDAO(points=0)
+		session.add(created_card)
+		await session.commit()
 
 	# update the card points a few times
 	card = await repo.update_and_attach_card_to_customer(
@@ -221,13 +242,13 @@ async def test_update_and_attach_to_customer():
 async def test_is_attached():
 	repo = CardRepository()
 
-	# create a card without a customer
-	card = await repo.create_card()
-
+	card = None
 	card_1 = None
-	# create a card with a customer attached
+	# create a card with a customer attached and one without
 	async with await repo._get_session() as session:
+		card = CardDAO(points=0)
 		card_1 = CardDAO(points=0, customer_id=1)
+		session.add(card)
 		session.add(card_1)
 		await session.commit()
 		await session.refresh(card_1)
