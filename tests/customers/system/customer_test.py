@@ -713,8 +713,32 @@ def test_attach_card_to_customer_twice(client, auth_tokens):
     
 
 def test_attach_card_to_customer_customer_already_has_card(client, auth_tokens):
-	# TODO: what is the outcome?
-    pass
+	# create a card
+    card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "admin"))
+    card = card_resp.json()
+    card_id = card["card_id"]
+    
+	# create a second card
+    card_resp_1 = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "admin"))
+    card_1 = card_resp_1.json()
+    card_id_1 = card_1["card_id"]
+
+	# create a customer
+    customer_resp = client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "admin"))
+    customer = customer_resp.json()
+    customer_id = customer["id"]
+
+	# attach one card
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+
+	# attach other card
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id_1}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
+    
+	# attach first card again (since it is not deleted, this should work)
+    resp = client.patch(BASE_URL + f"/customers/{customer_id}/attach-card/{card_id}", headers=auth_header(auth_tokens, "admin"))
+    assert resp.status_code == 201
     
 
 def test_attach_card_to_customer_customer_unauthenticated(client):
@@ -731,6 +755,7 @@ def test_modify_card_points_success_as_admin(client, auth_tokens):
     card_resp = client.post(BASE_URL + "/customers/cards", headers=auth_header(auth_tokens, "admin"))
     card = card_resp.json()
     card_id = card["card_id"]
+    
 
 	# modify points a few times
     resp = client.patch(BASE_URL + f"/customers/cards/{card_id}?points={100}", headers=auth_header(auth_tokens, "admin"))

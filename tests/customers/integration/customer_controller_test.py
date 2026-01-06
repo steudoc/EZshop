@@ -6,6 +6,7 @@ from app.controllers.customer_controller import CustomerController
 from app.models.DAO.card_dao import CardDAO
 from app.models.DAO.customer_dao import CustomerDAO
 from app.models.DTO.customer_dto import CardDTO, CustomerDTO, UpdateCardDTO, UpdateCustomerDTO
+from app.models.errors.bad_request import BadRequestError
 from app.models.errors.conflict_error import ConflictError
 from app.models.errors.notfound_error import NotFoundError
 from main import app
@@ -37,19 +38,16 @@ def reset_db_but_keep_users(event_loop):
 # most checks because they assume valid inputs)
 
 
-async def create_two_customers() -> tuple[CustomerDAO, CustomerDAO]:
+async def create_customer(customer_name = "Marco Bianchi") ->CustomerDAO:
 	customer = None
-	customer_1 = None
 
 	# create two customers
 	async with db.AsyncSessionLocal() as session:
-		customer = CustomerDAO(name = "Marco Bianchi")
-		customer_1 = CustomerDAO(name = "Paolo Rossi")
+		customer = CustomerDAO(name = customer_name)
 		session.add(customer)
-		session.add(customer_1)
 		await session.commit()
 
-	return (customer, customer_1)
+	return customer
 
 
 async def create_card() -> CardDAO:
@@ -88,6 +86,7 @@ async def get_customer_by_id(customer_id: int) -> CardDAO | None:
 		result = await session.execute(select(CustomerDAO).filter_by(id=customer_id))
 		return result.scalars().first()
 
+
 # ---------------------------
 # CREATE CUSTOMER TESTS
 # ---------------------------
@@ -125,17 +124,17 @@ async def test_create_customer():
 # GET CUSTOMER TESTS
 # ---------------------------
 
-
 @pytest.mark.asyncio
-async def test_get_customer():
+async def test_get_customer_success():
 	customer_controller = CustomerController()
 	
 	# create card and customers
 	created_card = await create_card()
-	created_customer, created_customer_1 = await create_two_customers()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
 
 	# attach card to customer 1
-	await attach_card(created_customer.id, created_card.cardId)
+	await attach_card(created_customer_1.id, created_card.cardId)
 
 	# search for the created customer
 	customer = await customer_controller.get_customer(created_customer.id)
@@ -153,16 +152,12 @@ async def test_get_customer():
 	assert customer_1.card.card_id == 1
 	assert customer_1.card.points == 0
 
-	# TODO: ensure expected is None and not error
 
-	# # search for a customer that does not exist
-	# with pytest.raises(NotFoundError):
-	# 	customer_1 = await customer_controller.get_customer(-1)
-
-	# # search for a customer that does not exist
-	# with pytest.raises(NotFoundError):
-	# 	customer_1 = await customer_controller.get_customer(9999)
-
+# TODO: ensure expected is None and not error
+@pytest.mark.asyncio
+async def test_get_customer_not_found():
+	customer_controller = CustomerController()
+	
 	# search for a customer that does not exist
 	customer_1 = await customer_controller.get_customer(-1)
 	assert customer_1 is None
@@ -177,7 +172,7 @@ async def test_get_customer():
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_list_customers():
+async def test_list_customers_empty():
 	customer_controller = CustomerController()
 	
 	# list customers should return empty list
@@ -185,9 +180,15 @@ async def test_list_customers():
 	assert empty_list is not None
 	assert empty_list == []
 
+
+@pytest.mark.asyncio
+async def test_list_customers_success():
+	customer_controller = CustomerController()
+
 	# create card and customers
 	created_card = await create_card()
-	created_customer, created_customer_1 = await create_two_customers()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
 
 	# attach card to customer 1
 	await attach_card(created_customer.id, created_card.cardId)
@@ -213,12 +214,12 @@ async def test_list_customers():
 # --------------------------------
 
 @pytest.mark.asyncio
-async def test_attach_card_to_customer():
+async def test_attach_card_to_customer_not_found():
 	customer_controller = CustomerController()
 	
 	# create card and customers
 	created_card = await create_card()
-	created_customer, created_customer_1 = await create_two_customers()
+	created_customer = await create_customer("Paolo Rossi")
 
 	# attach non-existing card to customer
 	with pytest.raises(NotFoundError):
@@ -240,6 +241,44 @@ async def test_attach_card_to_customer():
 		customer = await customer_controller.attach_card_to_customer(
 			9999, created_card.cardId)
 		
+	# attach non-existing card to non-existing customer
+	with pytest.raises(NotFoundError):
+		customer = await customer_controller.attach_card_to_customer(
+			9999, 9999)
+
+
+@pytest.mark.asyncio
+async def test_attach_card_to_customer_conflict():
+	customer_controller = CustomerController()
+	
+	# create card and customers
+	created_card = await create_card()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
+
+	# attach card to customer
+	customer = await customer_controller.attach_card_to_customer(
+			created_customer.id, created_card.cardId)
+	assert customer.name == created_customer.name
+	assert customer.card is not None
+	assert customer.card.card_id == created_card.cardId
+	assert customer.card.points == created_card.points
+
+	# attach same card to another customer
+	with pytest.raises(ConflictError):
+		customer_1 = await customer_controller.attach_card_to_customer(
+				created_customer_1.id, created_card.cardId)
+
+
+@pytest.mark.asyncio
+async def test_attach_card_to_customer_card_switch():
+	customer_controller = CustomerController()
+	
+	# create card and customers
+	created_card = await create_card()
+	created_card_1 = await create_card()
+	created_customer = await create_customer("Paolo Rossi")
+
 	# attach card to customer
 	customer = await customer_controller.attach_card_to_customer(
 			created_customer.id, created_card.cardId)
@@ -256,10 +295,22 @@ async def test_attach_card_to_customer():
 	assert customer.card.card_id == created_card.cardId
 	assert customer.card.points == created_card.points
 
-	# attach same card to another customer
-	with pytest.raises(ConflictError):
-		customer_1 = await customer_controller.attach_card_to_customer(
-				created_customer_1.id, created_card.cardId)
+		
+	# attach another card to same customer
+	customer = await customer_controller.attach_card_to_customer(
+			created_customer.id, created_card_1.cardId)
+	assert customer.name == created_customer.name
+	assert customer.card is not None
+	assert customer.card.card_id == created_card_1.cardId
+	assert customer.card.points == created_card_1.points
+
+	# attach same card back
+	customer = await customer_controller.attach_card_to_customer(
+			created_customer.id, created_card.cardId)
+	assert customer.name == created_customer.name
+	assert customer.card is not None
+	assert customer.card.card_id == created_card.cardId
+	assert customer.card.points == created_card.points
 	
 
 # ---------------------------
@@ -267,22 +318,46 @@ async def test_attach_card_to_customer():
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_update_customer():
+async def test_update_customer_without_card():
 	customer_controller = CustomerController()
 	
-	# create cards and customers
+	# create cards and customer
 	created_card = await create_card()
-	created_card_1 = await create_card()
-	created_card_2 = await create_card()
-
-	created_customer, created_customer_1 = await create_two_customers()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
 	
-	# attach first two cards to customers
+	# attach card to customer
 	await attach_card(created_customer.id, created_card.cardId)
-	await attach_card(created_customer_1.id, created_card_1.cardId)
 
-	update_dto = UpdateCustomerDTO(name="update 0", card=None)
+	# update customer without specifying a card
+	update_dto = UpdateCustomerDTO(name="updated", card=None)
+	updated = await customer_controller.update_customer(created_customer.id, update_dto)
+	assert updated is not None
+	assert updated.name == "updated"
 
+	# ensure card is not deleted
+	card = await get_card_by_customer(created_customer.id)
+	assert card is not None
+
+	# update customer 1 without specifying a card
+	update_dto = UpdateCustomerDTO(name="updated", card=None)
+	updated = await customer_controller.update_customer(created_customer_1.id, update_dto)
+	assert updated is not None
+	assert updated.name == "updated"
+
+	# ensure customer still doesn't have a card
+	card_1 = await get_card_by_customer(created_customer_1.id)
+	assert card_1 is None
+
+
+@pytest.mark.asyncio
+async def test_update_customer_not_found():
+	customer_controller = CustomerController()
+	created_customer = await create_customer("Paolo Rossi")
+
+	update_dto = UpdateCustomerDTO(name="updated", card=None)
+
+	# TODO: ensure expected is None and not error
 	# update non existing customer
 	updated = await customer_controller.update_customer(-1, update_dto)
 	assert updated is None
@@ -291,69 +366,86 @@ async def test_update_customer():
 	updated = await customer_controller.update_customer(9999, update_dto)
 	assert updated is None
 
+	# TODO: ensure expected is error and not None
+	# update customer with non existing card 
+	update_dto = UpdateCustomerDTO(name="updated", 
+					card=UpdateCardDTO(cardId=9999, points=0))
+	with pytest.raises(NotFoundError):
+		updated = await customer_controller.update_customer(created_customer.id, update_dto)
+		
+	# ensure customer name wasn't updated 
+	updated = await get_customer_by_id(created_customer.id)
+	assert updated.name != "updated"
 
-	# update customer without specifying a card
-	update_dto = UpdateCustomerDTO(name="update 1", card=None)
-	updated = await customer_controller.update_customer(created_customer.id, update_dto)
-	assert updated is not None
-	assert updated.name == "update 1"
 
-	# ensure card is not deleted
-	card = await get_card_by_customer(created_customer.id)
-	assert card is not None
+@pytest.mark.asyncio
+async def test_update_customer_with_card():
+	customer_controller = CustomerController()
+	
+	created_card = await create_card()
+	created_card_1 = await create_card()
 
+	created_customer = await create_customer("Paolo Rossi")
+	await attach_card(created_customer.id, created_card.cardId)
 
 	# update customer specifying a card (same card)
-	update_dto = UpdateCustomerDTO(name="update 2", 
+	update_dto = UpdateCustomerDTO(name="updated", 
 					card=UpdateCardDTO(cardId=created_card.cardId, points=0))
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	assert updated is not None
-	assert updated.name == "update 2"
+	assert updated.name == "updated"
 
 	# ensure card is not deleted
 	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
+	assert card.points == 0
 
-
-	# update customer specifying a card (same card)
-	update_dto = UpdateCustomerDTO(name="update 3", 
+	# update customer specifying a card (same card with different points)
+	update_dto = UpdateCustomerDTO(name="updated 1", 
 					card=UpdateCardDTO(cardId=created_card.cardId, points=1000))
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	assert updated is not None
-	assert updated.name == "update 3"
+	assert updated.name == "updated 1"
 
-	# ensure card is not deleted
+	# ensure card is not deleted and got its points updated
 	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
 	assert card.points == 1000
 
 
 	# update customer specifying a card (different card with different points)
-	update_dto = UpdateCustomerDTO(name="update 4", 
-					card=UpdateCardDTO(cardId=created_card_2.cardId, points=1000))
+	update_dto = UpdateCustomerDTO(name="updated 2", 
+					card=UpdateCardDTO(cardId=created_card_1.cardId, points=1000))
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	
 	assert updated is not None
-	assert updated.name == "update 4"
+	assert updated.name == "updated 2"
 
 	# ensure old card is deleted
 	card = await get_card_by_id(created_card.cardId)
 	assert card is None
 
 	# ensure new card is attached to customer 
-	card = await get_card_by_customer(created_customer.id)
-	assert card is not None
-	assert card.cardId == created_card_2.cardId
-	assert card.points == 1000
+	card_1 = await get_card_by_customer(created_customer.id)
+	assert card_1 is not None
+	assert card_1.cardId == created_card_1.cardId
+	assert card_1.points == 1000
+
+
+@pytest.mark.asyncio
+async def test_update_customer_empty_card():
+	customer_controller = CustomerController()
+	created_card = await create_card()
+	created_customer = await create_customer("Paolo Rossi")
+	await attach_card(created_customer.id, created_card.cardId)
 
 	# update customer specifying an empty card
-	update_dto = UpdateCustomerDTO(name="update 5", 
+	update_dto = UpdateCustomerDTO(name="updated", 
 					card={})
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	
-	
 	assert updated is not None
-	assert updated.name == "update 5"
+	assert updated.name == "updated"
 
 	# ensure old card is deleted
 	card = await get_card_by_id(created_card.cardId)
@@ -364,64 +456,73 @@ async def test_update_customer():
 	assert card is None
 
 
+@pytest.mark.asyncio
+async def test_update_customer_conflict():
+	customer_controller = CustomerController()
+	
+	# create cards and customers
+	created_card = await create_card()
+	created_card_1 = await create_card()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
+	
+	# attach first two cards to customers
+	await attach_card(created_customer.id, created_card.cardId)
+	await attach_card(created_customer_1.id, created_card_1.cardId)
+
 	# update customer with other customer's card (conflict)
-	update_dto = UpdateCustomerDTO(name="update 6", 
-					card=UpdateCardDTO(cardId=created_card_1.cardId, points=9999))
+	update_dto = UpdateCustomerDTO(name="updated", 
+			card=UpdateCardDTO(cardId=created_card_1.cardId, points=9999))
 	
 	with pytest.raises(ConflictError):
 		updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	
-	
 	# ensure customer name wasn't updated
 	updated = await get_customer_by_id(created_customer.id)
-	assert updated.name != "update 6"
+	assert updated.name != "updated"
 
-	# ensure old card is not deleted or updated
-	card = await get_card_by_id(created_card.cardId)
+	# ensure same card is attached to customer and not updated 
+	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
+	assert card.cardId == created_card.cardId
 	assert card.points != 9999
+
+
+@pytest.mark.asyncio
+async def test_update_customer_invalid_card():
+	customer_controller = CustomerController()
+	created_card = await create_card()
+	created_customer = await create_customer("Paolo Rossi")
+	await attach_card(created_customer.id, created_card.cardId)
+
+	# TODO: ensure expected is error and not None
+	# update customer with invalid card (negative points)
+	update_dto = UpdateCustomerDTO(name="updated", 
+					card=UpdateCardDTO(cardId=created_card.cardId, points=-1))
+	with pytest.raises(BadRequestError):
+		updated = await customer_controller.update_customer(created_customer.id, update_dto)
+		
+	# ensure customer name wasn't updated 
+	updated = await get_customer_by_id(created_customer.id)
+	assert updated.name != "updated"
 
 	# ensure same card is attached to customer 
 	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
-	assert card.cardId == created_card_2.cardId
-
-
-	# TODO: ensure expected is error and not None
-	# update customer 1 with non existing card 
-	update_dto = UpdateCustomerDTO(name="update 7", 
-					card=UpdateCardDTO(cardId=9999, points=9999))
-	with pytest.raises(NotFoundError):
-		updated = await customer_controller.update_customer(created_customer_1.id, update_dto)
-		
-	# ensure customer 1 name wasn't updated 
-	updated = await get_customer_by_id(created_customer.id)
-	assert updated.name != "update 7"
+	assert card.cardId == created_card.cardId
 
 
 # ---------------------------
 # DELETE CUSTOMER TESTS
 # ---------------------------
 
-# TODO: ensure expected is False and not error
-
 @pytest.mark.asyncio
-async def test_attach_card_to_customer():
+async def test_delete_customer_without_card():
 	customer_controller = CustomerController()
 	
 	# create card and customers
 	created_card = await create_card()
-	created_customer, created_customer_1 = await create_two_customers()
-
-	# attach card to customer 1
-	await attach_card(created_customer_1.id, created_card.cardId)
-
-	# delete non-existing customer
-	deleted = await customer_controller.delete_customer(-1)
-	assert deleted == False
-
-	deleted = await customer_controller.delete_customer(9999)
-	assert deleted == False
+	created_customer = await create_customer()
 
 	# delete customer without a card
 	deleted = await customer_controller.delete_customer(created_customer.id)
@@ -431,13 +532,36 @@ async def test_attach_card_to_customer():
 	customer = await get_customer_by_id(created_customer.id)
 	assert customer is None
 
+
+# TODO: ensure expected is False and not error
+@pytest.mark.asyncio
+async def test_delete_customer_not_fount():
+	customer_controller = CustomerController()
+	
+	# delete non-existing customer
+	deleted = await customer_controller.delete_customer(-1)
+	assert deleted == False
+
+	deleted = await customer_controller.delete_customer(9999)
+	assert deleted == False
+
+
+@pytest.mark.asyncio
+async def test_delete_customer_without_card():
+	customer_controller = CustomerController()
+	
+	# create card and customers
+	created_card = await create_card()
+	created_customer = await create_customer()
+	await attach_card(created_customer.id, created_card.cardId)
+
 	# delete customer with a card attached
-	deleted = await customer_controller.delete_customer(created_customer_1.id)
+	deleted = await customer_controller.delete_customer(created_customer.id)
 	assert deleted == True
 
-	# ensure customer 1 and card are deleted
-	customer_1 = await get_customer_by_id(created_customer_1.id)
-	assert customer_1 is None
+	# ensure customer and card are deleted
+	customer = await get_customer_by_id(created_customer.id)
+	assert customer is None
 	
 	card = await get_card_by_id(created_card.cardId)
 	assert card is None

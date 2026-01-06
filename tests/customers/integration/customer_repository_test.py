@@ -3,6 +3,8 @@ import pytest
 from sqlalchemy import select
 from app.models.DAO.card_dao import CardDAO
 from app.models.DAO.customer_dao import CustomerDAO
+from app.models.DTO.customer_dto import CardDTO, UpdateCardDTO
+from app.models.errors.bad_request import BadRequestError
 from app.models.errors.conflict_error import ConflictError
 from app.models.errors.notfound_error import NotFoundError
 from app.repositories.customer_repository import CustomerRepository
@@ -34,19 +36,16 @@ def reset_db_but_keep_users(event_loop):
 
 # some helper functions that work with db (they do not include 
 # most checks because they assume valid inputs)
-async def create_two_customers() -> tuple[CustomerDAO, CustomerDAO]:
+async def create_customer(customer_name = "Marco Bianchi") ->CustomerDAO:
 	customer = None
-	customer_1 = None
 
 	# create two customers
 	async with db.AsyncSessionLocal() as session:
-		customer = CustomerDAO(name = "Marco Bianchi")
-		customer_1 = CustomerDAO(name = "Paolo Rossi")
+		customer = CustomerDAO(name = customer_name)
 		session.add(customer)
-		session.add(customer_1)
 		await session.commit()
 
-	return (customer, customer_1)
+	return customer
 
 
 async def create_card() -> CardDAO:
@@ -123,14 +122,12 @@ async def test_create_customer():
 # GET CUSTOMER TESTS
 # ---------------------------
 
-
-
 @pytest.mark.asyncio
-async def test_get_customer():
+async def test_get_customer_success():
 	customer_repo = CustomerRepository()
 	
 	# create a customer
-	created_customer, dummy = await create_two_customers()
+	created_customer = await create_customer()
 
 	# search for the created customer
 	customer = await customer_repo.get_customer(created_customer.id)
@@ -138,15 +135,11 @@ async def test_get_customer():
 	assert customer.name == created_customer.name
 	assert customer.id == created_customer.id
 
-	# # search for a customer that does not exist
-	# with pytest.raises(NotFoundError):
-	# 	customer_1 = await customer_repo.get_customer(-1)
 
-	# # search for a customer that does not exist
-	# with pytest.raises(NotFoundError):
-	# 	customer_1 = await customer_repo.get_customer(9999)
-
-	# TODO: ensure expected is None and not error
+# TODO: ensure expected is None and not error
+@pytest.mark.asyncio
+async def test_get_customer():
+	customer_repo = CustomerRepository()
 
 	# search for a customer that does not exist
 	customer_1 = await customer_repo.get_customer(-1)
@@ -156,12 +149,13 @@ async def test_get_customer():
 	customer_1 = await customer_repo.get_customer(9999)
 	assert customer_1 is None
 
+
 # ---------------------------
 # LIST CUSTOMERS TESTS
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_list_customers():
+async def test_list_customers_empty():
 	customer_repo = CustomerRepository()
 
 	# list customers should return empty list
@@ -169,8 +163,14 @@ async def test_list_customers():
 	assert empty_list is not None
 	assert empty_list == []
 
+
+@pytest.mark.asyncio
+async def test_list_customers_success():
+	customer_repo = CustomerRepository()
+
 	# create two customers
-	created_customer, created_customer_1 = await create_two_customers()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
 
 	# list customers should contain both customers
 	customers_list = await customer_repo.list_customers()
@@ -191,11 +191,11 @@ async def test_list_customers():
 # --------------------------------
 
 @pytest.mark.asyncio
-async def test_attach_card_to_customer():
+async def test_attach_card_to_customer_not_found():
 	customer_repo = CustomerRepository()
 	
-	# create two customers
-	created_customer, created_customer_1 = await create_two_customers()
+	# create one customer
+	created_customer = await create_customer()
 
 	# create a card
 	created_card = await create_card()
@@ -219,6 +219,42 @@ async def test_attach_card_to_customer():
 	with pytest.raises(NotFoundError):
 		customer, card = await customer_repo.attach_card_to_customer(
 			9999, created_card.cardId)
+
+
+@pytest.mark.asyncio
+async def test_attach_card_to_customer_conflict():
+	customer_repo = CustomerRepository()
+	
+	# create two customers
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
+
+	# create a card
+	created_card = await create_card()
+		
+	# attach card to customer
+	customer, card = await customer_repo.attach_card_to_customer(
+			created_customer.id, created_card.cardId)
+	assert customer.name == created_customer.name
+	assert card.cardId == created_card.cardId
+	assert card.customer_id == created_customer.id
+
+	# attach same card to another customer
+	with pytest.raises(ConflictError):
+		customer_1, card = await customer_repo.attach_card_to_customer(
+				created_customer_1.id, created_card.cardId)
+
+
+@pytest.mark.asyncio
+async def test_attach_card_to_customer_card_switch():
+	customer_repo = CustomerRepository()
+
+	# create one customer
+	created_customer = await create_customer()
+
+	# create a card
+	created_card = await create_card()
+	created_card_1 = await create_card()
 		
 	# attach card to customer
 	customer, card = await customer_repo.attach_card_to_customer(
@@ -234,91 +270,119 @@ async def test_attach_card_to_customer():
 	assert card.cardId == created_card.cardId
 	assert card.customer_id == created_customer.id
 
-	# attach same card to another customer
-	with pytest.raises(ConflictError):
-		customer_1, card = await customer_repo.attach_card_to_customer(
-				created_customer_1.id, created_card.cardId)
-	
+	# attach another card to same customer
+	customer, card = await customer_repo.attach_card_to_customer(
+			created_customer.id, created_card_1.cardId)
+	assert customer.name == created_customer.name
+	assert card.cardId == created_card_1.cardId
+	assert card.customer_id == created_customer.id
+
+	# attach same card back
+	customer, card = await customer_repo.attach_card_to_customer(
+			created_customer.id, created_card.cardId)
+	assert customer.name == created_customer.name
+	assert card.cardId == created_card.cardId
+	assert card.customer_id == created_customer.id
+
 
 # ---------------------------
 # UPDATE CUSTOMER TEST
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_update_customer():
+async def test_update_customer_without_card():
 	customer_repo = CustomerRepository()
 
-	# create two customers
-	created_customer, created_customer_1 = await create_two_customers()
-
-	# create two card attached to each customer, plus a third card
 	created_card = await create_card()
-	created_card_1 = await create_card()
-	created_card_2 = await create_card()
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
+
 	await attach_card(created_customer.id, created_card.cardId)
-	await attach_card(created_customer_1.id, created_card_1.cardId)
-
-	# update non existing customer
-	updated = await customer_repo.update_customer(
-		-1, "update 0", None)
-	
-	assert updated is None
-
-	# update non existing customer
-	updated = await customer_repo.update_customer(
-		9999, "update 0", None)
-	
-	assert updated is None
-
 
 	# update customer without specifying a card
-	updated = await customer_repo.update_customer(
-		created_customer.id, "update 1", None)
+	updated = await customer_repo.update_customer(created_customer.id, "updated", None)
 	
 	assert updated is not None
-	assert updated.name == "update 1"
+	assert updated.name == "updated"
 
 	# ensure card is not deleted
 	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
 
+	# update customer 1 without specifying a card
+	updated = await customer_repo.update_customer(created_customer_1.id, "updated", None)
+	
+	assert updated is not None
+	assert updated.name == "updated"
+
+	# ensure customer 1 still doesn't have a card
+	card_1 = await get_card_by_customer(created_customer_1.id)
+	assert card_1 is None
+
+
+@pytest.mark.asyncio
+async def test_update_customer_not_found():
+	customer_repo = CustomerRepository()
+	created_customer = await create_customer()
+
+	# update non existing customer
+	updated = await customer_repo.update_customer(-1, "update 0", None)
+	
+	assert updated is None
+
+	# update non existing customer
+	updated = await customer_repo.update_customer(9999, "update 0", None)
+	assert updated is None
+
+	# TODO: ensure expected is error and not None
+	# update customer with non existing card 
+	with pytest.raises(NotFoundError):
+		card_dto = CardDTO(card_id=-1, points=0)
+		updated = await customer_repo.update_customer(created_customer.id, "updated", card_dto)
+		
+	# ensure customer name wasn't updated 
+	updated = await get_customer_by_id(created_customer.id)
+	assert updated.name != "updated"
+
+
+@pytest.mark.asyncio
+async def test_update_customer_with_card():
+	customer_repo = CustomerRepository()
+	created_customer = await create_customer()
+
+	created_card = await create_card()
+	created_card_2 = await create_card()
+	await attach_card(created_customer.id, created_card.cardId)
 
 	# update customer specifying a card (same card)
-	card_dto = carddao_to_response_dto(created_card)
-	updated = await customer_repo.update_customer(
-		created_customer.id, "update 2", card_dto)
+	card_dto = CardDTO(card_id=created_card.cardId, points = 0)
+	updated = await customer_repo.update_customer(created_customer.id, "updated", card_dto)
 	
 	assert updated is not None
-	assert updated.name == "update 2"
+	assert updated.name == "updated"
 
 	# ensure card is not deleted
 	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
 
-
 	# update customer specifying a card (same card with different points)
-	card_dto = carddao_to_response_dto(created_card)
-	card_dto.points = 1000
-	updated = await customer_repo.update_customer(
-		created_customer.id, "update 3", card_dto)
+	card_dto = CardDTO(card_id=created_card.cardId, points = 1000)
+	updated = await customer_repo.update_customer(created_customer.id, "updated 1", card_dto)
 	
 	assert updated is not None
-	assert updated.name == "update 3"
+	assert updated.name == "updated 1"
 
 	# ensure card is not deleted and got its points updated
 	card = await get_card_by_customer(created_customer.id)
 	assert card is not None
 	assert card.points == 1000
 
-
-	# update customer specifying a card (different card with different points)
-	card_dto = carddao_to_response_dto(created_card_2)
-	card_dto.points = 1000
-	updated = await customer_repo.update_customer(
-		created_customer.id, "update 4", card_dto)
+	# update customer specifying another card with different
+	card_dto = CardDTO(card_id=created_card_2.cardId, points = 1000)
+	updated = await customer_repo.update_customer(created_customer.id, "updated 2", card_dto)
 	
 	assert updated is not None
-	assert updated.name == "update 4"
+	assert updated.name == "updated 2"
 
 	# ensure old card is deleted, and new card is attached to customer
 	card = await get_card_by_id(created_card.cardId)
@@ -329,12 +393,24 @@ async def test_update_customer():
 	assert card_2.points == 1000
 
 
+@pytest.mark.asyncio
+async def test_update_customer_empty_card():
+	customer_repo = CustomerRepository()
+
+	# create two customers
+	created_customer = await create_customer()
+
+	# create two card attached to each customer, plus a third card
+	created_card = await create_card()
+	created_card_2 = await create_card()
+	await attach_card(created_customer.id, created_card.cardId)
+
 	# update customer specifying an empty card
 	updated = await customer_repo.update_customer(
-		created_customer.id, "update 5", {})
+		created_customer.id, "update 1", UpdateCardDTO())
 	
 	assert updated is not None
-	assert updated.name == "update 5"
+	assert updated.name == "update 1"
 
 	# ensure old card is deleted, and no new card is attached to customer
 	card_2 = await get_card_by_id(created_card_2.cardId)
@@ -344,50 +420,62 @@ async def test_update_customer():
 	assert customer_card is None
 
 	
+@pytest.mark.asyncio
+async def test_update_customer_conflict():
+	customer_repo = CustomerRepository()
+
+	# create two customers
+	created_customer = await create_customer("Paolo Rossi")
+	created_customer_1 = await create_customer("Giorgio Neri")
+
+	# create two card attached to each customer, plus a third card
+	created_card = await create_card()
+	created_card_1 = await create_card()
+	await attach_card(created_customer.id, created_card.cardId)
+	await attach_card(created_customer_1.id, created_card_1.cardId)
+
 	# update customer with other customer's card (conflict)
+	card_dto =  CardDTO(card_id=created_card_1.cardId, points = 0)
 	with pytest.raises(ConflictError):
 		updated = await customer_repo.update_customer(
-			created_customer.id, "update 6", created_card_1.cardId)
+			created_customer.id, "updated", card_dto)
 
 	# ensure customer name wasn't updated 
 	updated = await get_customer_by_id(created_customer.id)
-	assert updated.name != "update 6"
+	assert updated.name != "updated"
+
+	# ensure same card is attached to customer and not updated 
+	card = await get_card_by_customer(created_customer.id)
+	assert card is not None
+	assert card.cardId == created_card.cardId
+	assert card.points != 9999
 
 
-	# TODO: ensure expected is error and not None
-	# update customer 1 with non existing card 
-	with pytest.raises(NotFoundError):
-		updated = await customer_repo.update_customer(
-			created_customer_1.id, "update 7", 9999)
+@pytest.mark.asyncio
+async def test_update_customer_invalid_card():
+	customer_repo = CustomerRepository()
+	created_customer = await create_customer()
+	created_card = await create_card()
+	await attach_card(created_customer.id, created_card.cardId)
+
+	with pytest.raises(BadRequestError):
+		card_dto = CardDTO(card_id=created_card.cardId, points=0)
+		card_dto.points = -1
+		updated = await customer_repo.update_customer(created_customer.id, "update 2", card_dto)
 		
-	# ensure customer 1 name wasn't updated 
-	updated = await get_customer_by_id(created_customer_1.id)
-	assert updated.name != "update 7"
+	# ensure customer name wasn't updated 
+	updated = await get_customer_by_id(created_customer.id)
+	assert updated.name != "update 2"
 
 
 # ---------------------------
 # DELETE CUSTOMER TESTS
 # ---------------------------
 
-
-
 @pytest.mark.asyncio
-async def test_attach_card_to_customer():
+async def test_delete_customer_without_card():
 	customer_repo = CustomerRepository()
-
-	created_customer, created_customer_1 = await create_two_customers()
-
-	# create a card attached to customer_1
-	created_card = await create_card()
-	await attach_card(created_customer_1.id, created_card.cardId)
-		
-	# TODO: ensure expected is False and not error
-	# delete non-existing customer
-	deleted = await customer_repo.delete_customer(-1)
-	assert deleted == False
-
-	deleted = await customer_repo.delete_customer(9999)
-	assert deleted == False
+	created_customer = await create_customer()
 
 	# delete customer without a card
 	deleted = await customer_repo.delete_customer(created_customer.id)
@@ -397,12 +485,36 @@ async def test_attach_card_to_customer():
 	customer = await get_customer_by_id(created_customer.id)
 	assert customer is None
 
+
+# TODO: ensure expected is False and not error
+@pytest.mark.asyncio
+async def test_delete_customer_not_found():
+	customer_repo = CustomerRepository()
+
+	# TODO: ensure expected is False and not error
+	# delete non-existing customer
+	deleted = await customer_repo.delete_customer(-1)
+	assert deleted == False
+
+	deleted = await customer_repo.delete_customer(9999)
+	assert deleted == False
+
+
+@pytest.mark.asyncio
+async def test_delete_customer_with_card():
+	customer_repo = CustomerRepository()
+	created_customer = await create_customer()
+
+	# create a card attached to customer_1
+	created_card = await create_card()
+	await attach_card(created_customer.id, created_card.cardId)
+
 	# delete customer with a card attached
-	deleted = await customer_repo.delete_customer(created_customer_1.id)
+	deleted = await customer_repo.delete_customer(created_customer.id)
 	assert deleted == True
 
 	# ensure customer and card are deleted
-	customer = await get_customer_by_id(created_customer_1.id)
+	customer = await get_customer_by_id(created_customer.id)
 	assert customer is None
 	card = await get_card_by_id(created_card.cardId)
 	assert card is None

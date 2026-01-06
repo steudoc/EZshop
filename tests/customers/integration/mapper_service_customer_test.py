@@ -32,19 +32,16 @@ def reset_db_but_keep_users(event_loop):
 # most checks because they assume valid inputs)
 
 
-async def create_two_customers() -> tuple[CustomerDAO, CustomerDAO]:
+async def create_customer(customer_name = "Marco Bianchi") ->CustomerDAO:
 	customer = None
-	customer_1 = None
 
 	# create two customers
 	async with db.AsyncSessionLocal() as session:
-		customer = CustomerDAO(name = "Marco Bianchi")
-		customer_1 = CustomerDAO(name = "Paolo Rossi")
+		customer = CustomerDAO(name = customer_name)
 		session.add(customer)
-		session.add(customer_1)
 		await session.commit()
 
-	return (customer, customer_1)
+	return customer
 
 
 async def create_card(points_amount = 0) -> CardDAO:
@@ -92,29 +89,32 @@ async def test_card_dato_to_response_dto():
 # CUSTOMER DAO TO RESPONSE DTO TESTS
 # ------------------------------------------
 
-# TODO: ensure expected is None and not error
-
 @pytest.mark.asyncio
-async def test_customer_dao_to_response_dto():
-	customer_dao, customer_dao_1 = await create_two_customers() 
-	card_dao = await create_card()
-
-	await attach_card(customer_dao_1.id, card_dao.cardId)
+async def test_customer_dao_to_response_dto_without_card():
+	customer_dao = await create_customer() 
 
 	customer_dto = await customerdao_to_responsedto(customer_dao)
-	customer_dto_1 = await customerdao_to_responsedto(customer_dao_1)
 
 	# ensure customer has the correct data
 	assert customer_dto.id == customer_dao.id
 	assert customer_dto.name == customer_dao.name
 	assert customer_dto.card is None
 
-	# ensure customer 1 has the correct data and correct card data
-	assert customer_dto_1.id == customer_dao_1.id
-	assert customer_dto_1.name == customer_dao_1.name
-	assert customer_dto_1.card is not None
-	assert customer_dto_1.card.card_id == card_dao.cardId
-	assert customer_dto_1.card.points == card_dao.points
+
+@pytest.mark.asyncio
+async def test_customer_dao_to_response_dto_with_card():
+	customer_dao = await create_customer() 
+	card_dao = await create_card()
+	await attach_card(customer_dao.id, card_dao.cardId)
+
+	customer_dto = await customerdao_to_responsedto(customer_dao)
+
+	# ensure customer has the correct data and correct card data
+	assert customer_dto.id == customer_dao.id
+	assert customer_dto.name == customer_dao.name
+	assert customer_dto.card is not None
+	assert customer_dto.card.card_id == card_dao.cardId
+	assert customer_dto.card.points == card_dao.points
 
 
 
