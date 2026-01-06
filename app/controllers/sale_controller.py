@@ -67,8 +67,9 @@ class SaleController:
         sale_dao = await self._get_sale_or_throw(sale_id)
         
         # Unique logic for delete: cannot be PAID (OPEN or PENDING is usually okay to delete)
+        
         if sale_dao.status == SaleStatus.PAID:
-            throw_bad_request("Cannot delete this sale")
+            throw_invalid_state("Cannot delete this sale")
             
         await self.sale_repo.delete_sale(sale_id)
 
@@ -87,7 +88,12 @@ class SaleController:
         """Remove a line from a sale - throws NotFoundError if sale missing, InvalidStateError if not OPEN"""
         sale_dao = await self._get_sale_or_throw(item_dto.sale_id)
         self._validate_sale_status(sale_dao, SaleStatus.OPEN)
+
         
+        sale_lines = next((l for l in sale_dao.lines if l.product_barcode == item_dto.product_barcode), None)
+        if not sale_lines or sale_lines.quantity < item_dto.quantity:
+            throw_bad_request("Not enough quantity in sale line to remove")
+
         await self.sale_repo.remove_item_from_sale(
             item_dto.sale_id, 
             item_dto.product_barcode, 
@@ -147,6 +153,12 @@ class SaleController:
             total_price += partial_price
             
         final_price = total_price - (total_price * sale_dao.discount_rate)
+
+        
+        if sale_payment_dto.amount_paid < final_price:
+            throw_bad_request("Insufficient amount paid")
+
+
         change = sale_payment_dto.amount_paid - final_price
 
         await self.sale_repo.update_sale_status_paid(sale_payment_dto.sale_id)
