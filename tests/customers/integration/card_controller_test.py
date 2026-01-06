@@ -1,5 +1,6 @@
 import asyncio
 import pytest
+from app.controllers.card_controller import CardController
 from main import app
 from init_db import reset, init_db
 
@@ -28,12 +29,74 @@ def reset_db_but_keep_users(event_loop):
 # CREATE CARD TESTS
 # ---------------------------
 
+@pytest.mark.asyncio
+async def test_create_card():
+	controller = CardController()
+
+	card = await controller.create_card()
+	card_1 = await controller.create_card()
+
+	# verify auto incremented id
+	assert card.card_id == 1
+	assert card_1.card_id == 2
+
+	# verify points are 0
+	assert card.points == 0
+	assert card_1.points == 0
+
 # ---------------------------
 # GET CARD TESTS
 # ---------------------------
+
+# TODO: ensure expected is None and not error
+
+@pytest.mark.asyncio
+async def test_get_card():
+	controller = CardController()
+	# create a card to get
+	created_card = await controller.create_card()
+
+	card = await controller.get_card(created_card.card_id)
+	
+	# verify card has the same data as the created one
+	assert card is not None
+	assert card.card_id == created_card.card_id
+	assert card.points == created_card.points
+
+	# searching for a card that doesn't exist
+	card = await controller.get_card(-1)
+	assert card is None
+
+	# searching for a card that doesn't exist
+	card = await controller.get_card(9999)	
+	assert card is None
+
 
 # ---------------------------
 # MODIFY CARD POINTS TESTS
 # ---------------------------
 
+# TODO: ensure expected is None and not error
 
+@pytest.mark.asyncio
+async def test_modify_card_points():
+	controller = CardController()
+	# create a card to update
+	created_card = await controller.create_card()
+
+	# update the card points a few times
+	card = await controller.modify_points_card(created_card.card_id, 100)
+	assert card is not None
+	assert card.points == 100
+
+	card = await controller.modify_points_card(created_card.card_id, -1000)
+	assert card is not None
+	assert card.points == -900
+
+	card = await controller.modify_points_card(created_card.card_id, 900)
+	assert card is not None
+	assert card.points == 0
+
+	# updating a non-existing card should result in None being returned
+	card = await controller.modify_points_card(9999, 100)
+	assert card is None

@@ -51,6 +51,8 @@ async def test_create_card():
 # GET CARD TESTS
 # ---------------------------
 
+# TODO: ensure expected is error and not None
+
 @pytest.mark.asyncio
 async def test_get_card():
 	repo = CardRepository()
