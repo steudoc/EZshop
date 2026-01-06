@@ -2,7 +2,7 @@ import asyncio
 import pytest
 from sqlalchemy import select
 from app.controllers.customer_controller import CustomerController
-import app.database.database as db
+
 from app.models.DAO.card_dao import CardDAO
 from app.models.DAO.customer_dao import CustomerDAO
 from app.models.DTO.customer_dto import CardDTO, CustomerDTO, UpdateCardDTO, UpdateCustomerDTO
@@ -10,6 +10,7 @@ from app.models.errors.conflict_error import ConflictError
 from app.models.errors.notfound_error import NotFoundError
 from main import app
 from init_db import reset, init_db
+import app.database.database as db
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -34,6 +35,8 @@ def reset_db_but_keep_users(event_loop):
 
 # some helper functions that work with db (they do not include 
 # most checks because they assume valid inputs)
+
+
 async def create_two_customers() -> tuple[CustomerDAO, CustomerDAO]:
 	customer = None
 	customer_1 = None
