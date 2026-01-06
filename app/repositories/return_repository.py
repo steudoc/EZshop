@@ -120,20 +120,33 @@ class ReturnRepository:
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
             if not return_tx:
-                return None
-            new_line = ReturnLineDAO(
-                return_id=return_id,
-                product_barcode=item.product_barcode,
-                quantity=item.quantity,
-                price_per_unit=item.price_per_unit
-            )
-            session.add(new_line)
+                raise NotFoundError(f"Return with id '{return_id}' not found")
+            
+            # Check if line with same barcode already exists
+            existing_line = next((line for line in return_tx.lines if line.product_barcode == item.product_barcode), None)
+            
+            if existing_line:
+                # Increase quantity of existing line
+                existing_line.quantity += item.quantity
+            else:
+                # Create new line
+                new_line = ReturnLineDAO(
+                    return_id=return_id,
+                    product_barcode=item.product_barcode,
+                    quantity=item.quantity,
+                    price_per_unit=item.price_per_unit
+                )
+                session.add(new_line)
+            
             await session.commit()
             await session.refresh(return_tx)
             return return_tx
 
-    async def remove_item(self, return_id: int, product_barcode: str) -> Optional[ReturnDAO]:
-        """Remove a product from a return transaction"""
+    async def remove_item(self, return_id: int, product_barcode: str, quantity: int) -> Optional[ReturnDAO]:
+        """Remove a product from a return transaction
+        If quantity equals the line quantity, delete the entire line
+        If quantity is less, decrease the line quantity
+        """
         async with await self._get_session() as session:
             result = await session.execute(
                 select(ReturnLineDAO).where(
@@ -143,8 +156,15 @@ class ReturnRepository:
             )
             line = result.scalars().first()
             if not line:
-                return None
-            await session.delete(line)
+                raise NotFoundError(f"Return line not found for return_id '{return_id}' and product_barcode '{product_barcode}'")
+            
+            # If quantity matches line quantity, delete the entire line
+            if quantity >= line.quantity:
+                await session.delete(line)
+            else:
+                # Decrease the quantity
+                line.quantity -= quantity
+            
             await session.commit()
             return_tx = await session.get(ReturnDAO, return_id, options=[selectinload(ReturnDAO.lines)])
             return return_tx

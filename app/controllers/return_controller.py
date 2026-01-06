@@ -1,6 +1,3 @@
-""" Return Controller Module.
-This module contains the ReturnController class which handles the business logic"""
-
 from app.repositories.return_repository import ReturnRepository
 from app.models.DTO.return_dto import (
     ReturnDTO,
@@ -59,7 +56,7 @@ class ReturnController:
         """Remove item from return - throws NotFoundError if return or product not found, InvalidStateError if return not open"""
         return await self.repo.remove_item(return_id, product_barcode)
 
-    async def close_return(self, return_id: int) -> Optional[bool]:
+    async def close_return(self, return_id: int) -> Optional[ReturnDTO]:
         """Close return - throws NotFoundError if return not found, InvalidStateError if return not open
         If return is empty (has no items), it will be deleted instead of closed"""
         return_tx = await self.repo.get_return_by_id(return_id)
@@ -72,7 +69,8 @@ class ReturnController:
             return None
         
         # Otherwise, close the return normally
-        return await self.repo.close_return(return_id)
+        closed_return = await self.repo.close_return(return_id)
+        return returndao_to_responsedto(closed_return) if closed_return else None
 
     async def reimburse_return(self, return_id: int) -> ReturnReimburseDTO:
         # Find return transaction

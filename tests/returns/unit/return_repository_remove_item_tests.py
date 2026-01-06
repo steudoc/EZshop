@@ -9,7 +9,7 @@ from app.repositories.return_repository import ReturnRepository
 @pytest.fixture
 def mock_session():
     session = AsyncMock()
-    session.delete = MagicMock()
+    session.delete = AsyncMock()
     session.commit = AsyncMock()
     session.refresh = AsyncMock()
     session.get = AsyncMock()
@@ -29,40 +29,39 @@ def mock_repo(mock_session):
 @pytest.mark.asyncio
 async def test_remove_item_return_not_found(mock_repo, mock_session):
 
-    mock_session.execute.return_value = None
+    mock_result = MagicMock()
+    mock_result.scalars.return_value.first.return_value = None
+    mock_session.execute.return_value = mock_result
     
-    with pytest.raises(NotFoundError) as exc_info:
-        result = await mock_repo.remove_item(return_id=99, product_barcode="ABC123")
+    with pytest.raises(NotFoundError):
+        await mock_repo.remove_item(return_id=99, product_barcode="ABC123", quantity=1)
 
-        assert result is None
-
-    mock_session.delete.assert_not_awaited()
-    mock_session.commit.assert_not_awaited()
-    mock_session.refresh.assert_not_awaited()
+    mock_session.delete.assert_not_called()
+    mock_session.commit.assert_not_called()
 
 
 
 @pytest.mark.asyncio
 async def test_remove_item_success_delete(mock_repo, mock_session):
 
-    mock_result = MagicMock(spec=ReturnLineDAO)
-    mock_session.execute.return_value = mock_result
-
-    mock_session.scalar.first.return_value = ReturnLineDAO(
+    mock_result = MagicMock()
+    mock_result.scalars.return_value.first.return_value = ReturnLineDAO(
         id=1,
         return_id=1,
         product_barcode="ABC123",
         quantity=2,
         price_per_unit=10.0
     )
+    mock_session.execute.return_value = mock_result
+    
+    return_tx = MagicMock(spec=ReturnDAO)
+    mock_session.get.return_value = return_tx
 
     result = await mock_repo.remove_item(return_id=1, product_barcode="ABC123", quantity=2)
 
     mock_session.delete.assert_awaited_once()
     mock_session.commit.assert_awaited_once()
-
-    return_tx = MagicMock(spec=ReturnDAO)
-    mock_session.get.return_value = return_tx
+    
     assert result == return_tx
 
     mock_session.get.assert_awaited_once_with(
@@ -75,25 +74,24 @@ async def test_remove_item_success_delete(mock_repo, mock_session):
 @pytest.mark.asyncio
 async def test_remove_item_success_decrease(mock_repo, mock_session):
 
-    mock_result = MagicMock(spec=ReturnLineDAO)
-    mock_session.execute.return_value = mock_result
-
-    mock_session.scalar.first.return_value = ReturnLineDAO(
+    mock_result = MagicMock()
+    mock_result.scalars.return_value.first.return_value = ReturnLineDAO(
         id=1,
         return_id=1,
         product_barcode="ABC123",
         quantity=2,
         price_per_unit=10.0
     )
+    mock_session.execute.return_value = mock_result
+    
+    return_tx = MagicMock(spec=ReturnDAO)
+    mock_session.get.return_value = return_tx
 
     result = await mock_repo.remove_item(return_id=1, product_barcode="ABC123", quantity=1)
 
     mock_session.delete.assert_not_called()
     mock_session.commit.assert_awaited_once()
-    mock_session.refresh.assert_awaited_once()
 
-    return_tx = MagicMock(spec=ReturnDAO)
-    mock_session.get.return_value = return_tx
     assert result == return_tx
 
     mock_session.get.assert_awaited_once_with(
