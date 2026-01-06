@@ -28,11 +28,11 @@ class CustomerRepository:
 
             if card is not None:
                 
-                if await session.get(CardDAO, card.cardId) is not None:
+                if await session.get(CardDAO, card.card_id) is not None:
                     throw_conflict("Card with id {card.cardId} is already attached to a customer")
 
                 customer = CustomerDAO(name=name)
-                card_dao = CardDAO(cardId=card.cardId, points=card.points, customer_id = customer.id)
+                card_dao = CardDAO(cardId=card.card_id, points=card.points, customer_id = customer.id)
                 session.add(card_dao)
             else:
                 customer = CustomerDAO(name=name)
