@@ -49,7 +49,7 @@ def _validate_barcode(barcode: str) -> str:
 
 def _validate_discount(rate: float):
     """Validates discount rate is between 0 and 1."""
-    if rate is None or not (0.0 <= rate <= 1.0):
+    if rate is None or not (0.0 <= rate < 1.0):
         throw_bad_request("Discount must be between 0 and 1")
 
 # --- ROUTES ---

@@ -42,9 +42,9 @@ class CustomerController:
         )
     
 
-    async def delete_user(self, customer_id: int) -> bool: 
+    async def delete_customer(self, customer_id: int) -> bool: 
         """Delete a customer by customer_id, if a card is attached, the card will deleted as well"""
-        return await self.repo.delete_user(customer_id)
+        return await self.repo.delete_customer(customer_id)
 
     async def get_customer(self, customer_id: int) -> Optional[CustomerDTO]:
         """Get customer by id - throws NotFoundError if not found"""

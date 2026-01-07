@@ -54,7 +54,7 @@ async def attach_card_to_customer(customer_id:str, card_id:str):
 @router.delete("/{customer_id}", 
                status_code=status.HTTP_204_NO_CONTENT, 
                dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
-async def delete_user(customer_id: int):
+async def delete_customer(customer_id: int):
     """
     Delete a customer by ID, if a card is attached, the card will deleted as well.
 
@@ -65,7 +65,7 @@ async def delete_user(customer_id: int):
       - NotFoundError: when the customer to delete does not exist
     - Status code: 204 No Content
     """
-    success = await controller.delete_user(customer_id)
+    success = await controller.delete_customer(customer_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -94,7 +94,7 @@ async def get_customer(customer_id: int):
 
 @router.get("/", response_model=List[CustomerDTO],
             dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
-async def list_users():
+async def list_customers():
     """
     List all customers.
 

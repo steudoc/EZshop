@@ -13,3 +13,4 @@ pytest-asyncio
 httpx
 PyJWT
 greenlet
+python-dateutil
