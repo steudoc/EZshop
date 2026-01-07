@@ -1,0 +1,82 @@
+import pytest
+from unittest.mock import MagicMock
+from app.models.errors import NotFoundError, BadRequestError
+from app.models.DAO.product_dao import ProductDAO
+
+@pytest.mark.asyncio
+async def test_include_product_in_op_increment_success(repository, mock_session):
+    """
+    Test that involvedOperations is incremented when include=True.
+    """
+    # ARRANGE
+    product_id = 1
+    mock_product = MagicMock(spec=ProductDAO)
+    mock_product.involvedOperations = 5 # Initial value
+    
+    mock_session.get.return_value = mock_product
+
+    # ACT
+    await repository.include_product_in_op(product_id, include=True)
+
+    # ASSERT
+    mock_session.get.assert_called_once_with(ProductDAO, product_id)
+    # 5 + 1 = 6
+    assert mock_product.involvedOperations == 6
+    mock_session.flush.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_include_product_in_op_decrement_success(repository, mock_session):
+    """
+    Test that involvedOperations is decremented when include=False and count > 0.
+    """
+    # ARRANGE
+    product_id = 1
+    mock_product = MagicMock(spec=ProductDAO)
+    mock_product.involvedOperations = 1 # Valid state for decrementing
+    
+    mock_session.get.return_value = mock_product
+
+    # ACT
+    await repository.include_product_in_op(product_id, include=False)
+
+    # ASSERT
+    # 1 - 1 = 0
+    assert mock_product.involvedOperations == 0
+    mock_session.flush.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_include_product_in_op_not_found(repository, mock_session):
+    """
+    Test that NotFoundError is raised if the product does not exist.
+    """
+    # ARRANGE
+    product_id = 999
+    mock_session.get.return_value = None
+
+    # ACT & ASSERT
+    with pytest.raises(NotFoundError):
+        await repository.include_product_in_op(product_id, include=True)
+
+    mock_session.flush.assert_not_called()
+
+@pytest.mark.asyncio
+async def test_include_product_in_op_bad_request(repository, mock_session):
+    """
+    Test that BadRequestError is raised when trying to exclude a product
+    that has involvedOperations < 1 (e.g., 0).
+    """
+    # ARRANGE
+    product_id = 1
+    mock_product = MagicMock(spec=ProductDAO)
+    mock_product.involvedOperations = 0 # Cannot decrement below 0
+    
+    mock_session.get.return_value = mock_product
+
+    # ACT & ASSERT
+    with pytest.raises(BadRequestError):
+        # include=False triggers the decrement check
+        await repository.include_product_in_op(product_id, include=False)
+
+    # Verify state did not change
+    assert mock_product.involvedOperations == 0
+    mock_session.flush.assert_not_called()
