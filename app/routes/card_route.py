@@ -38,6 +38,9 @@ async def modify_points_card(
 
     - Permissions: Administrator, Shop manager, Cashier
     - Returns: Created card as CardDTO
+    - Raises:
+        - BadRequestError: when card_id is missing or invalid
+        - CustomerCardError: when trying to remove more points than there are in the card
     - Status code: 200 Customer card points successfully updated
     """
 
@@ -46,9 +49,6 @@ async def modify_points_card(
 
 
     card = await controller.get_card(card_id)
-
-    if not card:
-        throw_not_found("Customer Card not found")
 
     if points<card.points:
         throw_customer_card_error("Insufficient points on the card")

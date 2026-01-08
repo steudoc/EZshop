@@ -1,7 +1,7 @@
 from typing import List, Optional
 from app.repositories.customer_repository import CustomerRepository
 from app.models.DTO.customer_dto import CustomerDTO, CardDTO, UpdateCustomerDTO
-from app.services.mapper_service import customerdao_to_responsedto
+from app.services.mapper_service import customerdao_and_card_to_dto, customerdao_to_responsedto
 
 class CustomerController:
     def __init__(self):
@@ -10,36 +10,15 @@ class CustomerController:
     async def create_customer(self, customer_dto: CustomerDTO) -> CustomerDTO: 
         """Create customer"""
 
-
         customer, card = await self.repo.create_customer(customer_dto.name,  customer_dto.card)
 
-        if card is not None:
-            return CustomerDTO(
-            id=customer.id,
-            name=customer.name,
-            card=CardDTO(
-                card_id=card.cardId,
-                points=card.points
-                )
-            )
-        else:
-            return CustomerDTO(
-                id=customer.id,
-                name=customer.name
-            )
+        return customerdao_and_card_to_dto(customer=customer, card=card)
     
     async def attach_card_to_customer(self, customer_id=int, card_id=int) -> CustomerDTO: 
         """Attach a card with card_id to a customer with customer_id"""
         customer, card  = await self.repo.attach_card_to_customer(customer_id, card_id)
 
-        return CustomerDTO(
-            id=customer.id,
-            name=customer.name,
-            card=CardDTO(
-                card_id=card.cardId,
-                points=card.points
-            )
-        )
+        return customerdao_and_card_to_dto(customer=customer, card=card)
     
 
     async def delete_customer(self, customer_id: int) -> bool: 

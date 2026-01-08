@@ -21,7 +21,9 @@ async def create_customer(customer: CustomerDTO):
     Create a new customer given a name and optionally a card_id.
 
     - Permissions: Administrator, Shop manager, Cashier
-    - Returns: Created card as CardResponseDTO
+    - Returns: Created customer as CustomerDTO
+    - Raises:
+      - BadRequestError: when name is missing or invalid
     - Status code: 201 Created
     """
     if customer.name is None or customer.name == "":
@@ -39,7 +41,9 @@ async def attach_card_to_customer(customer_id:str, card_id:str):
     Attach a card with card_id to a customer with customer_id.
 
     - Permissions: Administrator, Shop manager, Cashier
-    - Returns: Created card as CardResponseDTO
+    - Returns: Updated customer as CustomerDTO
+    - Raises:
+      - BadRequestError: when mandatory fields (card_id, customer_id) are missing or invalid
     - Status code: 201 Created
     """
 
@@ -61,11 +65,9 @@ async def delete_customer(customer_id: int):
     - Permissions: Administrator, Shop manager, Cashier
     - Path parameter: customer_id (int)
     - Returns: No content (204) on success
-    - Raises:
-      - NotFoundError: when the customer to delete does not exist
     - Status code: 204 No Content
     """
-    success = await controller.delete_customer(customer_id)
+    await controller.delete_customer(customer_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -81,15 +83,12 @@ async def get_customer(customer_id: int):
     - Path parameter: customer_id (int)
     - Returns: CustomerDTO for the requested customer
     - Raises:
-      - NotFoundError: when the customer does not exist
+      - BadRequestError: when customer_id is missing or invalid
     - Status code: 200 OK
     """
     if customer_id<0:
         throw_bad_request("Customer ID must be a positive integer")
-    customer = await controller.get_customer(customer_id)
-    if not customer:
-        raise NotFoundError("Customer not found")
-    return customer
+    return await controller.get_customer(customer_id)
 
 
 @router.get("/", response_model=List[CustomerDTO],
@@ -118,15 +117,10 @@ async def update_customer(customer_id: int, customer: UpdateCustomerDTO):
     - Request body: CustomerDTO (fields to update)
     - Returns: Updated customer as CustomerDTO
     - Raises:
-      - NotFoundError: when the user to update does not exist
       - BadRequestError: when the customer input is invalid
-      - ConflictError: when there is a conflict updating the customer
     - Status code: 201 Created
     """
     if customer.name == "":
         throw_bad_request("Customer name cannot be empty")
 
-    updated = await controller.update_customer(customer_id, customer)
-    if not updated:
-        raise NotFoundError("Customer not found")
-    return updated
+    return await controller.update_customer(customer_id, customer)

@@ -6,6 +6,7 @@ from app.models.DAO.card_dao import CardDAO
 from app.models.DTO.customer_dto import CardDTO, UpdateCardDTO
 from app.database.database import AsyncSessionLocal
 from typing import Optional
+from app.models.errors.notfound_error import NotFoundError
 from app.utils import find_or_throw_not_found, throw_conflict, throw_not_found
 from app.repositories.card_repository import CardRepository
 class CustomerRepository:
@@ -19,10 +20,19 @@ class CustomerRepository:
     async def create_customer(
             self,
             name: str,
-            card: CardDTO | None
+            card: Optional[CardDTO]
     ) -> tuple[CustomerDAO, CardDAO]:
         """
-        Create card
+        Create and store a customer on the database.
+
+        Args:
+            name(str): The customer name
+            card(Optional[CardDTO]): A customer card if already exists
+        Returns:
+            CustomerDAO: Instance of the newly created and saved customer.
+            CardDAO: Instance of the card.
+        Raises:
+            ConflictError: If card is already attached to a customer.
         """
         async with await self._get_session() as session:
 
@@ -52,7 +62,27 @@ class CustomerRepository:
         customer_id: int,
         card_id: int
     ) -> tuple[CustomerDAO, CardDAO]:
+        """
+        Attach an existing card to an existing customer in the database.
 
+        Associates the card identified by `card_id` with the customer identified
+        by `customer_id`. Both entities must already exist in the database.
+
+        Args:
+            customer_id (int): Unique identifier of the customer.
+            card_id (int): Unique identifier of the card to attach.
+
+        Returns:
+            tuple[CustomerDAO, CardDAO]: A tuple containing:
+                - CustomerDAO: The updated customer instance.
+                - CardDAO: The attached card instance.
+
+        Raises:
+            NotFoundError: If no customer with the given `customer_id` exists
+                or if no card with the given `card_id` exists.
+            ConflictError: If the card with the given `card_id` is already
+                attached to a customer.
+        """
         async with await self._get_session() as session:
 
             customer = await session.get(CustomerDAO, customer_id)
@@ -79,7 +109,22 @@ class CustomerRepository:
             return customer, card
         
     async def delete_customer(self, customer_id: int) -> bool: 
-        """Delete a customer by customer_id, if a card is attached, the card will deleted as well"""
+        """
+        Delete a customer and its associated card from the database.
+
+        Removes the customer identified by `customer_id`. If a card is
+        associated with the customer, the card is deleted as well within
+        the same transaction.
+
+        Args:
+            customer_id (int): Unique identifier of the customer to delete.
+
+        Returns:
+            bool: True if the customer was successfully deleted.
+
+        Raises:
+            NotFoundError: If no customer with the given `customer_id` exists.
+        """
         async with await self._get_session() as session:
             customer = await session.get(CustomerDAO, customer_id)
             find_or_throw_not_found(
@@ -97,9 +142,21 @@ class CustomerRepository:
             return True
     
 
-    async def get_customer(self, customer_id: int) -> CustomerDAO | None:
+    async def get_customer(self, customer_id: int) -> CustomerDAO:
         """
-        Get customer by id or throw NotFoundError if not found
+        Retrieve a customer by its unique identifier.
+
+        Fetches the customer with the given `customer_id` from the database.
+        If the customer does not exist, a `NotFoundError` is raised.
+
+        Args:
+            customer_id (int): Unique identifier of the customer to retrieve.
+
+        Returns:
+            CustomerDAO: The requested customer if found.
+
+        Raises:
+            NotFoundError: If no customer with the given `customer_id` exists.
         """
         async with await self._get_session() as session:
             user = await session.get(CustomerDAO, customer_id)
@@ -111,19 +168,56 @@ class CustomerRepository:
         
 
     async def list_customers(self) -> list[CustomerDAO]:
-        """Get all customers"""
+        """
+        Retrieve all customer.
+
+        Fetches the customers from the database.
+
+        Returns:
+            list[CustomerDAO]: The list of customers.
+        """
         async with await self._get_session() as session:
             result = await session.execute(select(CustomerDAO))
             return result.scalars().all()
         
-    async def update_customer(self, customer_id: int, updated_name: str, updated_card: UpdateCardDTO) -> CustomerDAO | None:
+    async def update_customer(self, customer_id: int, updated_name: str, updated_card: UpdateCardDTO) -> CustomerDAO:
         """
-        Update customer information.
+        Update customer information and manage the associated card.
+
+        Updates the customer's name and optionally updates the card
+        association according to the provided `updated_card` payload.
+
+        Card update behavior:
+        - If `updated_card` is None, the card association is left unchanged.
+        - If `updated_card.cardId` is None, the existing card (if any) is removed.
+        - If `updated_card.cardId` refers to a non-existing card, a new card is created and attached to the customer.
+        - If `updated_card.cardId` refers to an existing card:
+            - If the card is already attached to another customer, a `ConflictError` is raised.
+            - If the customer already has a card, the existing association is updated or replaced accordingly.
+            - If the customer has no card, the card is attached.
+
+        All changes are persisted within a single transaction.
+
+        Args:
+            customer_id (int): Unique identifier of the customer to update.
+            updated_name (str): New name to assign to the customer.
+            updated_card (UpdateCardDTO): Card update payload defining how the customer's card association should be modified.
+
+        Returns:
+            CustomerDAO: The updated customer instance.
+
+        Raises:
+            NotFoundError: If no customer with the given `customer_id` exists.
+            ConflictError: If the specified card is already attached to another customer.
         """
         async with await self._get_session() as session:
             db_customer = await session.get(CustomerDAO, customer_id)
             if not db_customer:
-                return None
+                find_or_throw_not_found(
+                    [db_customer] if db_customer else [],
+                    lambda _: True,
+                    f"Customer with id '{customer_id}' not found"
+                )
 
             cardRepository_instance = CardRepository(session=session)
 

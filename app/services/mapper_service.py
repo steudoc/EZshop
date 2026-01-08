@@ -124,6 +124,21 @@ def carddao_to_response_dto(card_dao: CardDAO) -> CardDTO:
         points = card_dao.points
     )
 
+def customerdao_and_card_to_dto(customer: CustomerDAO, card: CardDAO | None = None) -> CustomerDTO:
+        return CustomerDTO(
+            id=customer.id,
+            name=customer.name,
+            card=(
+                CardDTO(
+                    card_id=card.cardId,
+                    points=card.points
+                )
+                if card is not None
+                else None
+            )
+        )
+
+
 async def customerdao_to_responsedto(customer_dao: CustomerDAO) -> CustomerDTO:
     # Nota: Istanziare un repository dentro un mapper non è ideale (rischio circular import),
     # ma se viene da develop lo manteniamo così per ora.
