@@ -153,18 +153,16 @@ async def test_get_customer_success():
 	assert customer_1.card.points == 0
 
 
-# TODO: ensure expected is None and not error
 @pytest.mark.asyncio
 async def test_get_customer_not_found():
 	customer_controller = CustomerController()
 	
 	# search for a customer that does not exist
-	customer_1 = await customer_controller.get_customer(-1)
-	assert customer_1 is None
+	with pytest.raises(NotFoundError):
+		customer_1 = await customer_controller.get_customer(-1)
 
-	# search for a customer that does not exist
-	customer_1 = await customer_controller.get_customer(9999)
-	assert customer_1 is None
+	with pytest.raises(NotFoundError):
+		customer_1 = await customer_controller.get_customer(9999)
 
 
 # ---------------------------
@@ -357,16 +355,13 @@ async def test_update_customer_not_found():
 
 	update_dto = UpdateCustomerDTO(name="updated", card=None)
 
-	# TODO: ensure expected is None and not error
 	# update non existing customer
-	updated = await customer_controller.update_customer(-1, update_dto)
-	assert updated is None
+	with pytest.raises(NotFoundError):
+		updated = await customer_controller.update_customer(-1, update_dto)
 
-	# update non existing customer
-	updated = await customer_controller.update_customer(9999, update_dto)
-	assert updated is None
+	with pytest.raises(NotFoundError):
+		updated = await customer_controller.update_customer(9999, update_dto)
 
-	# TODO: ensure expected is error and not None
 	# update customer with non existing card 
 	update_dto = UpdateCustomerDTO(name="updated", 
 					card=UpdateCardDTO(cardId=9999, points=0))
@@ -520,8 +515,7 @@ async def test_update_customer_invalid_card():
 async def test_delete_customer_without_card():
 	customer_controller = CustomerController()
 	
-	# create card and customers
-	created_card = await create_card()
+	# create customer
 	created_customer = await create_customer()
 
 	# delete customer without a card
@@ -533,17 +527,16 @@ async def test_delete_customer_without_card():
 	assert customer is None
 
 
-# TODO: ensure expected is False and not error
 @pytest.mark.asyncio
 async def test_delete_customer_not_fount():
 	customer_controller = CustomerController()
 	
 	# delete non-existing customer
-	deleted = await customer_controller.delete_customer(-1)
-	assert deleted == False
+	with pytest.raises(NotFoundError):
+		deleted = await customer_controller.delete_customer(-1)
 
-	deleted = await customer_controller.delete_customer(9999)
-	assert deleted == False
+	with pytest.raises(NotFoundError):
+		deleted = await customer_controller.delete_customer(9999)
 
 
 @pytest.mark.asyncio
