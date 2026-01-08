@@ -1,44 +1,62 @@
+from app.repositories.product_repository import ProductRepository
 import pytest
-from unittest.mock import MagicMock
-from app.exceptions import NotFoundError, InvalidStateError
-from app.models.product_dao import ProductDAO
+from unittest.mock import AsyncMock, MagicMock
+from app.models.errors.notfound_error import NotFoundError
+from app.models.errors.invalidstate_error import InvalidStateError
+from app.models.DAO.product_dao import ProductDAO
+
+@pytest.fixture
+def mock_session():
+    """Creates a mock database session with async support for all used methods."""
+    session = MagicMock()
+    # Async Context Manager
+    session.__aenter__ = AsyncMock(return_value=session)
+    session.__aexit__ = AsyncMock(return_value=None)
+    
+    # Async Methods - MUST be AsyncMock because they are 'awaited' in the repo
+    session.get = AsyncMock()
+    session.delete = AsyncMock()
+    session.flush = AsyncMock()
+    return session
+
+@pytest.fixture
+def repository(mock_session):
+    """Initializes the repository with the injected mock session."""
+    repo = ProductRepository()
+    repo._get_session = AsyncMock(return_value=mock_session)
+    return repo
 
 @pytest.mark.asyncio
 async def test_delete_product_success(repository, mock_session):
-    """
-    Test that a product is successfully deleted when found and 
-    involvedOperations is 0.
-    """
     # ARRANGE
     product_id = 1
-    # Create a mock product object
-    mock_product = MagicMock(spec=ProductDAO)
-    mock_product.id = product_id
-    mock_product.involvedOperations = 0  # Valid state for deletion
+    # Use a single object to avoid identity mismatches in assertions
+    product_to_delete = ProductDAO(
+        id=product_id,
+        barcode="1234567890128",
+        price_per_unit=1.99,
+        quantity=10,
+        position="A1",
+        description="Test Product",
+        note="Test Note",
+        involvedOperations=0
+    )
 
-    # Configure the session to return this product
-    mock_session.get.return_value = mock_product
+    mock_session.get.return_value = product_to_delete
 
     # ACT
     await repository.delete_product(product_id)
 
     # ASSERT
-    # Verify the repository searched for the correct ID
     mock_session.get.assert_called_once_with(ProductDAO, product_id)
-    # Verify the delete method was called on the specific product object
-    mock_session.delete.assert_called_once_with(mock_product)
-    # Verify changes were flushed to the database
+    # Corrected: asserting against the actual object returned by get
+    mock_session.delete.assert_called_once_with(product_to_delete)
     mock_session.flush.assert_called_once()
 
 @pytest.mark.asyncio
 async def test_delete_product_not_found(repository, mock_session):
-    """
-    Test that delete_product raises NotFoundError if the product 
-    does not exist in the database.
-    """
     # ARRANGE
     product_id = 999
-    # Simulate database returning None (product not found)
     mock_session.get.return_value = None
 
     # ACT & ASSERT
@@ -46,22 +64,16 @@ async def test_delete_product_not_found(repository, mock_session):
         await repository.delete_product(product_id)
     
     assert "Product not found" in str(exc_info.value)
-    
-    # Critical: Ensure no delete operation was attempted
     mock_session.delete.assert_not_called()
     mock_session.flush.assert_not_called()
 
 @pytest.mark.asyncio
 async def test_delete_product_invalid_state(repository, mock_session):
-    """
-    Test that delete_product raises InvalidStateError if the product 
-    has involvedOperations > 0.
-    """
     # ARRANGE
     product_id = 1
+    # You can use a MagicMock for the DAO object itself as long as it has the attributes
     mock_product = MagicMock(spec=ProductDAO)
-    mock_product.id = product_id
-    mock_product.involvedOperations = 5  # Invalid state: product is in use
+    mock_product.involvedOperations = 5 
 
     mock_session.get.return_value = mock_product
 
@@ -70,7 +82,5 @@ async def test_delete_product_invalid_state(repository, mock_session):
         await repository.delete_product(product_id)
     
     assert "Invalid sale state" in str(exc_info.value)
-
-    # Critical: Ensure no delete operation was attempted
     mock_session.delete.assert_not_called()
     mock_session.flush.assert_not_called()
