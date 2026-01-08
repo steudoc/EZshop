@@ -24,7 +24,7 @@ class ProductController:
         if (product_dto.position != ""):
             position_free = await self.repo.is_position_free(product_dto.position)
             if (not position_free):
-                throw_conflict()
+                throw_conflict(f"Position {product_dto.position} already occupied by another product")
 
         
         created = await self.repo.create_product(product_dto.barcode, 
@@ -69,18 +69,18 @@ class ProductController:
         # get the product in the db (throw not found if not found)
         db_product = await self.repo.get_product_by_id(product_dto.id)
         if (db_product is None):
-            throw_not_found()
+            throw_not_found("Product not found")
             
         # check that new position is reset position or free from other products
         if (product_dto.position is not None and product_dto.position != db_product.position):
             if (product_dto.position != "" ):
                 position_free = await self.repo.is_position_free(product_dto.position)
                 if (not position_free):
-                    throw_conflict()
+                    throw_conflict(f"Position {product_dto.position} already occupied by another product")
                 
         # check that quantity is >= 0
         if (product_dto.quantity is not None and product_dto.quantity < 0):
-            throw_bad_request()
+            throw_bad_request("Product quantity must be greater than or equal to 0")
 
         # update product with present information from the request update request dto
         update_productdao_from_partial_dto(db_product, product_dto)
@@ -110,11 +110,11 @@ class ProductController:
         # get the product in the db (throw not found if not found)
         product = await self.repo.get_product_by_id(product_id)
         if (product is None):
-            throw_not_found()
+            throw_not_found("Product not found")
             
         # check that resulting quantity is >= 0
         if (product.quantity + increment < 0):
-            throw_bad_request()
+            throw_bad_request("Insufficient product quantity")
 
         # update product quantity and update db
         product.quantity += increment
@@ -130,13 +130,13 @@ class ProductController:
         # get the product in the db (throw not found if not found)
         product = await self.repo.get_product_by_id(product_id)
         if (product is None):
-            throw_not_found()
+            throw_not_found("Product not found")
 
         # check that position is reset position or free from other products
         if (position != "" and position != product.position):
             position_free = await self.repo.is_position_free(position)
             if (not position_free):
-                throw_conflict()
+                throw_conflict(f"Position {position} already occupied by another product")
 
         # update product position
         product.position = position
@@ -149,7 +149,7 @@ class ProductController:
         # get the product in the db (throw not found if not found)
         product = await self.repo.get_product_by_id(product_id)
         if (product is None):
-            throw_not_found()
+            throw_not_found("Product not found")
             
         # update number of operations in which product is involved and update db
         product.involvedOperations += 1
@@ -163,11 +163,11 @@ class ProductController:
         # get the product in the db (throw not found if not found)
         product = await self.repo.get_product_by_id(product_id)
         if (product is None):
-            throw_not_found()
+            throw_not_found("Product not found")
             
         # check that product is involved in at least one transaction 
         if (product.involvedOperations < 1):
-            throw_bad_request()
+            throw_bad_request("Product is not involved in any shop operation")
 
         # update number of operations in which product is involved and update db
         product.involvedOperations -= 1
