@@ -96,7 +96,7 @@ class ProductRepository(BaseRepository):
         
         # check position format
         if (not self.is_position_valid(position)):
-            throw_bad_request()
+            throw_bad_request("Position format is not valid")
 
         # check if other products have occupied the position
         async with await self._get_session() as session:
@@ -111,7 +111,7 @@ class ProductRepository(BaseRepository):
         """
 
         if (not self.is_product_data_valid(barcode, description, price_per_unit, quantity, position)):
-            throw_bad_request()
+            throw_bad_request("Product data is not valid")
 
         sameBarcodeProduct = await self.get_product_by_barcode(barcode)
         
@@ -169,7 +169,7 @@ class ProductRepository(BaseRepository):
         
         if (not self.is_product_data_valid(product.barcode, product.description, 
             product.price_per_unit, product.quantity, product.position)):
-            throw_bad_request()
+            throw_bad_request("Product data is not valid")
 
         async with await self._get_session() as session:
             db_product = await session.get(ProductDAO, product.id)
@@ -246,11 +246,11 @@ class ProductRepository(BaseRepository):
 
             # check that product is present
             if (product is None):
-                throw_not_found()
+                throw_not_found("Product not found")
 
             # check that involved operations can be decremented
             if (not include and product.involvedOperations < 1):
-                throw_bad_request()
+                throw_bad_request("Product is not involved in any shop operation")
 
             # update number of operations in which product is involved and update db (+-1)
             product.involvedOperations += (1 if include else -1)

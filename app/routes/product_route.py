@@ -84,12 +84,12 @@ async def get_product_by_id(product_id: int):
 
 	# check that id is valid
 	if (product_id <= 0):
-		throw_bad_request()
+		throw_bad_request(f"Invalid product id: {product_id}")
 
 	# retrieve product and check if it is found
 	product = await controller.get_product_by_id(product_id)
 	if (product is None):
-		throw_not_found()
+		throw_not_found("Product not found")
 
 	return product
 
@@ -113,7 +113,7 @@ async def get_product_by_barcode(barcode: str):
 	# retrieve product and check if it is found
 	product = await controller.get_product_by_barcode(barcode)
 	if (product is None):
-		throw_not_found()
+		throw_not_found("Product not found")
 
 	return product
 
@@ -139,7 +139,7 @@ async def assign_product_position(product_id: int, position: str):
 
 	# check that product id is valid
 	if (product_id <= 0):
-		throw_bad_request()
+		throw_bad_request(f"Invalid product id: {product_id}")
 
 	# try to move product to new position
 	await controller.move_product(product_id, position)
@@ -169,7 +169,7 @@ async def increment_product_quantity(product_id: int, quantity: int):
 
 	# check that product id is valid
 	if (product_id <= 0):
-		throw_bad_request()
+		throw_bad_request(f"Invalid product id: {product_id}")
 
 	# try to increment (or decrement) product quantity
 	await controller.increment_product_quantity(product_id, quantity)
@@ -200,15 +200,15 @@ async def update_product(product_id: int, product: ProductDTO):
 
 	# check that product id is valid
 	if (product_id <= 0):
-		throw_bad_request()
+		throw_bad_request(f"Invalid product id: {product_id}")
 
 	# check that price_per_unit, if present, is a positive number
 	if (product.price_per_unit is not None and product.price_per_unit <= 0):
-		throw_bad_request()
+		throw_bad_request("Price per unit must be greater than 0")
 
 	# check that quantity, if present, is a positive number
 	if (product.quantity is not None and product.quantity < 0):
-		throw_bad_request()
+		throw_bad_request("Product quantity must be greater than 0")
 
 	# barcode must be present
 	if (product.barcode is None):
@@ -242,7 +242,7 @@ async def delete_product(product_id: int):
 
 	# check that product id is valid
 	if (product_id <= 0):
-		throw_bad_request()
+		throw_bad_request(f"Invalid product id: {product_id}")
 
 	# attempt to delete product
 	await controller.delete_product(product_id)
