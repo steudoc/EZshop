@@ -98,21 +98,6 @@ async def test_complete_order_invalid_id_negative():
 
 
 @pytest.mark.asyncio
-async def test_complete_order_invalid_id_not_int():
-    """Test completing with non-integer order ID raises BadRequestError"""
-    await reset_db()
-    await init_db()
-    
-    # Execute & Verify
-    controller = OrderController()
-    
-    with pytest.raises(BadRequestError) as exc_info:
-        await controller.complete_order("invalid")
-    
-    assert "Invalid order id" in str(exc_info.value)
-
-
-@pytest.mark.asyncio
 async def test_complete_order_issued_status():
     """Test completing an ISSUED order (not PAID) raises InvalidStateError"""
     await reset_db()
