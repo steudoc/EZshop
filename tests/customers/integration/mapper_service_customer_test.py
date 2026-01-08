@@ -3,7 +3,7 @@ import pytest
 from app.controllers.card_controller import CardController
 from app.models.DAO.card_dao import CardDAO
 from app.models.DAO.customer_dao import CustomerDAO
-from app.services.mapper_service import carddao_to_response_dto, customerdao_to_responsedto
+from app.services.mapper_service import carddao_to_response_dto, customerdao_and_card_to_dto, customerdao_to_responsedto
 from main import app
 from init_db import reset, init_db
 import app.database.database as db
@@ -118,4 +118,28 @@ async def test_customer_dao_to_response_dto_with_card():
 
 
 
+@pytest.mark.asyncio
+async def test_customerdao_and_card_to_dto_without_card():
+	customer_dao = await create_customer() 
 
+	customer_dto = customerdao_and_card_to_dto(customer_dao, None)
+
+	# ensure customer has the correct data
+	assert customer_dto.id == customer_dao.id
+	assert customer_dto.name == customer_dao.name
+	assert customer_dto.card is None
+
+
+@pytest.mark.asyncio
+async def test_customerdao_and_card_to_dto_with_card():
+	customer_dao = await create_customer() 
+	card_dao = await create_card()
+
+	customer_dto = customerdao_and_card_to_dto(customer_dao, card_dao)
+
+	# ensure customer has the correct data and correct card data
+	assert customer_dto.id == customer_dao.id
+	assert customer_dto.name == customer_dao.name
+	assert customer_dto.card is not None
+	assert customer_dto.card.card_id == card_dao.cardId
+	assert customer_dto.card.points == card_dao.points

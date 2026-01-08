@@ -1,6 +1,7 @@
 import asyncio
 import pytest
 from app.controllers.card_controller import CardController
+from app.models.errors.notfound_error import NotFoundError
 from main import app
 from init_db import reset, init_db
 
@@ -48,8 +49,6 @@ async def test_create_card():
 # GET CARD TESTS
 # ---------------------------
 
-# TODO: ensure expected is None and not error
-
 @pytest.mark.asyncio
 async def test_get_card():
 	controller = CardController()
@@ -64,19 +63,16 @@ async def test_get_card():
 	assert card.points == created_card.points
 
 	# searching for a card that doesn't exist
-	card = await controller.get_card(-1)
-	assert card is None
+	with pytest.raises(NotFoundError):
+		card = await controller.get_card(-1)
 
-	# searching for a card that doesn't exist
-	card = await controller.get_card(9999)	
-	assert card is None
+	with pytest.raises(NotFoundError):
+		card = await controller.get_card(9999)	
 
 
 # ---------------------------
 # MODIFY CARD POINTS TESTS
 # ---------------------------
-
-# TODO: ensure expected is None and not error
 
 @pytest.mark.asyncio
 async def test_modify_card_points():
@@ -98,5 +94,5 @@ async def test_modify_card_points():
 	assert card.points == 0
 
 	# updating a non-existing card should result in None being returned
-	card = await controller.modify_points_card(9999, 100)
-	assert card is None
+	with pytest.raises(NotFoundError):
+		card = await controller.modify_points_card(9999, 100)
