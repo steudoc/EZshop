@@ -51,8 +51,6 @@ async def test_create_card():
 # GET CARD TESTS
 # ---------------------------
 
-# TODO: ensure expected is error and not None
-
 @pytest.mark.asyncio
 async def test_get_card():
 	repo = CardRepository()
@@ -70,6 +68,11 @@ async def test_get_card():
 	assert card.cardId == created_card.cardId
 	assert card.points == created_card.points
 
+
+@pytest.mark.asyncio
+async def test_get_card_not_found():
+	repo = CardRepository()
+
 	# searching for a card that doesn't exist
 	with pytest.raises(NotFoundError):
 		card = await repo.get_card(-1)
@@ -78,35 +81,36 @@ async def test_get_card():
 	with pytest.raises(NotFoundError):
 		card = await repo.get_card(9999)	
 
+
+# method no longer exists	
+# # ---------------------------
+# # GET CARD BY ID TESTS
+# # ---------------------------
+
+# @pytest.mark.asyncio
+# async def test_get_card_by_id():
+# 	repo = CardRepository()
+# 	# create a card to get
+# 	created_card = None
+# 	async with await repo._get_session() as session:
+# 		created_card = CardDAO(points=0)
+# 		session.add(created_card)
+# 		await session.commit()
+
+# 	card = await repo.get_card_by_id(created_card.cardId)
 	
-# ---------------------------
-# GET CARD BY ID TESTS
-# ---------------------------
+# 	# verify card has the same data as the created one
+# 	assert card is not None
+# 	assert card.cardId == created_card.cardId
+# 	assert card.points == created_card.points
 
-@pytest.mark.asyncio
-async def test_get_card_by_id():
-	repo = CardRepository()
-	# create a card to get
-	created_card = None
-	async with await repo._get_session() as session:
-		created_card = CardDAO(points=0)
-		session.add(created_card)
-		await session.commit()
+# 	# searching for a card that doesn't exist
+# 	card = await repo.get_card_by_id(-1)
+# 	assert card is None
 
-	card = await repo.get_card_by_id(created_card.cardId)
-	
-	# verify card has the same data as the created one
-	assert card is not None
-	assert card.cardId == created_card.cardId
-	assert card.points == created_card.points
-
-	# searching for a card that doesn't exist
-	card = await repo.get_card_by_id(-1)
-	assert card is None
-
-	# searching for a card that doesn't exist
-	card = await repo.get_card_by_id(9999)	
-	assert card is None
+# 	# searching for a card that doesn't exist
+# 	card = await repo.get_card_by_id(9999)	
+# 	assert card is None
 	
 
 # ---------------------------
@@ -135,11 +139,15 @@ async def test_update_card():
 	card = await repo.update_card(created_card.cardId, 900)
 	assert card is not None
 	assert card.points == 0
+		
 
-	# updating a non-existing card should result in None being returned
-	card = await repo.update_card(9999, 100)
-	assert card is None
+@pytest.mark.asyncio
+async def test_update_card_not_found():
+	repo = CardRepository()
 
+	# updating a non-existing card should result in NotFoundError
+	with pytest.raises(NotFoundError):
+		card = await repo.update_card(9999, 100)
 
 # -----------------------------------
 # UPDATE CARD WITHOUT SUM TESTS
@@ -168,9 +176,14 @@ async def test_update_card_without_sum():
 	assert card is not None
 	assert card.points == 900
 
-	# updating a non-existing card should result in None being returned
-	card = await repo.update_card_without_sum(9999, 100)
-	assert card is None
+
+@pytest.mark.asyncio
+async def test_update_card_without_sum_not_found():
+	repo = CardRepository()
+
+	# updating a non-existing card should result in NotFoundError
+	with pytest.raises(NotFoundError):
+		card = await repo.update_card_without_sum(9999, 100)
 
 	
 # ---------------------------
@@ -178,16 +191,31 @@ async def test_update_card_without_sum():
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_delete_card():
+async def test_delete_card_success():
 	repo = CardRepository()
 
-	# deleting a non-existing card results in False
-	deleted = await repo.delete_card(9999)
-	assert deleted == False
+	created_card = None
+	# create a card with a customer attached
+	async with await repo._get_session() as session:
+		created_card = CardDAO(points=1000)
+		session.add(created_card)
+		await session.commit()
 
-	# deleting a non-existing card results in False
-	deleted = await repo.delete_card(9999)
-	assert deleted == False
+	# delete card
+	deleted = await repo.delete_card(created_card.cardId)
+	assert deleted == True
+
+
+@pytest.mark.asyncio
+async def test_delete_card_not_found():
+	repo = CardRepository()
+
+	# deleting a non-existing card results in NotFoundError
+	with pytest.raises(NotFoundError):
+		deleted = await repo.delete_card(-1)
+
+	with pytest.raises(NotFoundError):
+		deleted = await repo.delete_card(9999)
 
 
 # ----------------------------------------------
@@ -202,7 +230,7 @@ async def test_delete_card():
 # ----------------------------------------------
 
 @pytest.mark.asyncio
-async def test_update_and_attach_to_customer():
+async def test_update_and_attach_to_customer_success():
 	repo = CardRepository()
 	
 	# create a card to update
@@ -231,7 +259,12 @@ async def test_update_and_attach_to_customer():
 	assert card.customer_id == 3
 	assert card.points == 0
 
-	# updating a non-existing card should result in an error
+
+@pytest.mark.asyncio
+async def test_update_and_attach_to_customer_not_found():
+	repo = CardRepository()
+
+	# updating a non-existing card should result in NotFoundError
 	with pytest.raises(NotFoundError):
 		card = await repo.update_and_attach_card_to_customer(
 		1, 9999, 100)
@@ -241,7 +274,7 @@ async def test_update_and_attach_to_customer():
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_is_attached():
+async def test_is_attached_success():
 	repo = CardRepository()
 
 	card = None
@@ -264,12 +297,25 @@ async def test_is_attached():
 	assert card_1_attached == True
 
 
+@pytest.mark.asyncio
+async def test_is_attached_not_found():
+	repo = CardRepository()
+
+	# verifying non-existing card is attached should 
+	# result in NotFoundError
+	with pytest.raises(NotFoundError):
+		attached = await repo.is_attached(-1)
+
+	with pytest.raises(NotFoundError):
+		attached = await repo.is_attached(9999)
+
+
 # ---------------------------
 # GET CARD BY CUSTOMER TESTS
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_get_card_by_customer():
+async def test_get_card_by_customer_success():
 	repo = CardRepository()
 
 	created_card = None
@@ -280,11 +326,6 @@ async def test_get_card_by_customer():
 		await session.commit()
 		await session.refresh(created_card)
 
-	# searching a card by a non-existing customer
-	#  should result in None
-	card = await repo.get_card_by_customer(9999)
-	assert card is None
-
 	# searching card by customer should return created card
 	card = await repo.get_card_by_customer(100)
 	assert card is not None
@@ -293,3 +334,14 @@ async def test_get_card_by_customer():
 	assert card.cardId == created_card.cardId
 
 
+@pytest.mark.asyncio
+async def test_get_card_by_customer_not_found():
+	repo = CardRepository()
+
+	# searching a card by a non-existing customer
+	#  should result in NotFoundError
+	with pytest.raises(NotFoundError):
+		card = await repo.get_card_by_customer(-1)
+
+	with pytest.raises(NotFoundError):
+		card = await repo.get_card_by_customer(9999)
