@@ -136,18 +136,17 @@ async def test_get_customer_success():
 	assert customer.id == created_customer.id
 
 
-# TODO: ensure expected is None and not error
 @pytest.mark.asyncio
 async def test_get_customer():
 	customer_repo = CustomerRepository()
 
 	# search for a customer that does not exist
-	customer_1 = await customer_repo.get_customer(-1)
-	assert customer_1 is None
+	with pytest.raises(NotFoundError):
+		customer_1 = await customer_repo.get_customer(-1)
 
 	# search for a customer that does not exist
-	customer_1 = await customer_repo.get_customer(9999)
-	assert customer_1 is None
+	with pytest.raises(NotFoundError):
+		customer_1 = await customer_repo.get_customer(9999)
 
 
 # ---------------------------
@@ -334,7 +333,6 @@ async def test_update_customer_not_found():
 	updated = await customer_repo.update_customer(9999, "update 0", None)
 	assert updated is None
 
-	# TODO: ensure expected is error and not None
 	# update customer with non existing card 
 	with pytest.raises(NotFoundError):
 		card_dto = CardDTO(card_id=-1, points=0)
@@ -486,18 +484,16 @@ async def test_delete_customer_without_card():
 	assert customer is None
 
 
-# TODO: ensure expected is False and not error
 @pytest.mark.asyncio
 async def test_delete_customer_not_found():
 	customer_repo = CustomerRepository()
 
-	# TODO: ensure expected is False and not error
 	# delete non-existing customer
-	deleted = await customer_repo.delete_customer(-1)
-	assert deleted == False
+	with pytest.raises(NotFoundError):
+		deleted = await customer_repo.delete_customer(-1)
 
-	deleted = await customer_repo.delete_customer(9999)
-	assert deleted == False
+	with pytest.raises(NotFoundError):
+		deleted = await customer_repo.delete_customer(9999)
 
 
 @pytest.mark.asyncio
