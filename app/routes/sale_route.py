@@ -54,8 +54,7 @@ def _validate_discount(rate: float):
 
 # --- ROUTES ---
 
-"Fixed route method: get_sale adding Depends for authentication"
-"Fiexed all method to have proper robust validation"
+
 @router.get("/{sale_id}", response_model=SaleDTO,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def get_sale(sale_id: int):   
