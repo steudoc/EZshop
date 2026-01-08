@@ -7,7 +7,7 @@ from app.controllers.return_controller import ReturnController
 from app.middleware.auth_middleware import authenticate_user
 from app.config.config import ROUTES
 from fastapi import Response
-from app.repositories.product_repository import ProductRepository
+from app.controllers.product_controller import ProductController
 from app.utils import throw_bad_request, throw_invalid_state, throw_not_found
 
 from app.models.errors.notfound_error import NotFoundError
@@ -144,8 +144,8 @@ async def add_item(return_id: int, barcode: str, amount: int):
     if not return_id or return_id <= 0:
         throw_bad_request('Invalid return id')
 
-    product_repo = ProductRepository()
-    product = await product_repo.get_product_by_barcode(barcode)
+    product_controller = ProductController()
+    product = await product_controller.get_product_by_barcode(barcode)
     if not product:
         throw_not_found("Product not found")
 

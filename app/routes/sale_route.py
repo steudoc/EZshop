@@ -13,7 +13,51 @@ from app.models.errors.bad_request import BadRequestError
 router = APIRouter(prefix=ROUTES['V1_SALES'], tags=["Sales"])
 controller = SaleController()
 
-@router.get("/{sale_id}", response_model=SaleDTO)
+# --- HELPER FUNCTIONS FOR VALIDATION ---
+
+def _validate_sale_id(sale_id: int):
+    """Validates that sale_id is a positive integer."""
+    if sale_id is None or sale_id <= 0:
+        throw_bad_request("Invalid sale id: must be a positive integer")
+
+def _validate_positive_amount(amount: float, error_msg: str = "Amount must be a positive integer"):
+    """Validates that amount is positive."""
+    if amount is None or amount <= 0:
+        throw_bad_request(error_msg)
+
+def _validate_barcode(barcode: str) -> str:
+    """
+    Validates barcode: 
+    - Not empty/whitespace
+    - Numeric
+    - Length 12-14 digits
+    Returns stripped barcode.
+    """
+    if not barcode or not barcode.strip():
+        throw_bad_request("Invalid barcode: cannot be empty or whitespace")
+    
+    clean_barcode = barcode.strip()
+    
+    if not clean_barcode.isdigit():
+        throw_bad_request("Invalid barcode: non-numeric")
+
+    # Check length constraint (12-14 digits)
+    if not (12 <= len(clean_barcode) <= 14):
+        throw_bad_request("Invalid barcode: must be between 12 and 14 digits")
+        
+    return clean_barcode
+
+def _validate_discount(rate: float):
+    """Validates discount rate is between 0 and 1."""
+    if rate is None or not (0.0 <= rate < 1.0):
+        throw_bad_request("Discount must be between 0 and 1")
+
+# --- ROUTES ---
+
+"Fixed route method: get_sale adding Depends for authentication"
+"Fiexed all method to have proper robust validation"
+@router.get("/{sale_id}", response_model=SaleDTO,
+    dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def get_sale(sale_id: int):   
     """
     Retrieve a sale by its ID.
@@ -26,10 +70,7 @@ async def get_sale(sale_id: int):
       - NotFoundError: when the sale does not exist
     - Status code: 200 OK
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    
-        
+    _validate_sale_id(sale_id)
     return await controller.get_sale(sale_id)
 
 @router.get("/", response_model=List[SaleDTO],
@@ -71,8 +112,7 @@ async def delete_sale(sale_id: int):
       - InvalidStateError: when the sale cannot be deleted (e.g. it is already PAID)
     - Status code: 204 No Content
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
+    _validate_sale_id(sale_id)
         
     await controller.delete_sale(sale_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -97,19 +137,19 @@ async def add_item_to_sale(
       - InvalidStateError: when the sale is closed or paid
     - Status code: 201 Created
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    if amount <= 0:
-        throw_bad_request("Amount must be positive")
+    _validate_sale_id(sale_id)
+    _validate_positive_amount(amount, "Amount must be a positive integer")
+    clean_barcode = _validate_barcode(barcode)
         
-    item_dto = SaleLineDTO(sale_id=sale_id, product_barcode=barcode, quantity=amount)
+    
+    item_dto = SaleLineDTO(sale_id=sale_id, product_barcode=clean_barcode, quantity=amount)
     await controller.add_item_to_sale(item_dto)    
    
     return BooleanDTO(value=True)
 
 @router.patch("/{sale_id}/discount", response_model=BooleanDTO,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
-async def update_sale_discount(sale_id: int, discountRate: float):
+async def update_sale_discount(sale_id: int, discount_rate: float):
     """
     Update the discount of a sale.
 
@@ -123,18 +163,19 @@ async def update_sale_discount(sale_id: int, discountRate: float):
       - InvalidStateError: when the sale is not OPEN
     - Status code: 200 OK
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    if discountRate < 0 or discountRate > 1:
-        throw_bad_request("Discount must be between 0 and 1")
-        
-    sale_discount_dto = SaleDiscountDTO(id=sale_id, discount_rate=discountRate)
-    result=await controller.update_sale_discount(sale_discount_dto)    
+    
+    _validate_sale_id(sale_id)
+    
+    
+    _validate_discount(discount_rate)
+
+    sale_discount_dto = SaleDiscountDTO(id=sale_id, discount_rate=discount_rate)
+    result = await controller.update_sale_discount(sale_discount_dto)    
     return result
 
 @router.patch("/{sale_id}/items/{product_barcode}/discount", response_model=BooleanDTO,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
-async def update_sale_line_discount(sale_id: int, product_barcode: str, discountRate: float):
+async def update_sale_line_discount(sale_id: int, product_barcode: str, discount_rate: float):
     """
     Update the discount of a sale line.
 
@@ -148,13 +189,12 @@ async def update_sale_line_discount(sale_id: int, product_barcode: str, discount
       - InvalidStateError: when the sale is not OPEN
     - Status code: 200 OK
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    if discountRate < 0 or discountRate > 1:
-        throw_bad_request("Discount must be between 0 and 1")
-        
-    sale_line_discount_dto = SaleLineDiscountDTO(sale_id=sale_id, product_barcode=product_barcode, discount_rate=discountRate)
-    result=await controller.update_sale_line_discount(sale_line_discount_dto)
+    _validate_sale_id(sale_id)
+    clean_barcode = _validate_barcode(product_barcode)
+    _validate_discount(discount_rate)
+
+    sale_line_discount_dto = SaleLineDiscountDTO(sale_id=sale_id, product_barcode=clean_barcode, discount_rate=discount_rate)
+    result = await controller.update_sale_line_discount(sale_line_discount_dto)
 
     return result
 
@@ -174,13 +214,12 @@ async def delete_item_from_sale(sale_id: int, barcode: str, amount: int):
       - InvalidStateError: when the sale is not OPEN
     - Status code: 204 No Content
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    if amount <= 0:
-        throw_bad_request("Amount must be positive")    
-        
-    item_dto = SaleLineDTO(sale_id=sale_id, product_barcode=barcode, quantity=amount)
-    result=await controller.delete_item_from_sale(item_dto)
+    _validate_sale_id(sale_id)
+    _validate_positive_amount(amount, "Amount must be a positive integer")
+    clean_barcode = _validate_barcode(barcode)
+
+    item_dto = SaleLineDTO(sale_id=sale_id, product_barcode=clean_barcode, quantity=amount)
+    result = await controller.delete_item_from_sale(item_dto)
     return result
 
 @router.patch("/{sale_id}/close", 
@@ -198,12 +237,12 @@ async def close_sale(sale_id: int):
       - InvalidStateError: when the sale is not OPEN
     - Status code: 200 OK
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    result=await controller.close_sale(sale_id)    
+    _validate_sale_id(sale_id)
+        
+    result = await controller.close_sale(sale_id)    
     return result
 
-@router.patch("/{sale_id}/pay", # Assuming implementation returns details or just boolean, checked generic return in controller
+@router.patch("/{sale_id}/pay", 
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def payment(sale_id: int, cash_amount: float):
     """
@@ -219,10 +258,11 @@ async def payment(sale_id: int, cash_amount: float):
       - InvalidStateError: when the sale is not PENDING
     - Status code: 200 OK
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
-    if cash_amount <= 0:
-        throw_bad_request("Amount paid must be positive")
+   
+    _validate_sale_id(sale_id)
+    
+    
+    _validate_positive_amount(cash_amount, "Amount paid must be positive")
         
     sale_payment_dto = SalePaymentDTO(sale_id=sale_id, amount_paid=cash_amount)    
     return await controller.process_payment(sale_payment_dto)
@@ -242,7 +282,6 @@ async def get_sale_points(sale_id: int):
       - InvalidStateError: when the sale is not PAID
     - Status code: 200 OK
     """
-    if sale_id <= 0:
-        throw_bad_request("Invalid sale id")
+    _validate_sale_id(sale_id)
         
     return await controller.get_sale_points(sale_id)
