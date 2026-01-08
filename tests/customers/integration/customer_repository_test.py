@@ -405,10 +405,10 @@ async def test_update_customer_empty_card():
 
 	# update customer specifying an empty card
 	updated = await customer_repo.update_customer(
-		created_customer.id, "update 1", UpdateCardDTO())
+		created_customer.id, "updated", UpdateCardDTO())
 	
 	assert updated is not None
-	assert updated.name == "update 1"
+	assert updated.name == "updated"
 
 	# ensure old card is deleted, and no new card is attached to customer
 	card_2 = await get_card_by_id(created_card_2.cardId)
@@ -459,12 +459,16 @@ async def test_update_customer_invalid_card():
 	with pytest.raises(BadRequestError):
 		card_dto = CardDTO(card_id=created_card.cardId, points=0)
 		card_dto.points = -1
-		updated = await customer_repo.update_customer(created_customer.id, "update 2", card_dto)
+		updated = await customer_repo.update_customer(created_customer.id, "updated", card_dto)
 		
 	# ensure customer name wasn't updated 
 	updated = await get_customer_by_id(created_customer.id)
-	assert updated.name != "update 2"
+	assert updated.name != "updated"
 
+	# ensure same card is attached to customer 
+	card = await get_card_by_customer(created_customer.id)
+	assert card is not None
+	assert card.cardId == created_card.cardId
 
 # ---------------------------
 # DELETE CUSTOMER TESTS

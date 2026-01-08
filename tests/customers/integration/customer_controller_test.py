@@ -490,7 +490,6 @@ async def test_update_customer_invalid_card():
 	created_customer = await create_customer("Paolo Rossi")
 	await attach_card(created_customer.id, created_card.cardId)
 
-	# TODO: ensure expected is error and not None
 	# update customer with invalid card (negative points)
 	update_dto = UpdateCustomerDTO(name="updated", 
 					card=UpdateCardDTO(cardId=created_card.cardId, points=-1))
