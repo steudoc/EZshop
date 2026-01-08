@@ -5,7 +5,6 @@ from fastapi.testclient import TestClient
 from main import app
 from init_db import reset, init_db
 from datetime import datetime, timedelta
-from dateutil.parser import isoparse
 
 BASE_URL = "http://127.0.0.1:8000/api/v1"
 
@@ -137,7 +136,7 @@ def test_start_return_success_authorized_users(client, auth_tokens, paid_sale_cr
         assert resp.json()["status"] == "OPEN"
 
         # Assert created_at
-        created_at = isoparse(resp.json()["created_at"])
+        created_at = datetime.fromisoformat(resp.json()["created_at"])
         now = datetime.now()
         tolerance = timedelta(seconds=1)
         assert abs((created_at - now)) < tolerance
