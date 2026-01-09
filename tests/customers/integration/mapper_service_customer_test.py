@@ -69,7 +69,7 @@ async def attach_card(customer_id, card_id) -> None:
 # -----------------------------------------
 
 @pytest.mark.asyncio
-async def test_card_dato_to_response_dto():
+async def test_card_dao_to_response_dto():
       
 	# create a dao, get the dto and check they have the same data
 	card_dao = await create_card(0)
