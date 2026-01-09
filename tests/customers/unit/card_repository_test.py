@@ -52,7 +52,7 @@ async def test_create_card():
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_get_card():
+async def test_get_card_success():
 	repo = CardRepository()
 	# create a card to get
 	created_card = None
@@ -118,7 +118,7 @@ async def test_get_card_not_found():
 # ---------------------------
 
 @pytest.mark.asyncio
-async def test_update_card():
+async def test_update_card_success():
 	repo = CardRepository()
 	# create a card to update
 	created_card = None
@@ -154,7 +154,7 @@ async def test_update_card_not_found():
 # -----------------------------------
 
 @pytest.mark.asyncio
-async def test_update_card_without_sum():
+async def test_update_card_without_sum_success():
 	repo = CardRepository()
 	# create a card to update
 	created_card = None

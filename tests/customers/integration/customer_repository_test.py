@@ -137,16 +137,16 @@ async def test_get_customer_success():
 
 
 @pytest.mark.asyncio
-async def test_get_customer():
+async def test_get_customer_not_found():
 	customer_repo = CustomerRepository()
 
 	# search for a customer that does not exist
 	with pytest.raises(NotFoundError):
-		customer_1 = await customer_repo.get_customer(-1)
+		customer = await customer_repo.get_customer(-1)
 
 	# search for a customer that does not exist
 	with pytest.raises(NotFoundError):
-		customer_1 = await customer_repo.get_customer(9999)
+		customer = await customer_repo.get_customer(9999)
 
 
 # ---------------------------
@@ -325,13 +325,12 @@ async def test_update_customer_not_found():
 	created_customer = await create_customer()
 
 	# update non existing customer
-	updated = await customer_repo.update_customer(-1, "update 0", None)
-	
-	assert updated is None
+	with pytest.raises(NotFoundError):
+		updated = await customer_repo.update_customer(-1, "updated", None)
 
 	# update non existing customer
-	updated = await customer_repo.update_customer(9999, "update 0", None)
-	assert updated is None
+	with pytest.raises(NotFoundError):
+		updated = await customer_repo.update_customer(9999, "updated", None)
 
 	# update customer with non existing card 
 	with pytest.raises(NotFoundError):
