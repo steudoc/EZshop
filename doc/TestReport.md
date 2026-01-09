@@ -15,31 +15,348 @@
 
 # Dependency graph
 
-     <report the here the dependency graph of EzShop>
+  ![alt text](images/ezshopDependencyGraph.jpeg)
 
 # Integration approach
 
-    <Write here the integration sequence you adopted, in general terms (top down, bottom up, mixed) and as sequence
+## Balance tests
 
-    (ex: step1: unit A, step 2: unit A+B, step 3: unit A+B+C, etc)>
+Integration strategy: **Bottom-up approach**
 
-    <Some steps may  correspond to unit testing (ex step1 in ex above)>
+- **Step 1 (Unit testing)**: SystemRepository
+  - Mocked database session
+  - Tests low-level repository methods for getting and setting balance
 
-    <One step will  correspond to API testing >
+- **Step 2 (Integration testing)**: SystemRepository + SystemController
+  - Real database (reset between tests)
+  - Tests controller integration with repository layer
+  - Verifies balance operations through controller interface
+
+- **Step 3 (System/API testing)**: Full stack (Controller + Repository + Database + Routes)
+  - Uses TestClient to call REST API endpoints
+  - Tests complete HTTP flow with authentication
+  - Verifies system behavior at API level
+
+## Returns tests
+
+Integration strategy: **Bottom-up approach**
+
+- **Step 1 (Unit testing)**: 
+    
+- **Step 2 (Integration testing)**: 
+    
+- **Step 3 (API/System testing)**: 
+
+## Sales tests
+
+Integration strategy: **Bottom-up approach**
+
+- **Step 1 (Unit Testing)**: Individual components were tested in isolation using a White Box approach with Simple Decision Coverage:
+   - **Mapper Service**: Tested directly without the need for mocks.
+   - **Repository**: Tested in isolation by mocking calls to the `ProductRepository` and the underlying database.
+   - **Controller**: Tested in isolation by creating stubs (mocks) for functions related to `SaleRepository` and `SystemController`.
+
+- **Step 2 (Integration testing)**: Focused on specific Controller functions (`create_sale`, `list_sales`, `get_sale`). In this step, calls to the Repository remained mocked, but the interaction with the **Mapper Service** (`sale_dao_to_dto`) was real (no mocks), verifying the correct integration between Controller and Mapper. The technique used remained White Box with Simple Decision Coverage.
+
+- **Step 3 (API/System testing)**: The full system was tested at the Route level using a Black Box approach, specifically applying Equivalence Class Partitioning.
+
+## Customers tests
+
+Integration strategy: **Bottom-up approach**
+
+- **Step 1 (Unit Testing)**: CardRepository and CustomerRepository (in isolation)
+  - Real database with reset/init between tests
+  - Tests repository methods for CRUD operations on customers and cards
+  - Each test operates independently with mocked dependencies
+
+- **Step 2 (Integration Testing)**: CardRepository + CustomerRepository + CardController + CustomerController
+  - Real database
+  - Tests controller orchestration with multiple repositories
+  - Verifies customer and card management business logic
+
+- **Step 3 (System/API Testing)**: Full stack (All layers + Routes + HTTP)
+  - Uses TestClient for HTTP API testing
+  - Tests complete workflows with authentication
+  - Verifies customer and card operations through REST endpoints
+
+## Products test
+
+Integration strategy: **Bottom-up approach**
+
+- **Step 1 (Unit testing)**: In this phase, individual repository methods were tested in isolation. **Mocking** techniques were used to simulate SQLAlchemy database sessions, allowing for the verification of barcode validation logic (GTIN checksum algorithm), proper exception handling (e.g., `NotFoundError`, `ConflictError`), and data integrity at an atomic level.
+    
+- **Step 2 (Integration testing)**: Integration tests focused on the interaction between the controller and a real database (SQLite). In each test, the database was reset and reinitialized to ensure execution independence. Complex business logic was verified, such as checking for position conflicts (two products in the same location) and the secure incrementing/decrementing of operation counters (`involvedOperations`).
+    
+- **Step 3 (API/System testing)**: The final step involved testing the entire system through simulated HTTP requests. In addition to end-to-end functional flows, security constraints related to user roles (Admin, ShopManager, Cashier) were tested via JWT tokens. Product "locked" states were also verified, preventing, for example, barcode modification or deletion if the product is associated with an open sale.
+    
+## Orders tests
+
+Integration strategy: **Bottom-up approach**
+
+- **Step 1 (Unit Testing)**: OrderRepository, ProductRepository, SystemRepository (in isolation)
+  - Real database with reset/init between tests
+  - Tests repository methods for CRUD operations on orders
+  - Each test operates independently with mocked dependencies
+
+- **Step 2 (Integration Testing)**: OrderRepository + OrderController + ProductRepository
+  - Real database
+  - Tests controller orchestration with multiple repositories
+  - Verifies order state transitions and business logic
+
+- **Step 3 (System/API Testing)**: Full stack (All layers + Routes + HTTP)
+  - Uses TestClient for HTTP API testing
+  - Tests complete workflows with authentication
+  - Verifies order operations through REST endpoints
+
 
 # Tests
 
-<in the table below list the test cases defined For each test report the object tested, the test level (API, integration, unit) and the technique used to define the test case (BB/ eq partitioning, BB/ boundary, WB/ statement coverage, etc)> <split the table if needed>
+## Balance tests
 
 | Test case name | Object(s) tested | Test level | Technique used |
 | :------------: | :--------------: | :--------: | :------------: |
-|                |                  |            |                |
+| test_get_balance_success | SystemRepository.get_last_system_info() | Unit | WB: Mocking + Statement coverage |
+| test_get_balance_no_system_info | SystemRepository.get_last_system_info() | Unit | WB: Boundary value (None case) |
+| test_get_balance_session_error | SystemRepository.get_last_system_info() | Unit | WB: Error handling |
+| test_create_system_info_success | SystemRepository.create_system_info() | Unit | WB: Statement coverage + Mocking |
+| test_create_system_info_zero_balance | SystemRepository.create_system_info() | Unit | BB: Boundary value (zero) |
+| test_create_system_info_negative_balance | SystemRepository.create_system_info() | Unit | BB: Equivalence class (negative) |
+| test_create_system_info_failure | SystemRepository.create_system_info() | Unit | WB: Exception handling |
+| test_get_balance_success | SystemController.get_balance() | Integration | BB: Equivalence class + Integration testing |
+| test_get_balance_zero_value | SystemController.get_balance() | Integration | BB: Boundary value (zero) |
+| test_get_balance_not_found | SystemController.get_balance() | Integration | BB: Exception case |
+| test_set_balance_success | SystemController.set_balance() | Integration | BB: Valid input + Integration testing |
+| test_set_balance_zero | SystemController.set_balance() | Integration | BB: Boundary value (zero) |
+| test_set_balance_negative_raises_error | SystemController.set_balance() | Integration | BB: Exception case (negative) |
+| test_reset_balance_success | SystemController.reset_balance() | Integration | BB: State transition verification |
+| test_get_balance_success | REST API /balance GET | System/API | BB: Full stack + API testing |
+| test_get_balance_zero | REST API /balance GET | System/API | BB: Boundary value (zero) |
+| test_get_balance_positive_amount | REST API /balance GET | System/API | BB: Equivalence class (positive) |
+| test_get_balance_returns_latest | REST API /balance GET | System/API | WB: State consistency |
+| test_get_balance_unauthenticated | REST API /balance GET | System/API | BB: Authorization error |
+| test_get_balance_without_header | REST API /balance GET | System/API | BB: Missing header error |
+| test_get_balance_invalid_token | REST API /balance GET | System/API | BB: Invalid credentials |
+| test_get_balance_in_complete_workflow | REST API Balance workflow | System/API | WB: End-to-end scenario |
+| test_get_balance_consistency | REST API /balance GET | System/API | WB: Consistency verification |
+| test_set_balance_success | REST API /balance/set POST | System/API | BB: Valid input + API testing |
+| test_set_balance_zero | REST API /balance/set POST | System/API | BB: Boundary value (zero) |
+| test_set_balance_negative_rejected | REST API /balance/set POST | System/API | BB: Invalid input (negative) |
+| test_set_balance_then_get | REST API Balance workflow | System/API | WB: Integration verification |
+| test_set_balance_overwrites_previous | REST API /balance/set POST | System/API | WB: State overwrite |
+
+## Returns tests
+
+| Test case name | Object(s) tested | Test level | Technique used |
+| :------------: | :--------------: | :--------: | :------------: |
+
+## Sales tests
+
+| Test case name | Object(s) tested | Test level | Technique used |
+| :------------: | :--------------: | :--------: | :------------: |
+| test_mapper_service_sale_dao_to_dto.py | sale_dao_to_dto | Unit | WB / Decision coverage |
+| test_repository_add_item_to_sale.py | add_item_to_sale | Unit | WB / Decision coverage |
+| test_repository_delete_sale.py | delete_sale | Unit | WB / Decision coverage |
+| test_repository_remove_item_from_sale.py | remove_item_from_sale | Unit | WB / Decision coverage |
+| test_repository_update_sale_discount.py | update_sale_discount | Unit | WB / Decision coverage |
+| test_repository_update_sale_line_discount.py | update_sale_line_discount | Unit | WB / Decision coverage |
+| test_repository_update_sale_status_paid.py | update_sale_status_paid | Unit | WB / Decision coverage |
+| test_repository_update_sale_status_pending.py | update_sale_status_pending | Unit | WB / Decision coverage |
+| test_controller_add_item_to_sale.py | add_item_to_sale | Unit | WB / Decision coverage |
+| test_controller_close_sale.py | close_sale | Unit | WB / Decision coverage |
+| test_controller_delete_item_from_sale.py | delete_item_from_sale | Unit | WB / Decision coverage |
+| test_controller_delete_sale.py | delete_sale | Unit | WB / Decision coverage |
+| test_controller_get_sale_points.py | get_sale_points | Unit | WB / Decision coverage |
+| test_controller_process_payment.py | process_payment | Unit | WB / Decision coverage |
+| test_controller_update_sale_discount.py | update_sale_discount | Unit | WB / Decision coverage |
+| test_controller_update_sale_line_discount.py | update_sale_line_discount | Unit | WB / Decision coverage |
+| test_controller_create_sale.py | create_sale | Integration | WB / Decision coverage |
+| test_controller_get_sale.py | get_sale | Integration | WB / Decision coverage |
+| test_controller_list_sales.py | list_sales | Integration | WB / Decision coverage |
+| test_route_add_item_to_sale.py | add_item_to_sale | API | BB / Equivalence partitioning |
+| test_route_close_sale.py | close_sale | API | BB / Equivalence partitioning |
+| test_route_create_sale.py | create_sale | API | BB / Equivalence partitioning |
+| test_route_delete_item_from_sale.py | delete_item_from_sale | API | BB / Equivalence partitioning |
+| test_route_delete_sale.py | delete_sale | API | BB / Equivalence partitioning |
+| test_route_get_sale.py | get_sale | API | BB / Equivalence partitioning |
+| test_route_get_sale_points.py | get_sale_points | API | BB / Equivalence partitioning |
+| test_route_list_sales.py | list_sales | API | BB / Equivalence partitioning |
+| test_route_payment.py | process_payment | API | BB / Equivalence partitioning |
+| test_route_update_sale_discount.py | update_sale_discount | API | BB / Equivalence partitioning |
+| test_route_update_sale_line_discount.py | update_sale_line_discount | API | BB / Equivalence partitioning |
+
+## Costumers test
+
+| Test case name | Object(s) tested | Test level | Technique used |
+| :------------: | :--------------: | :--------: | :------------: | 
+
+## Products tests
+
+| Test case name | Object(s) tested | Test level | Technique used |
+| :------------: | :--------------: | :--------: | :------------: |
+| test_update_product_invalid_data | ProductRepository | Unit | BB: Boundary Value Analysis |
+| test_update_product_simple_fields | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_update_product_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_update_barcode_success | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_update_barcode_conflict | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_update_barcode_invalid_state | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_delete_product_success | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_delete_product_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_delete_product_invalid_state | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_get_product_by_barcode_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_get_product_by_barcode_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_get_product_by_barcode_invalid_format | ProductRepository | Unit | BB: Boundary Value Analysis |
+| test_get_product_by_id_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_get_product_by_id_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_include_product_in_op_increment_success | ProductRepository | Unit | WB: Statement Coverage |
+| test_include_product_in_op_decrement_success | ProductRepository | Unit | WB: Statement Coverage |
+| test_include_product_in_op_decrement_below_zero | ProductRepository | Unit | BB: Boundary Value Analysis |
+| test_include_product_in_op_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_is_position_free_yes | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_is_position_free_no | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_is_position_free_invalid_format | ProductRepository | Unit | BB: Boundary Value Analysis |
+| test_list_products_populated | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_list_products_empty | ProductRepository | Unit | BB: Equivalence Partitioning |
+| test_create_product_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_create_product_defaults_valid | ProductController | Integration | BB: Equivalence Partitioning |
+| test_create_product_invalid_barcode | ProductController | Integration | BB: Boundary Value Analysis |
+| test_create_product_invalid_position_format | ProductController | Integration | BB: Boundary Value Analysis |
+| test_create_product_conflict_position | ProductController | Integration | BB: Equivalence Partitioning |
+| test_create_product_conflict_barcode | ProductController | Integration | BB: Equivalence Partitioning |
+| test_delete_product_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_delete_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_delete_product_invalid_state | ProductController | Integration | BB: Equivalence Partitioning |
+| test_include_product_in_op_success | ProductController | Integration | WB: Statement Coverage |
+| test_include_product_in_op_multiple_times | ProductController | Integration | BB: Equivalence Partitioning |
+| test_include_product_in_op_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_exclude_product_from_op_success | ProductController | Integration | WB: Statement Coverage |
+| test_exclude_product_from_op_success_to_zero | ProductController | Integration | WB: Statement Coverage |
+| test_exclude_product_from_op_bad_request | ProductController | Integration | BB: Boundary Value Analysis |
+| test_exclude_product_from_op_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_get_product_by_barcode_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_get_product_by_barcode_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_get_product_by_barcode_invalid_format | ProductController | Integration | BB: Boundary Value Analysis |
+| test_get_product_by_id_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_get_product_by_id_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_search_by_description_partial_match | ProductController | Integration | BB: Equivalence Partitioning |
+| test_search_by_description_case_insensitive | ProductController | Integration | BB: Equivalence Partitioning |
+| test_search_by_description_no_match | ProductController | Integration | BB: Equivalence Partitioning |
+| test_search_by_description_empty_db | ProductController | Integration | BB: Equivalence Partitioning |
+| test_list_products_empty | ProductController | Integration | BB: Equivalence Partitioning |
+| test_list_products_populated | ProductController | Integration | BB: Equivalence Partitioning |
+| test_increment_quantity_add_success | ProductController | Integration | WB: Statement Coverage |
+| test_increment_quantity_subtract_success | ProductController | Integration | WB: Statement Coverage |
+| test_increment_quantity_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_increment_quantity_bad_request_negative_result | ProductController | Integration | BB: Boundary Value Analysis |
+| test_move_product_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_move_product_reset_position | ProductController | Integration | BB: Equivalence Partitioning |
+| test_move_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_move_product_conflict | ProductController | Integration | BB: Equivalence Partitioning |
+| test_move_product_invalid_format | ProductController | Integration | BB: Boundary Value Analysis |
+| test_update_product_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_update_product_move_position_success | ProductController | Integration | BB: Equivalence Partitioning |
+| test_update_product_reset_position | ProductController | Integration | BB: Equivalence Partitioning |
+| test_update_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
+| test_update_product_conflict_position | ProductController | Integration | BB: Equivalence Partitioning |
+| test_update_product_bad_request_quantity | ProductController | Integration | BB: Boundary Value Analysis |
+| test_assign_position_lifecycle | API Endpoints | API | BB: Scenario Testing |
+| test_assign_position_conflict | API Endpoints | API | BB: Equivalence Partitioning |
+| test_assign_position_forbidden_cashier | API Endpoints | API | BB: Access Control |
+| test_assign_position_not_found | API Endpoints | API | BB: Equivalence Partitioning |
+| test_assign_position_invalid_format | API Endpoints | API | BB: Boundary Value Analysis |
+| test_assign_position_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
+| test_assign_position_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_create_product_success_valid_gtin_and_position | API Endpoints | API | BB: Equivalence Partitioning |
+| test_create_product_insufficient_permissions | API Endpoints | API | BB: Access Control |
+| test_create_product_invalid_input | API Endpoints | API | BB: Boundary Value Analysis |
+| test_create_product_conflict_duplicate_barcode | API Endpoints | API | BB: Equivalence Partitioning |
+| test_delete_product_success | API Endpoints | API | BB: Equivalence Partitioning |
+| test_delete_product_forbidden_cashier | API Endpoints | API | BB: Access Control |
+| test_delete_product_not_found | API Endpoints | API | BB: Equivalence Partitioning |
+| test_delete_product_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
+| test_delete_product_invalid_state_transaction_exists | API Endpoints | API | BB: Equivalence Partitioning |
+| test_delete_product_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_get_by_barcode_success | API Endpoints | API | BB: Equivalence Partitioning |
+| test_get_by_barcode_forbidden_cashier | API Endpoints | API | BB: Access Control |
+| test_get_by_barcode_not_found | API Endpoints | API | BB: Equivalence Partitioning |
+| test_get_by_barcode_bad_request | API Endpoints | API | BB: Boundary Value Analysis |
+| test_get_by_barcode_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_get_by_barcode_missing_barcode_param | API Endpoints | API | BB: Boundary Value Analysis |
+| test_get_product_by_id_success | API Endpoints | API | BB: Equivalence Partitioning |
+| test_get_product_by_id_not_found | API Endpoints | API | BB: Equivalence Partitioning |
+| test_get_product_by_id_bad_request_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
+| test_get_product_by_id_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_increment_quantity_success | API Endpoints | API | WB: Statement Coverage |
+| test_decrement_quantity_success | API Endpoints | API | WB: Statement Coverage |
+| test_decrement_quantity_insufficient_stock | API Endpoints | API | BB: Boundary Value Analysis |
+| test_quantity_forbidden_cashier | API Endpoints | API | BB: Access Control |
+| test_quantity_not_found | API Endpoints | API | BB: Equivalence Partitioning |
+| test_quantity_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
+| test_quantity_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_list_products_empty | API Endpoints | API | BB: Equivalence Partitioning |
+| test_list_products_success_all_roles | API Endpoints | API | BB: Access Control |
+| test_list_products_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_search_products_success_partial_match | API Endpoints | API | BB: Equivalence Partitioning |
+| test_search_products_success_single_match | API Endpoints | API | BB: Equivalence Partitioning |
+| test_search_products_no_match | API Endpoints | API | BB: Equivalence Partitioning |
+| test_search_products_forbidden_cashier | API Endpoints | API | BB: Access Control |
+| test_search_products_unauthenticated | API Endpoints | API | BB: Access Control |
+| test_search_products_missing_query_param | API Endpoints | API | BB: Boundary Value Analysis |
+| test_update_product_success | API Endpoints | API | BB: Equivalence Partitioning |
+| test_update_product_forbidden_cashier | API Endpoints | API | BB: Access Control |
+| test_update_product_not_found | API Endpoints | API | BB: Equivalence Partitioning |
+| test_update_product_validation_error | API Endpoints | API | BB: Boundary Value Analysis |
+| test_update_product_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
+| test_update_product_conflict_barcode | API Endpoints | API | BB: Equivalence Partitioning |
+| test_update_barcode_fails_if_transaction_exists | API Endpoints | API | BB: Scenario Testing |
+| test_update_other_fields_allowed_with_transaction | API Endpoints | API | BB: Scenario Testing |
+
+## Orders tests
+
+| Test case name | Object(s) tested | Test level | Technique used |
+| :------------: | :--------------: | :--------: | :------------: |
+| test_create_order_success | OrderRepository.create_order() | Unit | WB: Statement coverage + Mocking |
+| test_create_order_paid_with_sufficient_balance | OrderRepository.create_order() + SystemRepository | Unit | BB: Equivalence class (sufficient balance) |
+| test_create_order_product_not_found | OrderRepository.create_order() | Unit | BB: Exception case |
+| test_create_order_insufficient_balance | OrderRepository.create_order() + SystemRepository | Unit | BB: Boundary value (insufficient balance) |
+| test_get_order_existing_order | OrderRepository.get_order() | Unit | WB: Statement coverage |
+| test_get_order_non_existent_order | OrderRepository.get_order() | Unit | BB: Boundary value (None case) |
+| test_get_order_multiple_orders | OrderRepository.get_order() | Unit | WB: Isolation verification |
+| test_list_orders_empty | OrderRepository.list_orders() | Unit | BB: Boundary value (empty list) |
+| test_list_orders_single_order | OrderRepository.list_orders() | Unit | BB: Equivalence class (single element) |
+| test_list_orders_multiple_orders | OrderRepository.list_orders() | Unit | WB: Statement coverage |
+| test_create_issued_order_success | OrderController.create_issued_order() | Integration | BB: Valid input + Integration testing |
+| test_create_issued_order_with_zero_quantity | OrderController.create_issued_order() | Integration | BB: Boundary value (zero) |
+| test_create_issued_order_with_negative_quantity | OrderController.create_issued_order() | Integration | BB: Equivalence class (negative) |
+| test_create_issued_order_with_zero_price | OrderController.create_issued_order() | Integration | BB: Boundary value (zero price) |
+| test_pay_order_success | OrderController.pay_order() + SystemController | Integration | BB: State transition + Balance deduction |
+| test_pay_order_not_found | OrderController.pay_order() | Integration | BB: Exception case |
+| test_pay_order_invalid_id_negative | OrderController.pay_order() | Integration | BB: Boundary value (negative ID) |
+| test_pay_order_already_paid | OrderController.pay_order() | Integration | BB: Invalid state |
+| test_list_orders | OrderController.list_orders() | Integration | WB: Integration verification |
+| test_complete_order_success | OrderController.complete_order() | Integration | BB: State transition |
+| test_create_issued_order_system_workflow | Full stack + OrderRepository verification | System | WB: End-to-end scenario |
+| test_create_issued_order_with_product_involvement | OrderController + ProductRepository | System | WB: Side effect verification |
+| test_create_issued_order_does_not_affect_balance | OrderController + SystemRepository | System | WB: State isolation |
+| test_pay_order_system_workflow | Full workflow: Create + Pay + Verify | System | WB: Complete workflow |
+| test_pay_order_deducts_correct_amount | OrderController + SystemController | System | BB: Calculation verification |
 
 # Coverage
 
 ## Coverage of FR
 
-<Report in the following table the coverage of functional requirements and scenarios(from official requirements) >
+### Balance
+
+| Functional Requirement or scenario | Test(s) |
+| :--------------------------------: | :-----: |
+| FR8.4 - Compute balance | test_get_balance_success, test_get_balance_zero_value, test_get_balance_zero, test_get_balance_positive_amount, test_get_balance_returns_latest, test_get_balance_consistency |
+| FR8.1 - Record debit | test_set_balance_success, test_set_balance_zero, test_set_balance_then_get, test_set_balance_overwrites_previous |
+| FR8.2 - Record credit | test_set_balance_success, test_set_balance_then_get |
+| FR8.3 - Show credits and debits over a period | test_get_balance_in_complete_workflow |
+| Balance error handling | test_set_balance_negative_rejected, test_get_balance_not_found |
+| Authentication & Authorization | test_get_balance_unauthenticated, test_get_balance_without_header, test_get_balance_invalid_token |
+| Scenario 9-1 - List credits and debits | test_get_balance_in_complete_workflow, test_get_balance_success |
+
+### Returns
 
 | Functional Requirement or scenario | Test(s) |
 | :--------------------------------: | :-----: |
@@ -48,6 +365,67 @@
 |                Scx                 |         |
 |                Scy                 |         |
 |                ...                 |         |
+
+### Sales
+
+| Functional Requirement or scenario | Test(s) |
+| :--------------------------------: | :-----: |
+|                FR6.1               |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py  |
+|                FR6.2               |   test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py |
+|                FR6.3               |   test_route_delete_item_from_sale.py, test_controller_delete_item_from_sale.py, test_repository_remove_item_from_sale.py  |
+|                FR6.4               |   test_route_update_sale_discount.py, test_controller_update_sale_discount.py, test_repository_update_sale_discount.py      |
+|                FR6.5               |   test_route_update_sale_line_discount.py, test_controller_update_sale_line_discount.py, test_repository_update_sale_line_discount.py      |
+|                FR6.6               |   test_route_get_sale_points.py, test_controller_get_sale_points.py      |
+|                FR6.10              |   test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py       |
+|                FR6.11              |   test_route_delete_sale.py, test_controller_delete_sale.py, test_repository_delete_sale.py      |
+|                FR7.1               |   test_route_payment.py, test_controller_process_payment.py, test_repository_update_sale_status_paid.py      |
+|                Scenario 6-1        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
+|                Scenario 6-2        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_update_sale_line_discount.py, test_controller_update_sale_line_discount.py, test_repository_update_sale_line_discount.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
+|                Scenario 6-3        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_update_sale_discount.py, test_controller_update_sale_discount.py, test_repository_update_sale_discount.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
+|                Scenario 6-4        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py, test_route_get_sale_points.py, test_controller_get_sale_points.py      |
+|                Scenario 6-5        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, , test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py, test_route_delete_sale.py, test_controller_delete_sale.py, test_repository_delete_sale.py      |
+|                Scenario 6-6        |    test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
+|                Scenario 7-4        |   test_route_payment.py, test_controller_process_payment.py, test_repository_update_sale_status_paid.py      |
+
+### Costumers
+
+| Functional Requirement or scenario | Test(s) |
+| :--------------------------------: | :-----: |
+|                FRx                 |         |
+|                FRy                 |         |
+|                Scx                 |         |
+|                Scy                 |         |
+|                ...                 |         |
+
+### Products
+
+| Functional Requirement or scenario | Test(s) |
+| :--------------------------------: | :-----: |
+| FR3.1 - Define/Modify product type | test_create_product_success, test_update_product_success, test_create_product_success_valid_gtin_and_position |
+| FR3.2 - Delete a product type | test_delete_product_success, test_delete_product_invalid_state |
+| FR3.3 - List all product types | test_list_products_populated, test_list_products_empty, test_list_products_success_all_roles |
+| FR3.4 - Search product type | test_get_product_by_barcode_found, test_get_by_barcode_success, test_search_products_success_partial_match, test_search_by_description_partial_match |
+| FR4.1 - Modify quantity available | test_increment_product_quantity, test_increment_quantity_success, test_decrement_quantity_success, test_include_product_in_op_success, test_include_product_in_op_multiple_times |
+| FR4.2 - Modify position | test_move_product_success, test_assign_position_lifecycle, test_update_product_move_position_success |
+| NFR4 - Barcode Algorithm (GTIN) | test_get_product_by_barcode_invalid_format, test_create_product_invalid_input, test_update_product_validation_error |
+| Scenario 1-1 - Create product type X | test_create_product_success_valid_gtin_and_position |
+| Scenario 1-2 - Modify product type location | test_update_product_move_position_success, test_move_product_success, test_assign_position_lifecycle |
+| Scenario 1-3 - Modify product type price | test_update_product_success, test_update_product_simple_fields |
+
+### Orders
+
+| Functional Requirement or scenario | Test(s) |
+| :--------------------------------: | :-----: |
+| FR4.4 - Send and pay an order for a product type | test_create_issued_order_success, test_create_issued_order_system_workflow, test_pay_order_success, test_pay_order_system_workflow |
+| FR4.5 - Pay an issued reorder warning | test_pay_order_success, test_pay_order_system_workflow, test_pay_order_deducts_correct_amount |
+| FR4.6 - Record order arrival | test_complete_order_success |
+| FR4.7 - List all orders (issued, payed, completed) | test_list_orders_empty, test_list_orders_single_order, test_list_orders_multiple_orders, test_list_orders |
+| Scenario 3-1 - Order of product type X issued | test_create_issued_order_success, test_create_issued_order_system_workflow, test_create_issued_order_does_not_affect_balance |
+| Scenario 3-2 - Order of product type X payed | test_pay_order_success, test_pay_order_system_workflow, test_pay_order_deducts_correct_amount |
+| Scenario 3-3 - Record order arrival | test_complete_order_success, test_create_issued_order_with_product_involvement |
+| Order validation & error handling | test_create_order_product_not_found, test_create_order_insufficient_balance, test_create_issued_order_with_zero_quantity, test_create_issued_order_with_negative_quantity, test_create_issued_order_with_zero_price, test_pay_order_not_found, test_pay_order_invalid_id_negative, test_pay_order_already_paid |
+| Order state transitions | test_create_issued_order_success, test_pay_order_success, test_complete_order_success |
+| Balance deduction on payment | test_create_order_paid_with_sufficient_balance, test_pay_order_success, test_pay_order_system_workflow, test_pay_order_deducts_correct_amount |
 
 ## Coverage white box
 
