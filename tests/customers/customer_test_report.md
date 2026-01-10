@@ -157,11 +157,11 @@ API testing steps: step 5
 | Test case name | Object(s) tested | Test level | Technique used |
 | :------------ | :-------------- | :--------: | :------------ |
 | card_repository_test.test_create_card() | CardRepository.create_card() | Unit | WB / decision coverage |
-| card_repository_test.test_get_card()_success | CardRepository.get_card() | Unit | WB / decision coverage |
+| card_repository_test.test_get_card_success() | CardRepository.get_card() | Unit | WB / decision coverage |
 | card_repository_test.test_get_card_not_found() | CardRepository.get_card() | Unit | WB / decision coverage |
-| card_repository_test.test_update_card()_success | CardRepository.update_card() | Unit | WB / decision coverage |
+| card_repository_test.test_update_card_success() | CardRepository.update_card() | Unit | WB / decision coverage |
 | card_repository_test.test_update_card_not_found() | CardRepository.update_card() | Unit | WB / decision coverage |
-| card_repository_test.test_update_card_without_sum()_success | CardRepository.update_card_without_sum() | Unit | WB / decision coverage |
+| card_repository_test.test_update_card_without_sum_success() | CardRepository.update_card_without_sum() | Unit | WB / decision coverage |
 | card_repository_test.test_update_card_without_sum_not_found() | CardRepository.update_card_without_sum() | Unit | WB / decision coverage |
 | card_repository_test.test_delete_card_success() | CardRepository.delete_card() | Unit | WB / decision coverage |
 | card_repository_test.test_delete_card_not_found() | CardRepository.delete_card() | Unit | WB / decision coverage |
@@ -174,3 +174,17 @@ API testing steps: step 5
 
 # TODO: remove?
 | card_repository_test.test_get_card_by_id() |  | Unit | WB / decision coverage |
+
+
+| Functional Requirement or scenario | Test(s) |
+| :--------------------------------: | :-----: |
+|                FR5.1               |    customer_test.test_create_customer_success_as_admin(), customer_test.test_create_customer_success_as_cashier(), customer_test.test_create_customer_success_as_manager(), customer_test.test_create_multiple_customers(), customer_test.test_create_customer_missing_fields(), customer_test.test_create_customer_with_card(), customer_test.test_create_customer_with_invalid_card(), customer_test.test_create_customer_with_wrong_card(), customer_test.test_create_customer_card_conflict(), customer_test.test_create_customer_unauthenticated(), customer_test.test_update_customer_success_as_admin(), customer_test.test_update_customer_success_as_cashier(), customer_test.test_update_customer_success_as_manager(), customer_test.test_update_customer_invalid_customer(), customer_test.test_update_customer_not_found(), customer_test.test_update_customer_with_card_success(), customer_test.test_update_customer_invalid_card(), customer_test.test_update_customer_card_not_found(), customer_test.test_update_customer_empty_card(), customer_test.test_update_customer_empty_card_1(), customer_test.test_update_customer_change_card(), customer_test.test_update_customer_conflict(), customer_test.test_update_customer_with_card_negative_points(), customer_test.test_update_customer_unauthenticated()      |
+|                FR5.2               |    customer_test.test_delete_customer_success_as_admin(), customer_test.test_delete_customer_success_as_cashier(), customer_test.test_delete_customer_success_as_manager(), customer_test.test_delete_customer_not_found(), customer_test.test_delete_customer_unauthenticated()      |
+|                FR5.3               |     customer_test.test_get_customer_success_as_admin(), customer_test.test_get_customer_success_as_admin(), customer_test.test_get_customer_success_as_admin(), customer_test.test_get_customer_invalid_id(), customer_test.test_get_customer_not_found(), customer_test.test_get_customer_unauthenticated()    |
+|                FR5.4               |    customer_test.test_list_customers_success_as_admin(), customer_test.test_list_customers_success_as_cashier(), customer_test.test_list_customers_success_as_manager(), customer_test.test_list_customers_empty(), customer_test.test_list_customers_not_empty(), customer_test.test_list_customers_unauthenticated()    |
+|                FR5.5               |    customer_test.test_create_card_success_as_admin(), customer_test.test_create_card_success_as_cashier(), customer_test.test_create_card_success_as_manager(), customer_test.test_create_card_unauthenticated()     |
+|                FR5.6               |    customer_test.test_attach_card_to_customer_success_as_admin(), customer_test.test_attach_card_to_customer_success_as_cashier(), customer_test.test_attach_card_to_customer_success_as_manager(), customer_test.test_attach_card_to_customer_invalid_customer(), customer_test.test_attach_card_to_customer_invalid_card(), customer_test.test_attach_card_to_customer_card_not_found(), customer_test.test_attach_card_to_customer_customer_not_found(), customer_test.test_attach_card_to_customer_card_already_attached(), customer_test.test_attach_card_to_customer_twice(), customer_test.test_attach_card_to_customer_customer_already_has_card(), customer_test.test_attach_card_to_customer_customer_unauthenticated()     |
+|                FR5.7               |     customer_test.test_modify_card_points_success_as_admin(), customer_test.test_modify_card_points_success_as_cashier(), customer_test.test_modify_card_points_success_as_manager(), customer_test.test_modify_card_points_invalid_id(), customer_test.test_modify_card_points_card_not_found(), customer_test.test_modify_card_points_success_as_manager(), customer_test.test_modify_card_points_success_unauthenticated()    |
+
+
+
