@@ -193,7 +193,7 @@ Integration strategy: **Bottom-up approach**
 | test_route_update_sale_discount.py | update_sale_discount | API | BB / Equivalence partitioning |
 | test_route_update_sale_line_discount.py | update_sale_line_discount | API | BB / Equivalence partitioning |
 
-## Custumers test
+## Customers test
 
 | Test case name | Object(s) tested | Test level | Technique used |
 | :------------ | :-------------- | :--------: | :------------ |
@@ -315,8 +315,8 @@ Integration strategy: **Bottom-up approach**
 | customer_test.test_modify_card_points_success_as_manager() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
 | customer_test.test_modify_card_points_invalid_id() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
 | customer_test.test_modify_card_points_card_not_found() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_success_as_manager() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_success_unauthenticated() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
+| customer_test.test_modify_card_points_insufficient_points() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
+| customer_test.test_modify_card_points_unauthenticated() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
 
 
 ## Products tests
@@ -517,7 +517,7 @@ Integration strategy: **Bottom-up approach**
 |                Scenario 6-6        |    test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
 |                Scenario 7-4        |   test_route_payment.py, test_controller_process_payment.py, test_repository_update_sale_status_paid.py      |
 
-### Custumers
+### Customers
 
 | Functional Requirement or scenario | Test(s) |
 | :--------------------------------: | :-----: |
@@ -527,7 +527,7 @@ Integration strategy: **Bottom-up approach**
 |                FR5.4 - List  all customers             |    customer_test.test_list_customers_success_as_admin(), customer_test.test_list_customers_success_as_cashier(), customer_test.test_list_customers_success_as_manager(), customer_test.test_list_customers_empty(), customer_test.test_list_customers_not_empty(), customer_test.test_list_customers_unauthenticated()    |
 |                FR5.5 - Create a loyalty card             |    customer_test.test_create_card_success_as_admin(), customer_test.test_create_card_success_as_cashier(), customer_test.test_create_card_success_as_manager(), customer_test.test_create_card_unauthenticated()     |
 |                FR5.6 - Attach loyalty card to a customer             |    customer_test.test_attach_card_to_customer_success_as_admin(), customer_test.test_attach_card_to_customer_success_as_cashier(), customer_test.test_attach_card_to_customer_success_as_manager(), customer_test.test_attach_card_to_customer_invalid_customer(), customer_test.test_attach_card_to_customer_invalid_card(), customer_test.test_attach_card_to_customer_card_not_found(), customer_test.test_attach_card_to_customer_customer_not_found(), customer_test.test_attach_card_to_customer_card_already_attached(), customer_test.test_attach_card_to_customer_twice(), customer_test.test_attach_card_to_customer_customer_already_has_card(), customer_test.test_attach_card_to_customer_customer_unauthenticated()     |
-|                FR5.7 - Modify points on a loyalty card             |     customer_test.test_modify_card_points_success_as_admin(), customer_test.test_modify_card_points_success_as_cashier(), customer_test.test_modify_card_points_success_as_manager(), customer_test.test_modify_card_points_invalid_id(), customer_test.test_modify_card_points_card_not_found(), customer_test.test_modify_card_points_success_as_manager(), customer_test.test_modify_card_points_success_unauthenticated()    |
+|                FR5.7 - Modify points on a loyalty card             |     customer_test.test_modify_card_points_success_as_admin(), customer_test.test_modify_card_points_success_as_cashier(), customer_test.test_modify_card_points_success_as_manager(), customer_test.test_modify_card_points_invalid_id(), customer_test.test_modify_card_points_card_not_found(), customer_test.test_modify_card_points_insufficient_points(), customer_test.test_modify_card_points_unauthenticated()    |
 
 ### Products
 
