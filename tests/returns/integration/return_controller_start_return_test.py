@@ -5,6 +5,7 @@ from app.database.database import  AsyncSessionLocal, init_db, reset_db, AsyncSe
 from app.controllers.return_controller import ReturnController
 from app.models.DAO.sale_dao import SaleDAO
 from app.models.DAO.return_dao import ReturnDAO
+from app.models.DTO.return_dto import ReturnDTO
 from app.models.errors.invalidstate_error import InvalidStateError
 from app.models.errors.notfound_error import NotFoundError
 
@@ -69,6 +70,6 @@ async def test_start_return_success(sale_paid):
 
     result = await controller.start_return(sale_id=sale_paid.id)
 
-    assert isinstance(result, ReturnDAO)
+    assert isinstance(result, ReturnDTO)
     assert result.sale_id == sale_paid.id
     assert result.status == "OPEN"

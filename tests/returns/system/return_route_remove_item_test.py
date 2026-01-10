@@ -320,40 +320,51 @@ def test_remove_more_items_compared_to_sale(client, auth_tokens,returns_creation
     return_id = returns_creation["id"]
 
     for role in ["admin", "manager", "cashier"]:
-
-        add_resp = client.delete(
+        # Try to remove an item that was never added to the return
+        rem_resp = client.delete(
             BASE_URL + f"/returns/{return_id}/items",
             params={"barcode": doritos["barcode"], "amount":30},
             headers=auth_header(auth_tokens, role)
-        )  
+        )
 
-        # You cannot add more items than there are in the sale
-        assert add_resp.status_code == 400
+        # Item not found in return
+        assert rem_resp.status_code == 404
 
 
 def test_remove_item_success_admin(client, auth_tokens,returns_creation):
     return_id = returns_creation["id"]
 
     role = "admin"
-    # Remove products to return transaction
-    rem_resp = client.delete(
-        BASE_URL + f"/returns/{return_id}/items",
-        params={"barcode": chocolate_bar["barcode"], "amount":1},
-        headers=auth_header(auth_tokens, role)
-    )  
-
-    # Assert response
-    assert rem_resp.status_code == 202  
-    assert len(rem_resp.json()["success"]) == True
-
-    # Get return
+    
+    # Get the current return to see what items it has
     resp = client.get(
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
     )
-    assert len(resp.json()["lines"]) == 21
+    # The fixture already added 2 chocolate_bar items to this return
+    assert len(resp.json()["lines"]) == 1
+    initial_quantity = resp.json()["lines"][0]["quantity"]
+    assert initial_quantity == 2
 
-    # Remove products to return transaction
+    # Remove one item from return transaction
+    rem_resp = client.delete(
+        BASE_URL + f"/returns/{return_id}/items",
+        params={"barcode": chocolate_bar["barcode"], "amount":1},
+        headers=auth_header(auth_tokens, role)
+    )  
+
+    # Assert response (204 No Content for successful DELETE)
+    assert rem_resp.status_code == 204
+
+    # Get return and verify item quantity decreased
+    resp = client.get(
+        BASE_URL + f"/returns/{return_id}",
+        headers=auth_header(auth_tokens, role)
+    )
+    assert len(resp.json()["lines"]) == 1
+    assert resp.json()["lines"][0]["quantity"] == 1
+
+    # Remove the last item from return transaction
     rem_resp = client.delete(
         BASE_URL + f"/returns/{return_id}/items",
         params={"barcode": chocolate_bar["barcode"], "amount":1},
@@ -361,10 +372,9 @@ def test_remove_item_success_admin(client, auth_tokens,returns_creation):
     )  
 
     # Assert response
-    assert rem_resp.status_code == 202  
-    assert len(rem_resp.json()["success"]) == True
+    assert rem_resp.status_code == 204
 
-    # Get return
+    # Get return and verify line was deleted
     resp = client.get(
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
@@ -375,25 +385,36 @@ def test_remove_item_success_manager(client, auth_tokens,returns_creation):
     return_id = returns_creation["id"]
 
     role = "manager"
-    # Remove products to return transaction
-    rem_resp = client.delete(
-        BASE_URL + f"/returns/{return_id}/items",
-        params={"barcode": chocolate_bar["barcode"], "amount":1},
-        headers=auth_header(auth_tokens, role)
-    )  
-
-    # Assert response
-    assert rem_resp.status_code == 202  
-    assert len(rem_resp.json()["success"]) == True
-
-    # Get return
+    
+    # Get the current return to see what items it has
     resp = client.get(
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
     )
-    assert len(resp.json()["lines"]) == 21
+    # The fixture already added 2 chocolate_bar items to this return
+    assert len(resp.json()["lines"]) == 1
+    initial_quantity = resp.json()["lines"][0]["quantity"]
+    assert initial_quantity == 2
 
-    # Remove products to return transaction
+    # Remove one item from return transaction
+    rem_resp = client.delete(
+        BASE_URL + f"/returns/{return_id}/items",
+        params={"barcode": chocolate_bar["barcode"], "amount":1},
+        headers=auth_header(auth_tokens, role)
+    )  
+
+    # Assert response (204 No Content for successful DELETE)
+    assert rem_resp.status_code == 204
+
+    # Get return and verify item quantity decreased
+    resp = client.get(
+        BASE_URL + f"/returns/{return_id}",
+        headers=auth_header(auth_tokens, role)
+    )
+    assert len(resp.json()["lines"]) == 1
+    assert resp.json()["lines"][0]["quantity"] == 1
+
+    # Remove the last item from return transaction
     rem_resp = client.delete(
         BASE_URL + f"/returns/{return_id}/items",
         params={"barcode": chocolate_bar["barcode"], "amount":1},
@@ -401,10 +422,9 @@ def test_remove_item_success_manager(client, auth_tokens,returns_creation):
     )  
 
     # Assert response
-    assert rem_resp.status_code == 202  
-    assert len(rem_resp.json()["success"]) == True
+    assert rem_resp.status_code == 204
 
-    # Get return
+    # Get return and verify line was deleted
     resp = client.get(
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
@@ -415,25 +435,36 @@ def test_remove_item_success_cashier(client, auth_tokens,returns_creation):
     return_id = returns_creation["id"]
 
     role = "cashier"
-    # Remove products to return transaction
-    rem_resp = client.delete(
-        BASE_URL + f"/returns/{return_id}/items",
-        params={"barcode": chocolate_bar["barcode"], "amount":1},
-        headers=auth_header(auth_tokens, role)
-    )  
-
-    # Assert response
-    assert rem_resp.status_code == 202  
-    assert len(rem_resp.json()["success"]) == True
-
-    # Get return
+    
+    # Get the current return to see what items it has
     resp = client.get(
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
     )
-    assert len(resp.json()["lines"]) == 21
+    # The fixture already added 2 chocolate_bar items to this return
+    assert len(resp.json()["lines"]) == 1
+    initial_quantity = resp.json()["lines"][0]["quantity"]
+    assert initial_quantity == 2
 
-    # Remove products to return transaction
+    # Remove one item from return transaction
+    rem_resp = client.delete(
+        BASE_URL + f"/returns/{return_id}/items",
+        params={"barcode": chocolate_bar["barcode"], "amount":1},
+        headers=auth_header(auth_tokens, role)
+    )  
+
+    # Assert response (204 No Content for successful DELETE)
+    assert rem_resp.status_code == 204
+
+    # Get return and verify item quantity decreased
+    resp = client.get(
+        BASE_URL + f"/returns/{return_id}",
+        headers=auth_header(auth_tokens, role)
+    )
+    assert len(resp.json()["lines"]) == 1
+    assert resp.json()["lines"][0]["quantity"] == 1
+
+    # Remove the last item from return transaction
     rem_resp = client.delete(
         BASE_URL + f"/returns/{return_id}/items",
         params={"barcode": chocolate_bar["barcode"], "amount":1},
@@ -441,10 +472,9 @@ def test_remove_item_success_cashier(client, auth_tokens,returns_creation):
     )  
 
     # Assert response
-    assert rem_resp.status_code == 202  
-    assert len(rem_resp.json()["success"]) == True
+    assert rem_resp.status_code == 204
 
-    # Get return
+    # Get return and verify line was deleted
     resp = client.get(
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)

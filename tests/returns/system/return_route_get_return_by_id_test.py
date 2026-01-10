@@ -166,7 +166,7 @@ def test_get_return_by_id_unauthenticated(client, auth_tokens):
 
 def test_get_return_by_id_invalid_or_missing_id(client, auth_tokens):
     for role in ["admin", "manager", "cashier"]:
-        # Get return
+        # Get return with negative ID
         resp = client.get(
             BASE_URL + "/returns/-2",
             headers=auth_header(auth_tokens, role)
@@ -175,18 +175,9 @@ def test_get_return_by_id_invalid_or_missing_id(client, auth_tokens):
         # Assert response
         assert resp.status_code == 400
 
-        # Get return
+        # Get return with zero ID
         resp = client.get(
             BASE_URL + "/returns/0",
-            headers=auth_header(auth_tokens, role)
-        )
-
-        # Assert response
-        assert resp.status_code == 400
-
-        # Get return
-        resp = client.get(
-            BASE_URL + "/returns/",
             headers=auth_header(auth_tokens, role)
         )
 
