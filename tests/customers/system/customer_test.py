@@ -292,14 +292,14 @@ def test_get_customer_success_as_admin(client, auth_tokens):
     resp = client.get(BASE_URL + "/customers/1", headers=auth_header(auth_tokens, "admin"))
     assert resp.status_code == 200
 
-def test_get_customer_success_as_admin(client, auth_tokens):
+def test_get_customer_success_as_cashier(client, auth_tokens):
     # create customer to retrieve
 	client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "cashier"))
 
 	resp = client.get(BASE_URL + "/customers/1", headers=auth_header(auth_tokens, "cashier"))
 	assert resp.status_code == 200
 
-def test_get_customer_success_as_admin(client, auth_tokens):
+def test_get_customer_success_as_manager(client, auth_tokens):
     # create customer to retrieve
     client.post(BASE_URL + "/customers", json=CUSTOMER_SAMPLE, headers=auth_header(auth_tokens, "manager"))
 
