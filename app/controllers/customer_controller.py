@@ -9,7 +9,6 @@ class CustomerController:
 
     async def create_customer(self, customer_dto: CustomerDTO) -> CustomerDTO: 
         """Create customer"""
-
         customer, card = await self.repo.create_customer(customer_dto.name,  customer_dto.card)
 
         return customerdao_and_card_to_dto(customer=customer, card=card)

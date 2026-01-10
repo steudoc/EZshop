@@ -394,12 +394,11 @@ async def test_update_customer_with_card():
 async def test_update_customer_empty_card():
 	customer_repo = CustomerRepository()
 
-	# create two customers
+	# create a customer
 	created_customer = await create_customer()
 
-	# create two card attached to each customer, plus a third card
+	# create a card attached to customer
 	created_card = await create_card()
-	created_card_2 = await create_card()
 	await attach_card(created_customer.id, created_card.cardId)
 
 	# update customer specifying an empty card
@@ -410,10 +409,10 @@ async def test_update_customer_empty_card():
 	assert updated.name == "updated"
 
 	# ensure old card is deleted, and no new card is attached to customer
-	card_2 = await get_card_by_id(created_card.cardId)
+	card = await get_card_by_id(created_card.cardId)
 	customer_card = await get_card_by_customer(created_customer.id)
 
-	assert card_2 is None
+	assert card is None
 	assert customer_card is None
 
 	

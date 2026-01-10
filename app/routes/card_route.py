@@ -27,7 +27,7 @@ async def create_card():
 
 @router.patch("/{card_id}", 
     response_model=CardDTO, 
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def modify_points_card(
     card_id: str,

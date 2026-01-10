@@ -94,9 +94,10 @@ async def get_customer_by_id(customer_id: int) -> CardDAO | None:
 @pytest.mark.asyncio
 async def test_create_customer():
 	controller = CustomerController()
+	card = await create_card()
 
 	customer_dto = CustomerDTO(id=100, name="Marco Bianchi", card=None)
-	customer_dto_1 = CustomerDTO(id=200, name="Paolo Verdi", card=CardDTO(id=1, points=0))
+	customer_dto_1 = CustomerDTO(id=200, name="Paolo Verdi", card=CardDTO(card_id=card.cardId, points=card.points))
 	
 	# create a customer without a card
 	customer = await controller.create_customer(customer_dto)
@@ -111,8 +112,8 @@ async def test_create_customer():
 	assert customer_1.id == 2 # give id should be ignored and should start from 1
 	assert customer_1.name == customer_dto_1.name
 	assert customer_1.card is not None
-	assert customer_1.card.card_id == 1
-	assert customer_1.card.points == 0
+	assert customer_1.card.card_id == card.cardId
+	assert customer_1.card.points == card.points
 
 	# create a customer with a card that is already assigned
 	# (use same card as before, so it should raise an error)
@@ -189,7 +190,7 @@ async def test_list_customers_success():
 	created_customer_1 = await create_customer("Giorgio Neri")
 
 	# attach card to customer 1
-	await attach_card(created_customer.id, created_card.cardId)
+	await attach_card(created_customer_1.id, created_card.cardId)
 
 	# list customers should contain both customers
 	customers_list = await customer_controller.list_customers()
