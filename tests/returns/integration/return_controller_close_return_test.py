@@ -29,6 +29,7 @@ def setup_database(event_loop):
 async def _get_session() -> AsyncSession:
         return AsyncSessionLocal()
 
+@pytest_asyncio.fixture
 async def instance_of_return_without_items():
     async with await _get_session() as session:
         sale1 = SaleDAO(status="PAID")

@@ -182,11 +182,18 @@ class ReturnRepository:
             return return_tx
 
     async def reimburse_return(self, return_id: int) -> Optional[ReturnDAO]:
-        """Update a return transaction as reimbursed"""
+        """Update a return transaction as reimbursed
+        Throws NotFoundError if return not found
+        Throws InvalidStateError if return status is not CLOSED
+        """
         async with await self._get_session() as session:
             return_tx = await session.get(ReturnDAO, return_id)
             if not return_tx:
-                return None
+                raise NotFoundError(f"Return with id '{return_id}' not found")
+            
+            if return_tx.status != "CLOSED":
+                raise InvalidStateError("Return must be closed before reimbursement")
+            
             return_tx.status = "REIMBURSED"
             await session.commit()
             await session.refresh(return_tx)

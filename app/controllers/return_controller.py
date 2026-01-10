@@ -52,9 +52,10 @@ class ReturnController:
         updated = await self.repo.add_item(return_id, item)
         return returndao_to_responsedto(updated)
 
-    async def remove_item(self, return_id: int, product_barcode: str) -> ReturnDTO:
+    async def remove_item(self, return_id: int, product_barcode: str, quantity: int) -> ReturnDTO:
         """Remove item from return - throws NotFoundError if return or product not found, InvalidStateError if return not open"""
-        return await self.repo.remove_item(return_id, product_barcode)
+        updated = await self.repo.remove_item(return_id, product_barcode, quantity)
+        return returndao_to_responsedto(updated)
 
     async def close_return(self, return_id: int) -> Optional[ReturnDTO]:
         """Close return - throws NotFoundError if return not found, InvalidStateError if return not open
@@ -81,7 +82,7 @@ class ReturnController:
         # Compute refund amount
         amount = ReturnService.calculate_refund(return_tx)
 
-        # Update return transaction status
+        # Update return transaction status (this will validate the status and throw if needed)
         await self.repo.reimburse_return(return_id)
 
         # Update system balance by deducting the refund amount

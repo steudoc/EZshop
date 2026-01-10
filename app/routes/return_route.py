@@ -8,6 +8,7 @@ from app.middleware.auth_middleware import authenticate_user
 from app.config.config import ROUTES
 from fastapi import Response
 from app.controllers.product_controller import ProductController
+from app.controllers.sale_controller import SaleController
 from app.utils import throw_bad_request, throw_invalid_state, throw_not_found
 
 from app.models.errors.notfound_error import NotFoundError
@@ -159,9 +160,31 @@ async def add_item(return_id: int, barcode: str, amount: int):
     if not return_tx:
         throw_not_found("Return not found")
     elif return_tx.status == "CLOSED":
-        raise BadRequestError("Cannot modify a closed return")
-    else:
-        updated_return = await controller.add_item(return_id, item_dto)
+        throw_invalid_state("Cannot modify a closed return")
+    
+    # Validate that the quantity being returned doesn't exceed the quantity in the sale
+    sale_controller = SaleController()
+    sale = await sale_controller.get_sale(return_tx.sale_id)
+    if not sale:
+        throw_not_found("Sale not found")
+    
+    # Find the line item in the sale with the same barcode
+    sale_line = next((line for line in sale.lines if line.product_barcode == barcode), None)
+    if not sale_line:
+        throw_bad_request("Product not in sale")
+    
+    # Calculate total quantity being returned for this barcode
+    total_return_quantity = amount
+    for line in return_tx.lines:
+        if line.product_barcode == barcode:
+            total_return_quantity += line.quantity
+            break
+    
+    # Check that total return quantity doesn't exceed sale quantity
+    if total_return_quantity > sale_line.quantity:
+        throw_bad_request("Cannot return more items than were sold")
+    
+    updated_return = await controller.add_item(return_id, item_dto)
     return BooleanDTO(success=True)
 
 @router.delete("/{return_id}/items", 
@@ -189,7 +212,7 @@ async def delete_return(return_id: int, barcode: str, amount: int):
     elif return_tx.status == "CLOSED":
         throw_invalid_state("Cannot remove items from a closed return")
 
-    success = await controller.remove_item(return_id, barcode)
+    await controller.remove_item(return_id, barcode, amount)
     return BooleanDTO(success=True)
 
 @router.patch("/{return_id}/close", 

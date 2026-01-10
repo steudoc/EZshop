@@ -338,7 +338,12 @@ def test_add_item_success_admin(client, auth_tokens,returns_creation):
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
     )
-    assert len(resp.json()["lines"]) == 3
+    assert len(resp.json()["lines"]) == 2
+    # Check that chocolate bar quantity increased to 2
+    lines = resp.json()["lines"]
+    chocolate_line = next((line for line in lines if line["product_barcode"] == chocolate_bar["barcode"]), None)
+    assert chocolate_line is not None
+    assert chocolate_line["quantity"] == 2
 
 def test_add_item_success_manager(client, auth_tokens,returns_creation):
     return_id = returns_creation["id"]
@@ -385,7 +390,12 @@ def test_add_item_success_manager(client, auth_tokens,returns_creation):
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
     )
-    assert len(resp.json()["lines"]) == 3
+    assert len(resp.json()["lines"]) == 2
+    # Check that chocolate bar quantity increased to 2
+    lines = resp.json()["lines"]
+    chocolate_line = next((line for line in lines if line["product_barcode"] == chocolate_bar["barcode"]), None)
+    assert chocolate_line is not None
+    assert chocolate_line["quantity"] == 2
 
 def test_add_item_success_cashier(client, auth_tokens,returns_creation):
     return_id = returns_creation["id"]
@@ -432,7 +442,12 @@ def test_add_item_success_cashier(client, auth_tokens,returns_creation):
         BASE_URL + f"/returns/{return_id}",
         headers=auth_header(auth_tokens, role)
     )
-    assert len(resp.json()["lines"]) == 3
+    assert len(resp.json()["lines"]) == 2
+    # Check that chocolate bar quantity increased to 2
+    lines = resp.json()["lines"]
+    chocolate_line = next((line for line in lines if line["product_barcode"] == chocolate_bar["barcode"]), None)
+    assert chocolate_line is not None
+    assert chocolate_line["quantity"] == 2
 
 def test_add_item_add_more_items_compared_to_sale(client, auth_tokens,returns_creation):
     return_id = returns_creation["id"]
