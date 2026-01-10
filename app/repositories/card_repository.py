@@ -99,6 +99,25 @@ class CardRepository:
                 raise NotFoundError(f"Customer card not found: no card associated with customer {customer_id}")
             return card
     
+    async def get_card_by_customer_without_raise_notfounderror(self, customer_id: int) -> CardDAO:
+        """
+            Retrieve a card associated at the given customer with customer_id.
+
+            Args:
+                customer_id(int): Unique identifier of the customer.
+
+            Returns:
+                CardDAO: The requested card, associated at the given customer, if found.
+
+            Raises:
+                NotFoundError: If no card associated at the given customer with customer_id exists.
+        """
+        async with await self._get_session() as session:
+            stmt = select(CardDAO).filter_by(customer_id=customer_id)
+            result = await session.execute(stmt)
+            card = result.scalars().first()
+            return card
+    
     async def delete_card(self, card_id: int) -> bool:
         """
         Delete a card by the given card_id.
@@ -174,7 +193,6 @@ class CardRepository:
                 raise NotFoundError(f"Card with id '{card_id}' not found")
             return card.customer_id is not None
         
-
     async def update_card_without_sum(self, card_id: int, points: int) -> CardDAO:
         """
         Update card points of the card with id=card_id.

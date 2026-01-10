@@ -143,7 +143,7 @@ async def customerdao_to_responsedto(customer_dao: CustomerDAO) -> CustomerDTO:
     # Nota: Istanziare un repository dentro un mapper non è ideale (rischio circular import),
     # ma se viene da develop lo manteniamo così per ora.
     card_repository = CardRepository()
-    card_dao = await card_repository.get_card_by_customer(customer_dao.id)
+    card_dao = await card_repository.get_card_by_customer_without_raise_notfounderror(customer_dao.id)
     card_dto = carddao_to_response_dto(card_dao) if card_dao else None
     
     return CustomerDTO(

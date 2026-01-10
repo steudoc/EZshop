@@ -410,8 +410,8 @@ async def test_update_customer_empty_card():
 	assert updated.name == "updated"
 
 	# ensure old card is deleted, and no new card is attached to customer
-	card_2 = await get_card_by_id(created_card_2.cardId)
-	customer_card = await get_card_by_customer(created_customer)
+	card_2 = await get_card_by_id(created_card.cardId)
+	customer_card = await get_card_by_customer(created_customer.id)
 
 	assert card_2 is None
 	assert customer_card is None

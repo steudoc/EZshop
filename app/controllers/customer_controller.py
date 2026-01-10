@@ -39,5 +39,5 @@ class CustomerController:
 
     async def update_customer(self, customer_id: int, customer_dto: UpdateCustomerDTO) -> Optional[CustomerDTO]:
         """Update customer"""
-        updated = await self.repo.update_customer(customer_id, customer_dto.name, customer_dto.card)
+        updated = await self.repo.update_customer(customer_id, customer_dto.name, customer_dto.card)     
         return await customerdao_to_responsedto(updated) if updated else None
