@@ -7,7 +7,7 @@ class CardDTO(BaseModel):
 
 
 class UpdateCardDTO(BaseModel):
-    cardId: Optional[int] = None
+    card_id: Optional[int] = None
     points: Optional[int] = None
 
 class CustomerDTO(BaseModel):

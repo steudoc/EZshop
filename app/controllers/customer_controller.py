@@ -9,7 +9,6 @@ class CustomerController:
 
     async def create_customer(self, customer_dto: CustomerDTO) -> CustomerDTO: 
         """Create customer"""
-
         customer, card = await self.repo.create_customer(customer_dto.name,  customer_dto.card)
 
         return customerdao_and_card_to_dto(customer=customer, card=card)
@@ -39,5 +38,5 @@ class CustomerController:
 
     async def update_customer(self, customer_id: int, customer_dto: UpdateCustomerDTO) -> Optional[CustomerDTO]:
         """Update customer"""
-        updated = await self.repo.update_customer(customer_id, customer_dto.name, customer_dto.card)
+        updated = await self.repo.update_customer(customer_id, customer_dto.name, customer_dto.card)     
         return await customerdao_to_responsedto(updated) if updated else None

@@ -97,7 +97,7 @@ async def test_create_customer():
 	card = await create_card()
 
 	customer_dto = CustomerDTO(id=100, name="Marco Bianchi", card=None)
-	customer_dto_1 = CustomerDTO(id=200, name="Paolo Verdi", card=CardDTO(id=card.cardId, points=card.points))
+	customer_dto_1 = CustomerDTO(id=200, name="Paolo Verdi", card=CardDTO(card_id=card.cardId, points=card.points))
 	
 	# create a customer without a card
 	customer = await controller.create_customer(customer_dto)
@@ -365,7 +365,7 @@ async def test_update_customer_not_found():
 
 	# update customer with non existing card 
 	update_dto = UpdateCustomerDTO(name="updated", 
-					card=UpdateCardDTO(cardId=9999, points=0))
+					card=UpdateCardDTO(card_id=9999, points=0))
 	with pytest.raises(NotFoundError):
 		updated = await customer_controller.update_customer(created_customer.id, update_dto)
 		
@@ -384,9 +384,10 @@ async def test_update_customer_with_card():
 	created_customer = await create_customer("Paolo Rossi")
 	await attach_card(created_customer.id, created_card.cardId)
 
+	print(f"card_id:{created_card.cardId}")
 	# update customer specifying a card (same card)
 	update_dto = UpdateCustomerDTO(name="updated", 
-					card=UpdateCardDTO(cardId=created_card.cardId, points=0))
+					card=UpdateCardDTO(card_id=created_card.cardId, points=0))
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	assert updated is not None
 	assert updated.name == "updated"
@@ -398,7 +399,7 @@ async def test_update_customer_with_card():
 
 	# update customer specifying a card (same card with different points)
 	update_dto = UpdateCustomerDTO(name="updated 1", 
-					card=UpdateCardDTO(cardId=created_card.cardId, points=1000))
+					card=UpdateCardDTO(card_id=created_card.cardId, points=1000))
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	assert updated is not None
 	assert updated.name == "updated 1"
@@ -411,7 +412,7 @@ async def test_update_customer_with_card():
 
 	# update customer specifying a card (different card with different points)
 	update_dto = UpdateCustomerDTO(name="updated 2", 
-					card=UpdateCardDTO(cardId=created_card_1.cardId, points=1000))
+					card=UpdateCardDTO(card_id=created_card_1.cardId, points=1000))
 	updated = await customer_controller.update_customer(created_customer.id, update_dto)
 	
 	assert updated is not None
@@ -468,7 +469,7 @@ async def test_update_customer_conflict():
 
 	# update customer with other customer's card (conflict)
 	update_dto = UpdateCustomerDTO(name="updated", 
-			card=UpdateCardDTO(cardId=created_card_1.cardId, points=9999))
+			card=UpdateCardDTO(card_id=created_card_1.cardId, points=9999))
 	
 	with pytest.raises(ConflictError):
 		updated = await customer_controller.update_customer(created_customer.id, update_dto)
@@ -493,7 +494,7 @@ async def test_update_customer_invalid_card():
 
 	# update customer with invalid card (negative points)
 	update_dto = UpdateCustomerDTO(name="updated", 
-					card=UpdateCardDTO(cardId=created_card.cardId, points=-1))
+					card=UpdateCardDTO(card_id=created_card.cardId, points=-1))
 	with pytest.raises(BadRequestError):
 		updated = await customer_controller.update_customer(created_customer.id, update_dto)
 		

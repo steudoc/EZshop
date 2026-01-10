@@ -7,7 +7,7 @@ from app.models.DTO.customer_dto import CardDTO, UpdateCardDTO
 from app.database.database import AsyncSessionLocal
 from typing import Optional
 from app.models.errors.notfound_error import NotFoundError
-from app.utils import find_or_throw_not_found, throw_conflict, throw_not_found
+from app.utils import find_or_throw_not_found, throw_bad_request, throw_conflict, throw_not_found
 from app.repositories.card_repository import CardRepository
 class CustomerRepository:
 
@@ -21,7 +21,7 @@ class CustomerRepository:
             self,
             name: str,
             card: Optional[CardDTO]
-    ) -> tuple[CustomerDAO, CardDAO]:
+    ) -> tuple[CustomerDAO, Optional[CardDAO]]:
         """
         Create and store a customer on the database.
 
@@ -35,26 +35,32 @@ class CustomerRepository:
             ConflictError: If card is already attached to a customer.
         """
         async with await self._get_session() as session:
+            
+            customer = CustomerDAO(name=name)
+            session.add(customer)
+            await session.flush()
+
+            card_dao: Optional[CardDAO] = None
 
             if card is not None:
-                
-                if await session.get(CardDAO, card.card_id) is not None:
-                    throw_conflict("Card with id {card.cardId} is already attached to a customer")
 
-                customer = CustomerDAO(name=name)
-                card_dao = CardDAO(cardId=card.card_id, points=card.points, customer_id = customer.id)
-                session.add(card_dao)
-            else:
-                customer = CustomerDAO(name=name)
-            
-            session.add(customer)
+                card_dao = await session.get(CardDAO, card.card_id)
+
+                if card_dao is None:
+                    throw_not_found(f"Card with id {card.card_id} not found")
+
+                if card_dao.customer_id is not None:
+                    throw_conflict(f"Card with id {card.card_id} is already attached to a customer")
+
+                card_dao.customer_id=customer.id
+
             await session.commit()
             await session.refresh(customer)
 
-            if card is not None:
-                await session.refresh(customer)
+            if card_dao is not None:
+                await session.refresh(card_dao)
 
-            return customer, card
+            return customer, card_dao
         
 
     async def attach_card_to_customer(
@@ -94,17 +100,35 @@ class CustomerRepository:
 
             card = await session.get(CardDAO, card_id)
             find_or_throw_not_found(
-                [card] if card else [],
+                    [card] if card else [],
                 lambda _: True,
                 f"Card with id '{card_id}' not found"
             )
+            
+            if card.customer_id == customer.id:
+                return customer, card
 
+            # If the card is already attached to another customer
             if card.customer_id is not None:
-                throw_conflict("Card with id {card_id} is already attached to a customer")
+                throw_conflict(
+                    f"Card with id '{card_id}' is already attached to a customer"
+                )
 
-            card.customer_id = customer_id
+            # Detach previous card if exists
+            stmt = select(CardDAO).filter_by(customer_id=customer_id)
+            result = await session.execute(stmt)
+            previous_card = result.scalars().first()
+
+            if previous_card and previous_card.cardId != card.cardId:
+                previous_card.customer_id = None
+                await session.flush()
+
+            # Attach card
+            card.customer_id = customer.id
+
             await session.commit()
             await session.refresh(card)
+            await session.refresh(customer)
 
             return customer, card
         
@@ -133,7 +157,7 @@ class CustomerRepository:
                 f"Customer with id '{customer_id}' not found"
             )
             cardRepository_instance = CardRepository(session=session)
-            card = await cardRepository_instance.get_card_by_customer(customer_id)
+            card = await cardRepository_instance.get_card_by_customer_without_raise_notfounderror(customer_id)
             if card is not None:
                 await session.delete(card)
 
@@ -223,30 +247,31 @@ class CustomerRepository:
 
             if updated_card is None:
                 pass
-            elif updated_card.cardId is None:
+            elif updated_card.card_id is None:
                 # remove card if it exists
                 card = await cardRepository_instance.get_card_by_customer(customer_id)
                 if card is not None:
                     await session.delete(card)
             else:
-                body_card_dao = await cardRepository_instance.get_card_by_id(updated_card.cardId)
+                body_card_dao = await cardRepository_instance.get_card(updated_card.card_id)
                 customer_card_dao = await cardRepository_instance.get_card_by_customer(customer_id)
 
+                if(updated_card.points<0):
+                    throw_bad_request("Card points must be positive") 
 
                 if body_card_dao is None:
                     # the updated card does not exist
                     if customer_card_dao is not None:
                         # the customer already had a card, remove it and attach the new one
                         await cardRepository_instance.delete_card(customer_card_dao.cardId)
-                        await cardRepository_instance.create_and_attach_new_card_to_customer(customer_id, updated_card.cardId, updated_card.points) #TODO
+                        await cardRepository_instance.create_and_attach_new_card_to_customer(customer_id, updated_card.card_id, updated_card.points)
                     else:
                         # the customer had not a card, attach the new one
-                        await cardRepository_instance.create_and_attach_new_card_to_customer(customer_id, updated_card.cardId, updated_card.points)
+                        await cardRepository_instance.create_and_attach_new_card_to_customer(customer_id, updated_card.card_id, updated_card.points)
                 else:
                     # the updated card existed
-
                     if customer_id != body_card_dao.customer_id and await cardRepository_instance.is_attached(body_card_dao.cardId) is True:
-                        throw_conflict(f"Card with id {updated_card.cardId} is already attached to another customer")
+                        throw_conflict(f"Card with id {updated_card.card_id} is already attached to another customer")
                     if customer_card_dao is not None:
                         # the customer already has a card
                         if body_card_dao.cardId != customer_card_dao.cardId:
@@ -258,10 +283,8 @@ class CustomerRepository:
                             await cardRepository_instance.update_card_without_sum(body_card_dao.cardId, updated_card.points)
                     else:
                         # the customer had not a card, attach the existing one
-                        await cardRepository_instance.update_and_attach_card_to_customer(customer_id, updated_card.cardId, updated_card.points)
+                        await cardRepository_instance.update_and_attach_card_to_customer(customer_id, updated_card.card_id, updated_card.points)
             
             db_customer.name = updated_name
-            await session.flush()
             await session.commit()
-
-            return await self.get_customer(customer_id)
+            return db_customer
