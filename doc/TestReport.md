@@ -1,6 +1,6 @@
 # Test Report
 
-<The goal of this document is to explain how the application was tested, detailing how the test cases were defined and what they cover>
+The goal of this document is to explain how the application was tested, detailing how the test cases were defined and what they cover
 
 # Contents
 
@@ -157,33 +157,33 @@ Integration strategy: **Bottom-up approach**
 
 | Test case name | Object(s) tested | Test level | Technique used |
 | :------------ | :-------------- | :--------: | :------------ |
-|`return_repository_add_item_test`|`ReturnRepository.add_item`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_close_return_test`|`ReturnRepository.close_return`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_delete_transaction_test`|`ReturnRepository.delete_return`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_get_all_returns_test`|`ReturnRepository.get_all_returns`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_get_return_by_id_test`|`ReturnRepository.get_return_by_id`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_get_return_by_sale_id_test`|`ReturnRepository.get_returns_by_sale`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_reimburse_test`|`ReturnRepository.reimburse_return`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_remove_item_test`|`ReturnRepository.remove_item`|Unit|WB:Multiple Condition Coverage|
-|`return_repository_start_return_test`|`ReturnRepository.start_return`|Unit|WB:Multiple Condition Coverage|
-|`return_controller_add_item_test`|`ReturnController.add_item`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_close_return_test`|`ReturnControlle.close_return`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_delete_transaction_test`|`ReturnController.delete_return`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_get_all_return_test`|`ReturnController.get_all_returns`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_get_return_by_id_test`|`ReturnController.get_return_by_id`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_get_return_by_sale_id_test`|`ReturnController.get_returns_by_sale`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_reimburse_test`|`ReturnController.reimburse_return`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_remove_item_test`|`ReturnController.remove_item`|Integration|WB:Multiple Condition Coverage|
-|`return_controller_start_return_test`|`ReturnController.start_return`|Integration|WB:Multiple Condition Coverage|
-|`return_route_add_item_test`|`ReturnRoute.add_item`|API/System|BB:Equivalence classes partitioning|
-|`return_route_close_return_test`|`ReturnRoute.close_return`|API/System|BB:Equivalence classes partitioning|
-|`return_route_delete_transaction_test`|`ReturnRoute.delete_return`|API/System|BB:Equivalence classes partitioning|
-|`return_route_get_all_returns_test`|`ReturnRoute.get_all_returns`|API/System|BB:Equivalence classes partitioning|
-|`return_route_get_return_by_id_test`|`ReturnRoute.get_return_by_id`|API/System|BB:Equivalence classes partitioning|
-|`return_route_get_returns_by_sale_test`|`ReturnRoute.get_returns_by_sale`|API/System|BB:Equivalence classes partitioning|
-|`return_route_reimburse_test`|`ReturnRoute.reimburse_return`|API/System|BB:Equivalence classes partitioning|
-|`return_route_remove_item_test`|`ReturnRoute.remove_item`|API/System|BB:Equivalence classes partitioning|
-|`return_route_start_return_test`|`ReturnRoute.start_return`|API/System|BB:Equivalence classes partitioning|
+| return_repository_add_item_test | ReturnRepository.add_item | Unit | WB: Multiple Condition Coverage |
+| return_repository_close_return_test | ReturnRepository.close_return | Unit | WB: Multiple Condition Coverage |
+| return_repository_delete_transaction_test | ReturnRepository.delete_return | Unit | WB: Multiple Condition Coverage |
+| return_repository_get_all_returns_test | ReturnRepository.get_all_returns | Unit | WB: Multiple Condition Coverage |
+| return_repository_get_return_by_id_test | ReturnRepository.get_return_by_id | Unit | WB: Multiple Condition Coverage |
+| return_repository_get_return_by_sale_id_test | ReturnRepository.get_returns_by_sale | Unit | WB: Multiple Condition Coverage |
+| return_repository_reimburse_test | ReturnRepository.reimburse_return | Unit | WB: Multiple Condition Coverage |
+| return_repository_remove_item_test | ReturnRepository.remove_item | Unit | WB: Multiple Condition Coverage |
+| return_repository_start_return_test | ReturnRepository.start_return | Unit | WB: Multiple Condition Coverage |
+| return_controller_add_item_test | ReturnController.add_item | Integration | WB: Multiple Condition Coverage |
+| return_controller_close_return_test | ReturnController.close_return | Integration | WB: Multiple Condition Coverage |
+| return_controller_delete_transaction_test | ReturnController.delete_return | Integration | WB: Multiple Condition Coverage |
+| return_controller_get_all_return_test | ReturnController.get_all_returns | Integration | WB: Multiple Condition Coverage |
+| return_controller_get_return_by_id_test | ReturnController.get_return_by_id | Integration | WB: Multiple Condition Coverage |
+| return_controller_get_return_by_sale_id_test | ReturnController.get_returns_by_sale | Integration | WB: Multiple Condition Coverage |
+| return_controller_reimburse_test | ReturnController.reimburse_return | Integration | WB: Multiple Condition Coverage |
+| return_controller_remove_item_test | ReturnController.remove_item | Integration | WB: Multiple Condition Coverage |
+| return_controller_start_return_test | ReturnController.start_return | Integration | WB: Multiple Condition Coverage |
+| return_route_add_item_test | ReturnRoute.add_item | API/System | BB: Equivalence classes partitioning |
+| return_route_close_return_test | ReturnRoute.close_return | API/System | BB: Equivalence classes partitioning |
+| return_route_delete_transaction_test | ReturnRoute.delete_return | API/System | BB: Equivalence classes partitioning |
+| return_route_get_all_returns_test | ReturnRoute.get_all_returns | API/System | BB: Equivalence classes partitioning |
+| return_route_get_return_by_id_test | ReturnRoute.get_return_by_id | API/System | BB: Equivalence classes partitioning |
+| return_route_get_returns_by_sale_test | ReturnRoute.get_returns_by_sale | API/System | BB: Equivalence classes partitioning |
+| return_route_reimburse_test | ReturnRoute.reimburse_return | API/System | BB: Equivalence classes partitioning |
+| return_route_remove_item_test | ReturnRoute.remove_item | API/System | BB: Equivalence classes partitioning |
+| return_route_start_return_test | ReturnRoute.start_return | API/System | BB: Equivalence classes partitioning |
 
 
 ## Sales tests
@@ -517,13 +517,13 @@ Integration strategy: **Bottom-up approach**
 ### Returns
 
 | Functional Requirement or scenario | Test(s) |
-| :-------------------------------- | :----- |
-|**FR6.12** – Start a return transaction|`return_repository_start_return_test`<br>`return_controller_start_return_test`<br>`return_route_start_return_test`<br>| 
-|**FR6.13** – Return a product listed in a sale transaction|`return_repository_add_item_test`<br>`return_controller_add_item_test`<br>`return_route_add_item_test`<br>| 
-|**FR6.14** – Close a return transaction|`return_repository_close_return_test`<br>`return_controller_close_return_test`<br>`return_route_close_return_test`<br>| 
-|**FR6.15** – Rollback or commit a closed return transaction|`return_repository_reimburse_test`<br>`return_controller_reimburse_test`<br>`return_route_reimburse_test`<br>| 
-|**Scenario 8-1** – Return transaction of product type X completed, credit card|`return_repository_start_return_test`<br>`return_repository_add_item_test`<br>`return_repository_reimburse_test`<br>`return_repository_close_return_test`<br><br>`return_controller_start_return_test`<br>`return_controller_add_item_test`<br>`return_controller_reimburse_test`<br>`return_controller_close_return_test`<br><br>`return_route_start_return_test`<br>`return_route_add_item_test`<br>`return_route_reimburse_test`<br>`return_route_close_return_test`|
-|**Scenario 8-2** – Return transaction of product type X completed, cash|`return_repository_start_return_test`<br>`return_repository_add_item_test`<br>`return_repository_reimburse_test`<br>`return_repository_close_return_test`<br><br>`return_controller_start_return_test`<br>`return_controller_add_item_test`<br>`return_controller_reimburse_test`<br>`return_controller_close_return_test`<br><br>`return_route_start_return_test`<br>`return_route_add_item_test`<br>`return_route_reimburse_test`<br>`return_route_close_return_test`|
+| :--------------------------------: | :-----: |
+| FR6.12 - Start a return transaction | return_repository_start_return_test, return_controller_start_return_test, return_route_start_return_test |
+| FR6.13 - Return a product listed in a sale transaction | return_repository_add_item_test, return_controller_add_item_test, return_route_add_item_test |
+| FR6.14 - Close a return transaction | return_repository_close_return_test, return_controller_close_return_test, return_route_close_return_test |
+| FR6.15 - Rollback or commit a closed return transaction | return_repository_reimburse_test, return_controller_reimburse_test, return_route_reimburse_test |
+| Scenario 8-1 - Return transaction of product type X completed, credit card | return_repository_start_return_test, return_repository_add_item_test, return_repository_reimburse_test, return_repository_close_return_test, return_controller_start_return_test, return_controller_add_item_test, return_controller_reimburse_test, return_controller_close_return_test, return_route_start_return_test, return_route_add_item_test, return_route_reimburse_test, return_route_close_return_test |
+| Scenario 8-2 - Return transaction of product type X completed, cash | return_repository_start_return_test, return_repository_add_item_test, return_repository_reimburse_test, return_repository_close_return_test, return_controller_start_return_test, return_controller_add_item_test, return_controller_reimburse_test, return_controller_close_return_test, return_route_start_return_test, return_route_add_item_test, return_route_reimburse_test, return_route_close_return_test |
 
 ### Sales
 
@@ -590,4 +590,4 @@ Integration strategy: **Bottom-up approach**
 
 ## Coverage white box
 
-Report here the screenshot of coverage values obtained with PyTest
+![alt text](images/tests_coverage.jpeg)
