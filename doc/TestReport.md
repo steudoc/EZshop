@@ -256,11 +256,6 @@ Integration strategy: **Bottom-up approach**
 | customer_repository_test.test_delete_customer_without_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
 | customer_repository_test.test_delete_customer_not_found() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
 | customer_repository_test.test_delete_customer_with_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
-| mapper_service_customer_test.test_card_dao_to_response_dto() | carddao_to_response_dto() | Integration | WB : Decision coverage |
-| mapper_service_customer_test.test_customer_dao_to_response_dto_without_card() | customerdao_to_responsedto() | Integration | WB : Decision coverage |
-| mapper_service_customer_test.test_customer_dao_to_response_dto_with_card() | customerdao_to_responsedto() | Integration | WB : Decision coverage |
-| mapper_service_customer_test.test_customerdao_and_card_to_dto_without_card() | customerdao_and_card_to_dto() | Integration | WB : Decision coverage |
-| mapper_service_customer_test.test_customerdao_and_card_to_dto_with_card() | customerdao_and_card_to_dto() | Integration | WB : Decision coverage |
 | card_controller_test.test_create_card() | CardController.create_card() | Integration | WB : Decision coverage |
 | card_controller_test.test_get_card() | CardController.get_card() | Integration | WB : Decision coverage |
 | card_controller_test.test_modify_card_points() | CardController.modify_points_card() | Integration | WB : Decision coverage |
@@ -529,7 +524,7 @@ Integration strategy: **Bottom-up approach**
 
 | Functional Requirement or scenario | Test(s) |
 | :--------------------------------: | :-----: |
-|                FR6.1 - Start a sale             |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale  |
+|                FR6.1 - Start a sale             |   test_route_create_sale, test_controller_create_sale  |
 |                FR6.2 - Add a product to a sale             |   test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale |
 |                FR6.3 - Delete a product from a sale             |   test_route_delete_item_from_sale, test_controller_delete_item_from_sale, test_repository_remove_item_from_sale  |
 |                FR6.4 - Apply discount rate to a sale             |   test_route_update_sale_discount, test_controller_update_sale_discount, test_repository_update_sale_discount      |
@@ -538,12 +533,12 @@ Integration strategy: **Bottom-up approach**
 |                FR6.10 - Close a sale transaction            |   test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending       |
 |                FR6.11 - Rollback or commit a closed sale transaction            |   test_route_delete_sale, test_controller_delete_sale, test_repository_delete_sale      |
 |                FR7.1 - Receive payment cash             |   test_route_payment, test_controller_process_payment, test_repository_update_sale_status_paid      |
-|                Scenario 6-1        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
-|                Scenario 6-2        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_update_sale_line_discount, test_controller_update_sale_line_discount, test_repository_update_sale_line_discount, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
-|                Scenario 6-3        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_update_sale_discount, test_controller_update_sale_discount, test_repository_update_sale_discount, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
-|                Scenario 6-4        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending, test_route_get_sale_points, test_controller_get_sale_points      |
-|                Scenario 6-5        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, , test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending, test_route_delete_sale, test_controller_delete_sale, test_repository_delete_sale      |
-|                Scenario 6-6        |    test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-1        |   test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-2        |   test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_update_sale_line_discount, test_controller_update_sale_line_discount, test_repository_update_sale_line_discount, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-3        |   test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_update_sale_discount, test_controller_update_sale_discount, test_repository_update_sale_discount, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-4        |   test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending, test_route_get_sale_points, test_controller_get_sale_points      |
+|                Scenario 6-5        |   test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, , test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending, test_route_delete_sale, test_controller_delete_sale, test_repository_delete_sale      |
+|                Scenario 6-6        |    test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
 |                Scenario 7-4        |   test_route_payment, test_controller_process_payment, test_repository_update_sale_status_paid      |
 
 ### Customers
