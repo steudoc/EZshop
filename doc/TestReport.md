@@ -45,7 +45,7 @@ Integration strategy: **Bottom-up approach**
     
 - **Step 2: Integration Testing (`ReturnController`)**: Integration tests focused on the interaction between the controller and a real database (SQLite). In each test, the database was reset and reinitialized to ensure execution independence.
     
-- **Step 3: API/System Testing (`FastAPI/TestClient`)**: The final step involved testing the entire system through simulated HTTP requests. In addition to end-to-end functional flows, security constraints related to user roles (Admin, ShopManager, Cashier) were tested via JWT tokens. In order to properly enable and validate return-related tests, the APIs for customers, sales, balance, and system management were also invoked, as these components are required for the correct execution of return operations.
+- **Step 3: System/API Testing (`FastAPI/TestClient`)**: The final step involved testing the entire system through simulated HTTP requests. In addition to end-to-end functional flows, security constraints related to user roles (Admin, ShopManager, Cashier) were tested via JWT tokens. In order to properly enable and validate return-related tests, the APIs for customers, sales, balance, and system management were also invoked, as these components are required for the correct execution of return operations.
 
 ## Sales tests
 
@@ -58,7 +58,7 @@ Integration strategy: **Bottom-up approach**
 
 - **Step 2 (Integration testing)**: Focused on specific Controller functions (`create_sale`, `list_sales`, `get_sale`). In this step, calls to the Repository remained mocked, but the interaction with the **Mapper Service** (`sale_dao_to_dto`) was real (no mocks), verifying the correct integration between Controller and Mapper. The technique used remained White Box with Simple Decision Coverage.
 
-- **Step 3 (API/System testing)**: The full system was tested at the Route level using a Black Box approach, specifically applying Equivalence Class Partitioning.
+- **Step 3 (System/API testing)**: The full system was tested at the Route level using a Black Box approach, specifically applying Equivalence Class Partitioning.
 
 ## Customers tests
 
@@ -96,7 +96,7 @@ Integration strategy: **Bottom-up approach**
     
 - **Step 2 (Integration testing)**: Integration tests focused on the interaction between the controller and a real database (SQLite). In each test, the database was reset and reinitialized to ensure execution independence. Complex business logic was verified, such as checking for position conflicts (two products in the same location) and the secure incrementing/decrementing of operation counters (`involvedOperations`).
     
-- **Step 3 (API/System testing)**: The final step involved testing the entire system through simulated HTTP requests. In addition to end-to-end functional flows, security constraints related to user roles (Admin, ShopManager, Cashier) were tested via JWT tokens. Product "locked" states were also verified, preventing, for example, barcode modification or deletion if the product is associated with an open sale.
+- **Step 3 (System/API testing)**: The final step involved testing the entire system through simulated HTTP requests. In addition to end-to-end functional flows, security constraints related to user roles (Admin, ShopManager, Cashier) were tested via JWT tokens. Product "locked" states were also verified, preventing, for example, barcode modification or deletion if the product is associated with an open sale.
     
 ## Orders tests
 
@@ -175,176 +175,175 @@ Integration strategy: **Bottom-up approach**
 | return_controller_reimburse_test | ReturnController.reimburse_return | Integration | WB: Multiple Condition Coverage |
 | return_controller_remove_item_test | ReturnController.remove_item | Integration | WB: Multiple Condition Coverage |
 | return_controller_start_return_test | ReturnController.start_return | Integration | WB: Multiple Condition Coverage |
-| return_route_add_item_test | ReturnRoute.add_item | API/System | BB: Equivalence classes partitioning |
-| return_route_close_return_test | ReturnRoute.close_return | API/System | BB: Equivalence classes partitioning |
-| return_route_delete_transaction_test | ReturnRoute.delete_return | API/System | BB: Equivalence classes partitioning |
-| return_route_get_all_returns_test | ReturnRoute.get_all_returns | API/System | BB: Equivalence classes partitioning |
-| return_route_get_return_by_id_test | ReturnRoute.get_return_by_id | API/System | BB: Equivalence classes partitioning |
-| return_route_get_returns_by_sale_test | ReturnRoute.get_returns_by_sale | API/System | BB: Equivalence classes partitioning |
-| return_route_reimburse_test | ReturnRoute.reimburse_return | API/System | BB: Equivalence classes partitioning |
-| return_route_remove_item_test | ReturnRoute.remove_item | API/System | BB: Equivalence classes partitioning |
-| return_route_start_return_test | ReturnRoute.start_return | API/System | BB: Equivalence classes partitioning |
+| return_route_add_item_test | ReturnRoute.add_item | System/API | BB: Equivalence classes partitioning |
+| return_route_close_return_test | ReturnRoute.close_return | System/API | BB: Equivalence classes partitioning |
+| return_route_delete_transaction_test | ReturnRoute.delete_return | System/API | BB: Equivalence classes partitioning |
+| return_route_get_all_returns_test | ReturnRoute.get_all_returns | System/API | BB: Equivalence classes partitioning |
+| return_route_get_return_by_id_test | ReturnRoute.get_return_by_id | System/API | BB: Equivalence classes partitioning |
+| return_route_get_returns_by_sale_test | ReturnRoute.get_returns_by_sale | System/API | BB: Equivalence classes partitioning |
+| return_route_reimburse_test | ReturnRoute.reimburse_return | System/API | BB: Equivalence classes partitioning |
+| return_route_remove_item_test | ReturnRoute.remove_item | System/API | BB: Equivalence classes partitioning |
+| return_route_start_return_test | ReturnRoute.start_return | System/API | BB: Equivalence classes partitioning |
 
 
 ## Sales tests
 
 | Test case name | Object(s) tested | Test level | Technique used |
 | :------------ | :-------------- | :--------: | :------------ |
-| test_mapper_service_sale_dao_to_dto.py | sale_dao_to_dto | Unit | WB / Decision coverage |
-| test_repository_add_item_to_sale.py | add_item_to_sale | Unit | WB / Decision coverage |
-| test_repository_delete_sale.py | delete_sale | Unit | WB / Decision coverage |
-| test_repository_remove_item_from_sale.py | remove_item_from_sale | Unit | WB / Decision coverage |
-| test_repository_update_sale_discount.py | update_sale_discount | Unit | WB / Decision coverage |
-| test_repository_update_sale_line_discount.py | update_sale_line_discount | Unit | WB / Decision coverage |
-| test_repository_update_sale_status_paid.py | update_sale_status_paid | Unit | WB / Decision coverage |
-| test_repository_update_sale_status_pending.py | update_sale_status_pending | Unit | WB / Decision coverage |
-| test_controller_add_item_to_sale.py | add_item_to_sale | Unit | WB / Decision coverage |
-| test_controller_close_sale.py | close_sale | Unit | WB / Decision coverage |
-| test_controller_delete_item_from_sale.py | delete_item_from_sale | Unit | WB / Decision coverage |
-| test_controller_delete_sale.py | delete_sale | Unit | WB / Decision coverage |
-| test_controller_get_sale_points.py | get_sale_points | Unit | WB / Decision coverage |
-| test_controller_process_payment.py | process_payment | Unit | WB / Decision coverage |
-| test_controller_update_sale_discount.py | update_sale_discount | Unit | WB / Decision coverage |
-| test_controller_update_sale_line_discount.py | update_sale_line_discount | Unit | WB / Decision coverage |
-| test_controller_create_sale.py | create_sale | Integration | WB / Decision coverage |
-| test_controller_get_sale.py | get_sale | Integration | WB / Decision coverage |
-| test_controller_list_sales.py | list_sales | Integration | WB / Decision coverage |
-| test_route_add_item_to_sale.py | add_item_to_sale | API | BB / Equivalence partitioning |
-| test_route_close_sale.py | close_sale | API | BB / Equivalence partitioning |
-| test_route_create_sale.py | create_sale | API | BB / Equivalence partitioning |
-| test_route_delete_item_from_sale.py | delete_item_from_sale | API | BB / Equivalence partitioning |
-| test_route_delete_sale.py | delete_sale | API | BB / Equivalence partitioning |
-| test_route_get_sale.py | get_sale | API | BB / Equivalence partitioning |
-| test_route_get_sale_points.py | get_sale_points | API | BB / Equivalence partitioning |
-| test_route_list_sales.py | list_sales | API | BB / Equivalence partitioning |
-| test_route_payment.py | process_payment | API | BB / Equivalence partitioning |
-| test_route_update_sale_discount.py | update_sale_discount | API | BB / Equivalence partitioning |
-| test_route_update_sale_line_discount.py | update_sale_line_discount | API | BB / Equivalence partitioning |
+| test_repository_add_item_to_sale | SaleRepository.add_item_to_sale() | Unit | WB : Decision coverage |
+| test_repository_delete_sale | SaleRepository.delete_sale() | Unit | WB : Decision coverage |
+| test_repository_remove_item_from_sale | SaleRepository.remove_item_from_sale() | Unit | WB : Decision coverage |
+| test_repository_update_sale_discount | SaleRepository.update_sale_discount() | Unit | WB : Decision coverage |
+| test_repository_update_sale_line_discount | SaleRepository.update_sale_line_discount() | Unit | WB : Decision coverage |
+| test_repository_update_sale_status_paid | SaleRepository.update_sale_status_paid() | Unit | WB : Decision coverage |
+| test_repository_update_sale_status_pending | SaleRepository.update_sale_status_pending() | Unit | WB : Decision coverage |
+| test_controller_add_item_to_sale | SaleController.add_item_to_sale() | Unit | WB : Decision coverage |
+| test_controller_close_sale | SaleController.close_sale() | Unit | WB : Decision coverage |
+| test_controller_delete_item_from_sale | SaleController.delete_item_from_sale() | Unit | WB : Decision coverage |
+| test_controller_delete_sale | SaleController.delete_sale() | Unit | WB : Decision coverage |
+| test_controller_get_sale_points | SaleController.get_sale_points() | Unit | WB : Decision coverage |
+| test_controller_process_payment | SaleController.process_payment() | Unit | WB : Decision coverage |
+| test_controller_update_sale_discount | SaleController.update_sale_discount() | Unit | WB : Decision coverage |
+| test_controller_update_sale_line_discount | SaleController.update_sale_line_discount() | Unit | WB : Decision coverage |
+| test_controller_create_sale | SaleController.create_sale() | Integration | WB : Decision coverage |
+| test_controller_get_sale | SaleController.get_sale() | Integration | WB : Decision coverage |
+| test_controller_list_sales | SaleController.list_sales() | Integration | WB : Decision coverage |
+| test_route_add_item_to_sale           | REST API /sales/{sale_id}/items POST | System/API | BB : Equivalence partitioning |
+| test_route_close_sale                 | REST API /sales/{sale_id}/close PATCH | System/API | BB : Equivalence partitioning |
+| test_route_create_sale                | REST API /sales POST | System/API | BB : Equivalence partitioning |
+| test_route_delete_item_from_sale      | REST API /sales/{sale_id}/items DELETE | System/API | BB : Equivalence partitioning |
+| test_route_delete_sale                | REST API /sales/{sale_id} DELETE | System/API | BB : Equivalence partitioning |
+| test_route_get_sale                   | REST API /sales/{sale_id} GET | System/API | BB : Equivalence partitioning |
+| test_route_get_sale_points            | REST API /sales/{sale_id}/points GET | System/API | BB : Equivalence partitioning |
+| test_route_list_sales                 | REST API /sales GET | System/API | BB : Equivalence partitioning |
+| test_route_payment                    | REST API /sales/{sale_id}/pay PATCH | System/API | BB : Equivalence partitioning |
+| test_route_update_sale_discount       | REST API /sales/{sale_id}/discount PATCH | System/API | BB : Equivalence partitioning |
+| test_route_update_sale_line_discount  | REST API /sales/{sale_id}/items/{product_barcode}/discount PATCH | System/API | BB : Equivalence partitioning |
 
 ## Customers test
 
 | Test case name | Object(s) tested | Test level | Technique used |
 | :------------ | :-------------- | :--------: | :------------ |
-| card_repository_test.test_create_card() | CardRepository.create_card() | Unit | WB / decision coverage |
-| card_repository_test.test_get_card_success() | CardRepository.get_card() | Unit | WB / decision coverage |
-| card_repository_test.test_get_card_not_found() | CardRepository.get_card() | Unit | WB / decision coverage |
-| card_repository_test.test_update_card_success() | CardRepository.update_card() | Unit | WB / decision coverage |
-| card_repository_test.test_update_card_not_found() | CardRepository.update_card() | Unit | WB / decision coverage |
-| card_repository_test.test_update_card_without_sum_success() | CardRepository.update_card_without_sum() | Unit | WB / decision coverage |
-| card_repository_test.test_update_card_without_sum_not_found() | CardRepository.update_card_without_sum() | Unit | WB / decision coverage |
-| card_repository_test.test_delete_card_success() | CardRepository.delete_card() | Unit | WB / decision coverage |
-| card_repository_test.test_delete_card_not_found() | CardRepository.delete_card() | Unit | WB / decision coverage |
-| card_repository_test.test_update_and_attach_to_customer_success() | CardRepository.update_and_attach_card_to_customer() | Unit | WB / decision coverage |
-| card_repository_test.test_update_and_attach_to_customer_not_found() | CardRepository.update_and_attach_card_to_customer() | Unit | WB / decision coverage |
-| card_repository_test.test_is_attached_success() | CardRepository.is_attached() | Unit | WB / decision coverage |
-| card_repository_test.test_is_attached_not_found() | CardRepository.is_attached() | Unit | WB / decision coverage |
-| card_repository_test.test_get_card_by_customer_success() | CardRepository.get_card_by_customer() | Unit | WB / decision coverage |
-| card_repository_test.test_get_card_by_customer_not_found() | CardRepository.get_card_by_customer() | Unit | WB / decision coverage |
-| customer_repository_test.test_create_customer() | CustomerRepository.create_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_get_customer_success() | CustomerRepository.get_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_get_customer_not_found() | CustomerRepository.get_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_list_customers_empty() | CustomerRepository.list_customers() | Integration | WB / decision coverage |
-| customer_repository_test.test_list_customers_success() | CustomerRepository.list_customers() | Integration | WB / decision coverage |
-| customer_repository_test.test_attach_card_to_customer_not_found() | CustomerRepository.attach_card_to_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_attach_card_to_customer_conflict() | CustomerRepository.attach_card_to_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_attach_card_to_customer_card_switch() | CustomerRepository.attach_card_to_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_update_customer_without_card() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_update_customer_not_found() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_update_customer_with_card() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_update_customer_empty_card() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_update_customer_conflict() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_update_customer_invalid_card() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_delete_customer_without_card() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_delete_customer_not_found() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| customer_repository_test.test_delete_customer_with_card() | CustomerRepository.update_customer() | Integration | WB / decision coverage |
-| mapper_service_customer_test.test_card_dao_to_response_dto() | carddao_to_response_dto() | Integration | WB / decision coverage |
-| mapper_service_customer_test.test_customer_dao_to_response_dto_without_card() | customerdao_to_responsedto() | Integration | WB / decision coverage |
-| mapper_service_customer_test.test_customer_dao_to_response_dto_with_card() | customerdao_to_responsedto() | Integration | WB / decision coverage |
-| mapper_service_customer_test.test_customerdao_and_card_to_dto_without_card() | customerdao_and_card_to_dto() | Integration | WB / decision coverage |
-| mapper_service_customer_test.test_customerdao_and_card_to_dto_with_card() | customerdao_and_card_to_dto() | Integration | WB / decision coverage |
-| card_controller_test.test_create_card() | CardController.create_card() | Integration | WB / decision coverage |
-| card_controller_test.test_get_card() | CardController.get_card() | Integration | WB / decision coverage |
-| card_controller_test.test_modify_card_points() | CardController.modify_points_card() | Integration | WB / decision coverage |
-| customer_controller_test.test_create_customer() | CustomerController.create_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_get_customer_success() | CustomerController.get_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_get_customer_not_found() | CustomerController.get_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_list_customers_empty() | CustomerController.list_customers() | Integration | WB / decision coverage |
-| customer_controller_test.test_list_customers_success() | CustomerController.list_customers() | Integration | WB / decision coverage |
-| customer_controller_test.test_attach_card_to_customer_not_found() | CustomerController.attach_card_to_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_attach_card_to_customer_conflict() | CustomerController.attach_card_to_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_attach_card_to_customer_card_switch() | CustomerController.attach_card_to_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_update_customer_without_card() | CustomerController.update_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_update_customer_not_found() | CustomerController.update_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_update_customer_with_card() | CustomerController.update_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_update_customer_empty_card() | CustomerController.update_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_update_customer_conflict() |  CustomerController.update_customer()| Integration | WB / decision coverage |
-| customer_controller_test.test_update_customer_invalid_card() | CustomerController.update_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_delete_customer_without_card() | CustomerController.delete_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_delete_customer_not_fount() | CustomerController.delete_customer() | Integration | WB / decision coverage |
-| customer_controller_test.test_delete_customer_without_card() | CustomerController.delete_customer() | Integration | WB / decision coverage |
-| customer_test.test_create_card_success_as_admin() | REST API /customers/cards POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_card_success_as_cashier() | REST API /customers/cards POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_card_success_as_manager() | REST API /customers/cards POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_card_unauthenticated() | REST API /customers/cards POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_success_as_admin() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_success_as_cashier() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_success_as_manager() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_multiple_customers() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_missing_fields() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_with_card() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_with_invalid_card() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_with_wrong_card() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_card_conflict() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_create_customer_unauthenticated() | REST API /customers POST | API | BB / Equivalence partitioning |
-| customer_test.test_list_customers_success_as_admin() | REST API /customers GET | API | BB / Equivalence partitioning |
-| customer_test.test_list_customers_success_as_cashier() | REST API /customers GET | API | BB / Equivalence partitioning |
-| customer_test.test_list_customers_success_as_manager() | REST API /customers GET | API | BB / Equivalence partitioning |
-| customer_test.test_list_customers_empty() | REST API /customers GET | API | BB / Equivalence partitioning |
-| customer_test.test_list_customers_not_empty() | REST API /customers GET | API | BB / Equivalence partitioning |
-| customer_test.test_list_customers_unauthenticated() | REST API /customers GET | API | BB / Equivalence partitioning |
-| customer_test.test_get_customer_success_as_admin() | REST API /customers/{customer_id} GET | API | BB / Equivalence partitioning |
-| customer_test.test_get_customer_success_as_cashier() | REST API /customers/{customer_id} GET | API | BB / Equivalence partitioning |
-| customer_test.test_get_customer_success_as_manager() | REST API /customers/{customer_id} GET | API | BB / Equivalence partitioning |
-| customer_test.test_get_customer_invalid_id() | REST API /customers/{customer_id} GET | API | BB / Equivalence partitioning |
-| customer_test.test_get_customer_not_found() | REST API /customers/{customer_id} GET | API | BB / Equivalence partitioning |
-| customer_test.test_get_customer_unauthenticated() | REST API /customers/{customer_id} GET | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_success_as_admin() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_success_as_cashier() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_success_as_manager() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_invalid_customer() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_not_found() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_with_card_success() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_invalid_card() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_card_not_found() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_empty_card() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_empty_card_1() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_change_card() |  REST API /customers/{customer_id} PUT| API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_conflict() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_with_card_negative_points() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_update_customer_unauthenticated() | REST API /customers/{customer_id} PUT | API | BB / Equivalence partitioning |
-| customer_test.test_delete_customer_success_as_admin() | REST API /customers/{customer_id} DELETE | API | BB / Equivalence partitioning |
-| customer_test.test_delete_customer_success_as_cashier() | REST API /customers/{customer_id} DELETE | API | BB / Equivalence partitioning |
-| customer_test.test_delete_customer_success_as_manager() | REST API /customers/{customer_id} DELETE | API | BB / Equivalence partitioning |
-| customer_test.test_delete_customer_not_found() | REST API /customers/{customer_id} DELETE | API | BB / Equivalence partitioning |
-| customer_test.test_delete_customer_unauthenticated() | REST API /customers/{customer_id} DELETE | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_success_as_admin() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_success_as_cashier() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_success_as_manager() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_invalid_customer() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_invalid_card() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_card_not_found() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_customer_not_found() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_card_already_attached() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_twice() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_customer_already_has_card() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_attach_card_to_customer_customer_unauthenticated() | REST API /customers/cards PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_success_as_admin() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_success_as_cashier() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_success_as_manager() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_invalid_id() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_card_not_found() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_insufficient_points() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
-| customer_test.test_modify_card_points_unauthenticated() | REST API /customers/cards/{card_id} PATCH | API | BB / Equivalence partitioning |
+| card_repository_test.test_create_card() | CardRepository.create_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_get_card_success() | CardRepository.get_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_get_card_not_found() | CardRepository.get_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_update_card_success() | CardRepository.update_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_update_card_not_found() | CardRepository.update_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_update_card_without_sum_success() | CardRepository.update_card_without_sum() | Unit | WB : Decision coverage |
+| card_repository_test.test_update_card_without_sum_not_found() | CardRepository.update_card_without_sum() | Unit | WB : Decision coverage |
+| card_repository_test.test_delete_card_success() | CardRepository.delete_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_delete_card_not_found() | CardRepository.delete_card() | Unit | WB : Decision coverage |
+| card_repository_test.test_update_and_attach_to_customer_success() | CardRepository.update_and_attach_card_to_customer() | Unit | WB : Decision coverage |
+| card_repository_test.test_update_and_attach_to_customer_not_found() | CardRepository.update_and_attach_card_to_customer() | Unit | WB : Decision coverage |
+| card_repository_test.test_is_attached_success() | CardRepository.is_attached() | Unit | WB : Decision coverage |
+| card_repository_test.test_is_attached_not_found() | CardRepository.is_attached() | Unit | WB : Decision coverage |
+| card_repository_test.test_get_card_by_customer_success() | CardRepository.get_card_by_customer() | Unit | WB : Decision coverage |
+| card_repository_test.test_get_card_by_customer_not_found() | CardRepository.get_card_by_customer() | Unit | WB : Decision coverage |
+| customer_repository_test.test_create_customer() | CustomerRepository.create_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_get_customer_success() | CustomerRepository.get_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_get_customer_not_found() | CustomerRepository.get_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_list_customers_empty() | CustomerRepository.list_customers() | Integration | WB : Decision coverage |
+| customer_repository_test.test_list_customers_success() | CustomerRepository.list_customers() | Integration | WB : Decision coverage |
+| customer_repository_test.test_attach_card_to_customer_not_found() | CustomerRepository.attach_card_to_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_attach_card_to_customer_conflict() | CustomerRepository.attach_card_to_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_attach_card_to_customer_card_switch() | CustomerRepository.attach_card_to_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_update_customer_without_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_update_customer_not_found() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_update_customer_with_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_update_customer_empty_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_update_customer_conflict() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_update_customer_invalid_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_delete_customer_without_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_delete_customer_not_found() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| customer_repository_test.test_delete_customer_with_card() | CustomerRepository.update_customer() | Integration | WB : Decision coverage |
+| mapper_service_customer_test.test_card_dao_to_response_dto() | carddao_to_response_dto() | Integration | WB : Decision coverage |
+| mapper_service_customer_test.test_customer_dao_to_response_dto_without_card() | customerdao_to_responsedto() | Integration | WB : Decision coverage |
+| mapper_service_customer_test.test_customer_dao_to_response_dto_with_card() | customerdao_to_responsedto() | Integration | WB : Decision coverage |
+| mapper_service_customer_test.test_customerdao_and_card_to_dto_without_card() | customerdao_and_card_to_dto() | Integration | WB : Decision coverage |
+| mapper_service_customer_test.test_customerdao_and_card_to_dto_with_card() | customerdao_and_card_to_dto() | Integration | WB : Decision coverage |
+| card_controller_test.test_create_card() | CardController.create_card() | Integration | WB : Decision coverage |
+| card_controller_test.test_get_card() | CardController.get_card() | Integration | WB : Decision coverage |
+| card_controller_test.test_modify_card_points() | CardController.modify_points_card() | Integration | WB : Decision coverage |
+| customer_controller_test.test_create_customer() | CustomerController.create_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_get_customer_success() | CustomerController.get_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_get_customer_not_found() | CustomerController.get_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_list_customers_empty() | CustomerController.list_customers() | Integration | WB : Decision coverage |
+| customer_controller_test.test_list_customers_success() | CustomerController.list_customers() | Integration | WB : Decision coverage |
+| customer_controller_test.test_attach_card_to_customer_not_found() | CustomerController.attach_card_to_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_attach_card_to_customer_conflict() | CustomerController.attach_card_to_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_attach_card_to_customer_card_switch() | CustomerController.attach_card_to_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_update_customer_without_card() | CustomerController.update_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_update_customer_not_found() | CustomerController.update_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_update_customer_with_card() | CustomerController.update_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_update_customer_empty_card() | CustomerController.update_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_update_customer_conflict() |  CustomerController.update_customer()| Integration | WB : Decision coverage |
+| customer_controller_test.test_update_customer_invalid_card() | CustomerController.update_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_delete_customer_without_card() | CustomerController.delete_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_delete_customer_not_fount() | CustomerController.delete_customer() | Integration | WB : Decision coverage |
+| customer_controller_test.test_delete_customer_without_card() | CustomerController.delete_customer() | Integration | WB : Decision coverage |
+| customer_test.test_create_card_success_as_admin() | REST API /customers/cards POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_card_success_as_cashier() | REST API /customers/cards POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_card_success_as_manager() | REST API /customers/cards POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_card_unauthenticated() | REST API /customers/cards POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_success_as_admin() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_success_as_cashier() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_success_as_manager() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_multiple_customers() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_missing_fields() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_with_card() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_with_invalid_card() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_with_wrong_card() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_card_conflict() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_create_customer_unauthenticated() | REST API /customers POST | System/API | BB : Equivalence partitioning |
+| customer_test.test_list_customers_success_as_admin() | REST API /customers GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_list_customers_success_as_cashier() | REST API /customers GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_list_customers_success_as_manager() | REST API /customers GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_list_customers_empty() | REST API /customers GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_list_customers_not_empty() | REST API /customers GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_list_customers_unauthenticated() | REST API /customers GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_get_customer_success_as_admin() | REST API /customers/{customer_id} GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_get_customer_success_as_cashier() | REST API /customers/{customer_id} GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_get_customer_success_as_manager() | REST API /customers/{customer_id} GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_get_customer_invalid_id() | REST API /customers/{customer_id} GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_get_customer_not_found() | REST API /customers/{customer_id} GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_get_customer_unauthenticated() | REST API /customers/{customer_id} GET | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_success_as_admin() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_success_as_cashier() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_success_as_manager() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_invalid_customer() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_not_found() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_with_card_success() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_invalid_card() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_card_not_found() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_empty_card() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_empty_card_1() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_change_card() |  REST API /customers/{customer_id} PUT| System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_conflict() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_with_card_negative_points() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_update_customer_unauthenticated() | REST API /customers/{customer_id} PUT | System/API | BB : Equivalence partitioning |
+| customer_test.test_delete_customer_success_as_admin() | REST API /customers/{customer_id} DELETE | System/API | BB : Equivalence partitioning |
+| customer_test.test_delete_customer_success_as_cashier() | REST API /customers/{customer_id} DELETE | System/API | BB : Equivalence partitioning |
+| customer_test.test_delete_customer_success_as_manager() | REST API /customers/{customer_id} DELETE | System/API | BB : Equivalence partitioning |
+| customer_test.test_delete_customer_not_found() | REST API /customers/{customer_id} DELETE | System/API | BB : Equivalence partitioning |
+| customer_test.test_delete_customer_unauthenticated() | REST API /customers/{customer_id} DELETE | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_success_as_admin() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_success_as_cashier() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_success_as_manager() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_invalid_customer() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_invalid_card() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_card_not_found() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_customer_not_found() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_card_already_attached() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_twice() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_customer_already_has_card() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_attach_card_to_customer_customer_unauthenticated() | REST API /customers/cards PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_success_as_admin() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_success_as_cashier() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_success_as_manager() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_invalid_id() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_card_not_found() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_insufficient_points() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
+| customer_test.test_modify_card_points_unauthenticated() | REST API /customers/cards/{card_id} PATCH | System/API | BB : Equivalence partitioning |
 
 
 ## Products tests
@@ -416,57 +415,57 @@ Integration strategy: **Bottom-up approach**
 | test_update_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
 | test_update_product_conflict_position | ProductController | Integration | BB: Equivalence Partitioning |
 | test_update_product_bad_request_quantity | ProductController | Integration | BB: Boundary Value Analysis |
-| test_assign_position_lifecycle | API Endpoints | API | BB: Scenario Testing |
-| test_assign_position_conflict | API Endpoints | API | BB: Equivalence Partitioning |
-| test_assign_position_forbidden_cashier | API Endpoints | API | BB: Access Control |
-| test_assign_position_not_found | API Endpoints | API | BB: Equivalence Partitioning |
-| test_assign_position_invalid_format | API Endpoints | API | BB: Boundary Value Analysis |
-| test_assign_position_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
-| test_assign_position_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_create_product_success_valid_gtin_and_position | API Endpoints | API | BB: Equivalence Partitioning |
-| test_create_product_insufficient_permissions | API Endpoints | API | BB: Access Control |
-| test_create_product_invalid_input | API Endpoints | API | BB: Boundary Value Analysis |
-| test_create_product_conflict_duplicate_barcode | API Endpoints | API | BB: Equivalence Partitioning |
-| test_delete_product_success | API Endpoints | API | BB: Equivalence Partitioning |
-| test_delete_product_forbidden_cashier | API Endpoints | API | BB: Access Control |
-| test_delete_product_not_found | API Endpoints | API | BB: Equivalence Partitioning |
-| test_delete_product_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
-| test_delete_product_invalid_state_transaction_exists | API Endpoints | API | BB: Equivalence Partitioning |
-| test_delete_product_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_get_by_barcode_success | API Endpoints | API | BB: Equivalence Partitioning |
-| test_get_by_barcode_forbidden_cashier | API Endpoints | API | BB: Access Control |
-| test_get_by_barcode_not_found | API Endpoints | API | BB: Equivalence Partitioning |
-| test_get_by_barcode_bad_request | API Endpoints | API | BB: Boundary Value Analysis |
-| test_get_by_barcode_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_get_by_barcode_missing_barcode_param | API Endpoints | API | BB: Boundary Value Analysis |
-| test_get_product_by_id_success | API Endpoints | API | BB: Equivalence Partitioning |
-| test_get_product_by_id_not_found | API Endpoints | API | BB: Equivalence Partitioning |
-| test_get_product_by_id_bad_request_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
-| test_get_product_by_id_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_increment_quantity_success | API Endpoints | API | WB: Statement Coverage |
-| test_decrement_quantity_success | API Endpoints | API | WB: Statement Coverage |
-| test_decrement_quantity_insufficient_stock | API Endpoints | API | BB: Boundary Value Analysis |
-| test_quantity_forbidden_cashier | API Endpoints | API | BB: Access Control |
-| test_quantity_not_found | API Endpoints | API | BB: Equivalence Partitioning |
-| test_quantity_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
-| test_quantity_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_list_products_empty | API Endpoints | API | BB: Equivalence Partitioning |
-| test_list_products_success_all_roles | API Endpoints | API | BB: Access Control |
-| test_list_products_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_search_products_success_partial_match | API Endpoints | API | BB: Equivalence Partitioning |
-| test_search_products_success_single_match | API Endpoints | API | BB: Equivalence Partitioning |
-| test_search_products_no_match | API Endpoints | API | BB: Equivalence Partitioning |
-| test_search_products_forbidden_cashier | API Endpoints | API | BB: Access Control |
-| test_search_products_unauthenticated | API Endpoints | API | BB: Access Control |
-| test_search_products_missing_query_param | API Endpoints | API | BB: Boundary Value Analysis |
-| test_update_product_success | API Endpoints | API | BB: Equivalence Partitioning |
-| test_update_product_forbidden_cashier | API Endpoints | API | BB: Access Control |
-| test_update_product_not_found | API Endpoints | API | BB: Equivalence Partitioning |
-| test_update_product_validation_error | API Endpoints | API | BB: Boundary Value Analysis |
-| test_update_product_invalid_id | API Endpoints | API | BB: Boundary Value Analysis |
-| test_update_product_conflict_barcode | API Endpoints | API | BB: Equivalence Partitioning |
-| test_update_barcode_fails_if_transaction_exists | API Endpoints | API | BB: Scenario Testing |
-| test_update_other_fields_allowed_with_transaction | API Endpoints | API | BB: Scenario Testing |
+| test_assign_position_lifecycle | API Endpoints | System/API | BB: Scenario Testing |
+| test_assign_position_conflict | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_assign_position_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
+| test_assign_position_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_assign_position_invalid_format | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_assign_position_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_assign_position_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_create_product_success_valid_gtin_and_position | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_create_product_insufficient_permissions | API Endpoints | System/API | BB: Access Control |
+| test_create_product_invalid_input | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_create_product_conflict_duplicate_barcode | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_delete_product_success | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_delete_product_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
+| test_delete_product_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_delete_product_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_delete_product_invalid_state_transaction_exists | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_delete_product_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_get_by_barcode_success | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_get_by_barcode_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
+| test_get_by_barcode_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_get_by_barcode_bad_request | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_get_by_barcode_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_get_by_barcode_missing_barcode_param | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_get_product_by_id_success | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_get_product_by_id_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_get_product_by_id_bad_request_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_get_product_by_id_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_increment_quantity_success | API Endpoints | System/API | WB: Statement Coverage |
+| test_decrement_quantity_success | API Endpoints | System/API | WB: Statement Coverage |
+| test_decrement_quantity_insufficient_stock | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_quantity_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
+| test_quantity_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_quantity_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_quantity_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_list_products_empty | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_list_products_success_all_roles | API Endpoints | System/API | BB: Access Control |
+| test_list_products_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_search_products_success_partial_match | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_search_products_success_single_match | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_search_products_no_match | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_search_products_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
+| test_search_products_unauthenticated | API Endpoints | System/API | BB: Access Control |
+| test_search_products_missing_query_param | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_update_product_success | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_update_product_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
+| test_update_product_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_update_product_validation_error | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_update_product_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
+| test_update_product_conflict_barcode | API Endpoints | System/API | BB: Equivalence Partitioning |
+| test_update_barcode_fails_if_transaction_exists | API Endpoints | System/API | BB: Scenario Testing |
+| test_update_other_fields_allowed_with_transaction | API Endpoints | System/API | BB: Scenario Testing |
 
 ## Orders tests
 
@@ -492,11 +491,11 @@ Integration strategy: **Bottom-up approach**
 | test_pay_order_already_paid | OrderController.pay_order() | Integration | BB: Invalid state |
 | test_list_orders | OrderController.list_orders() | Integration | WB: Integration verification |
 | test_complete_order_success | OrderController.complete_order() | Integration | BB: State transition |
-| test_create_issued_order_system_workflow | Full stack + OrderRepository verification | System | WB: End-to-end scenario |
-| test_create_issued_order_with_product_involvement | OrderController + ProductRepository | System | WB: Side effect verification |
-| test_create_issued_order_does_not_affect_balance | OrderController + SystemRepository | System | WB: State isolation |
-| test_pay_order_system_workflow | Full workflow: Create + Pay + Verify | System | WB: Complete workflow |
-| test_pay_order_deducts_correct_amount | OrderController + SystemController | System | BB: Calculation verification |
+| test_create_issued_order_system_workflow | Full stack + OrderRepository verification | System/API | WB: End-to-end scenario |
+| test_create_issued_order_with_product_involvement | OrderController + ProductRepository | System/API | WB: Side effect verification |
+| test_create_issued_order_does_not_affect_balance | OrderController + SystemRepository | System/API | WB: State isolation |
+| test_pay_order_system_workflow | Full workflow: Create + Pay + Verify | System/API | WB: Complete workflow |
+| test_pay_order_deducts_correct_amount | OrderController + SystemController | System/API | BB: Calculation verification |
 
 # Coverage
 
@@ -529,22 +528,22 @@ Integration strategy: **Bottom-up approach**
 
 | Functional Requirement or scenario | Test(s) |
 | :--------------------------------: | :-----: |
-|                FR6.1 - Start a sale             |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py  |
-|                FR6.2 - Add a product to a sale             |   test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py |
-|                FR6.3 - Delete a product from a sale             |   test_route_delete_item_from_sale.py, test_controller_delete_item_from_sale.py, test_repository_remove_item_from_sale.py  |
-|                FR6.4 - Apply discount rate to a sale             |   test_route_update_sale_discount.py, test_controller_update_sale_discount.py, test_repository_update_sale_discount.py      |
-|                FR6.5 - Apply discount rate to a product type             |   test_route_update_sale_line_discount.py, test_controller_update_sale_line_discount.py, test_repository_update_sale_line_discount.py      |
-|                FR6.6 - Compute points for a sale             |   test_route_get_sale_points.py, test_controller_get_sale_points.py      |
-|                FR6.10 - Close a sale transaction            |   test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py       |
-|                FR6.11 - Rollback or commit a closed sale transaction            |   test_route_delete_sale.py, test_controller_delete_sale.py, test_repository_delete_sale.py      |
-|                FR7.1 - Receive payment cash             |   test_route_payment.py, test_controller_process_payment.py, test_repository_update_sale_status_paid.py      |
-|                Scenario 6-1        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
-|                Scenario 6-2        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_update_sale_line_discount.py, test_controller_update_sale_line_discount.py, test_repository_update_sale_line_discount.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
-|                Scenario 6-3        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_update_sale_discount.py, test_controller_update_sale_discount.py, test_repository_update_sale_discount.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
-|                Scenario 6-4        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py, test_route_get_sale_points.py, test_controller_get_sale_points.py      |
-|                Scenario 6-5        |   test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, , test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py, test_route_delete_sale.py, test_controller_delete_sale.py, test_repository_delete_sale.py      |
-|                Scenario 6-6        |    test_mapper_service_sale_dao_to_dto.py, test_route_create_sale.py, test_controller_create_sale.py, test_route_add_item_to_sale.py, test_controller_add_item_to_sale.py, test_repository_add_item_to_sale.py, test_route_close_sale.py, test_controller_close_sale.py, test_repository_update_sale_status_pending.py      |
-|                Scenario 7-4        |   test_route_payment.py, test_controller_process_payment.py, test_repository_update_sale_status_paid.py      |
+|                FR6.1 - Start a sale             |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale  |
+|                FR6.2 - Add a product to a sale             |   test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale |
+|                FR6.3 - Delete a product from a sale             |   test_route_delete_item_from_sale, test_controller_delete_item_from_sale, test_repository_remove_item_from_sale  |
+|                FR6.4 - Apply discount rate to a sale             |   test_route_update_sale_discount, test_controller_update_sale_discount, test_repository_update_sale_discount      |
+|                FR6.5 - Apply discount rate to a product type             |   test_route_update_sale_line_discount, test_controller_update_sale_line_discount, test_repository_update_sale_line_discount      |
+|                FR6.6 - Compute points for a sale             |   test_route_get_sale_points, test_controller_get_sale_points      |
+|                FR6.10 - Close a sale transaction            |   test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending       |
+|                FR6.11 - Rollback or commit a closed sale transaction            |   test_route_delete_sale, test_controller_delete_sale, test_repository_delete_sale      |
+|                FR7.1 - Receive payment cash             |   test_route_payment, test_controller_process_payment, test_repository_update_sale_status_paid      |
+|                Scenario 6-1        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-2        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_update_sale_line_discount, test_controller_update_sale_line_discount, test_repository_update_sale_line_discount, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-3        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_update_sale_discount, test_controller_update_sale_discount, test_repository_update_sale_discount, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 6-4        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending, test_route_get_sale_points, test_controller_get_sale_points      |
+|                Scenario 6-5        |   test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, , test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending, test_route_delete_sale, test_controller_delete_sale, test_repository_delete_sale      |
+|                Scenario 6-6        |    test_mapper_service_sale_dao_to_dto, test_route_create_sale, test_controller_create_sale, test_route_add_item_to_sale, test_controller_add_item_to_sale, test_repository_add_item_to_sale, test_route_close_sale, test_controller_close_sale, test_repository_update_sale_status_pending      |
+|                Scenario 7-4        |   test_route_payment, test_controller_process_payment, test_repository_update_sale_status_paid      |
 
 ### Customers
 
