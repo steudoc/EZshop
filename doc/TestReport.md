@@ -592,4 +592,4 @@ Integration strategy: **Bottom-up approach**
 
 ## Coverage white box
 
-![alt text](images/tests_coverage.jpeg)
+![alt text](images/TestCoverage.png)

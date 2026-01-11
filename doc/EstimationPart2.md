@@ -33,9 +33,9 @@ productivity = ((LOC of production code)+ (LOC of test code)) / effort
 |                                        | Estimated (end of task 1) | Actual (jan 18, end of task 3)|
 | -------------------------------------------------------------------------------- | -------- |----|
 | production code size | 2509  ||
-| test code size | 11647 ||
-| total size  | 14156 ||
-| effort | 1416 ||
+| test code size | 11588 ||
+| total size  | 14097 ||
+| effort | 1410 ||
 | productivity  | 10 loc / hour ||
 
 
