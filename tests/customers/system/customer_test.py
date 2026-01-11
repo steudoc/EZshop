@@ -509,7 +509,8 @@ def test_update_customer_change_card(client, auth_tokens):
     updated_customer = copy.deepcopy(CUSTOMER_UPDATED_SAMPLE_WITH_CARD)
     updated_customer["card"]["card_id"] = card_id_1
     updated_customer["card"]["points"] = 1000
-    resp = client.put(BASE_URL + f"/customers/{customer["id"]}", json=updated_customer,
+    customer_id = customer["id"]
+    resp = client.put(BASE_URL + f"/customers/{customer_id}", json=updated_customer,
                     headers=auth_header(auth_tokens, "admin"))
     assert resp.status_code == 201
     actual_updated_customer = resp.json()
@@ -572,7 +573,8 @@ def test_update_customer_with_card_negative_points(client, auth_tokens):
     updated_customer = copy.deepcopy(CUSTOMER_UPDATED_SAMPLE_WITH_CARD)
     updated_customer["card"]["points"] = -100
     customer_id = customer["id"]
-    resp = client.put(BASE_URL + f"/customers/{customer_id}", json=CUSTOMER_UPDATED_SAMPLE_WITH_CARD,
+
+    resp = client.put(BASE_URL + f"/customers/{customer_id}", json=updated_customer,
                     headers=auth_header(auth_tokens, "admin"))
     assert resp.status_code == 400
 

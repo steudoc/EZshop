@@ -50,7 +50,7 @@ async def modify_points_card(
 
     card = await controller.get_card(card_id)
 
-    if points<card.points:
+    if points+card.points<0:
         throw_customer_card_error("Insufficient points on the card")
     
     return await controller.modify_points_card(card_id=card_id, points=points)

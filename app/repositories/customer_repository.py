@@ -47,7 +47,7 @@ class CustomerRepository:
                 card_dao = await session.get(CardDAO, card.card_id)
 
                 if card_dao is None:
-                    throw_not_found(f"Card with id {card.card_id} not found")
+                    throw_bad_request(f"Card with id {card.card_id} must be positive")
 
                 if card_dao.customer_id is not None:
                     throw_conflict(f"Card with id {card.card_id} is already attached to a customer")
@@ -244,7 +244,7 @@ class CustomerRepository:
                 )
 
             cardRepository_instance = CardRepository(session=session)
-
+            
             if updated_card is None:
                 pass
             elif updated_card.card_id is None:
@@ -254,8 +254,9 @@ class CustomerRepository:
                     await session.delete(card)
             else:
                 body_card_dao = await cardRepository_instance.get_card(updated_card.card_id)
-                customer_card_dao = await cardRepository_instance.get_card_by_customer(customer_id)
-
+                
+                customer_card_dao = await cardRepository_instance.get_card_by_customer_without_raise_notfounderror(customer_id)
+                
                 if(updated_card.points<0):
                     throw_bad_request("Card points must be positive") 
 
