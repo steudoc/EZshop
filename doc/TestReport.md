@@ -349,123 +349,124 @@ Integration strategy: **Bottom-up approach**
 ## Products tests
 
 | Test case name | Object(s) tested | Test level | Technique used |
-| :------------ | :-------------- | :--------: | :------------ |
-| test_update_product_invalid_data | ProductRepository | Unit | BB: Boundary Value Analysis |
-| test_update_product_simple_fields | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_update_product_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_update_barcode_success | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_update_barcode_conflict | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_update_barcode_invalid_state | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_delete_product_success | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_delete_product_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_delete_product_invalid_state | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_get_product_by_barcode_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_get_product_by_barcode_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_get_product_by_barcode_invalid_format | ProductRepository | Unit | BB: Boundary Value Analysis |
-| test_get_product_by_id_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_get_product_by_id_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_include_product_in_op_increment_success | ProductRepository | Unit | WB: Statement Coverage |
-| test_include_product_in_op_decrement_success | ProductRepository | Unit | WB: Statement Coverage |
-| test_include_product_in_op_decrement_below_zero | ProductRepository | Unit | BB: Boundary Value Analysis |
-| test_include_product_in_op_not_found | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_is_position_free_yes | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_is_position_free_no | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_is_position_free_invalid_format | ProductRepository | Unit | BB: Boundary Value Analysis |
-| test_list_products_populated | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_list_products_empty | ProductRepository | Unit | BB: Equivalence Partitioning |
-| test_create_product_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_create_product_defaults_valid | ProductController | Integration | BB: Equivalence Partitioning |
-| test_create_product_invalid_barcode | ProductController | Integration | BB: Boundary Value Analysis |
-| test_create_product_invalid_position_format | ProductController | Integration | BB: Boundary Value Analysis |
-| test_create_product_conflict_position | ProductController | Integration | BB: Equivalence Partitioning |
-| test_create_product_conflict_barcode | ProductController | Integration | BB: Equivalence Partitioning |
-| test_delete_product_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_delete_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_delete_product_invalid_state | ProductController | Integration | BB: Equivalence Partitioning |
-| test_include_product_in_op_success | ProductController | Integration | WB: Statement Coverage |
-| test_include_product_in_op_multiple_times | ProductController | Integration | BB: Equivalence Partitioning |
-| test_include_product_in_op_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_exclude_product_from_op_success | ProductController | Integration | WB: Statement Coverage |
-| test_exclude_product_from_op_success_to_zero | ProductController | Integration | WB: Statement Coverage |
-| test_exclude_product_from_op_bad_request | ProductController | Integration | BB: Boundary Value Analysis |
-| test_exclude_product_from_op_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_get_product_by_barcode_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_get_product_by_barcode_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_get_product_by_barcode_invalid_format | ProductController | Integration | BB: Boundary Value Analysis |
-| test_get_product_by_id_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_get_product_by_id_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_search_by_description_partial_match | ProductController | Integration | BB: Equivalence Partitioning |
-| test_search_by_description_case_insensitive | ProductController | Integration | BB: Equivalence Partitioning |
-| test_search_by_description_no_match | ProductController | Integration | BB: Equivalence Partitioning |
-| test_search_by_description_empty_db | ProductController | Integration | BB: Equivalence Partitioning |
-| test_list_products_empty | ProductController | Integration | BB: Equivalence Partitioning |
-| test_list_products_populated | ProductController | Integration | BB: Equivalence Partitioning |
-| test_increment_quantity_add_success | ProductController | Integration | WB: Statement Coverage |
-| test_increment_quantity_subtract_success | ProductController | Integration | WB: Statement Coverage |
-| test_increment_quantity_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_increment_quantity_bad_request_negative_result | ProductController | Integration | BB: Boundary Value Analysis |
-| test_move_product_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_move_product_reset_position | ProductController | Integration | BB: Equivalence Partitioning |
-| test_move_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_move_product_conflict | ProductController | Integration | BB: Equivalence Partitioning |
-| test_move_product_invalid_format | ProductController | Integration | BB: Boundary Value Analysis |
-| test_update_product_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_update_product_move_position_success | ProductController | Integration | BB: Equivalence Partitioning |
-| test_update_product_reset_position | ProductController | Integration | BB: Equivalence Partitioning |
-| test_update_product_not_found | ProductController | Integration | BB: Equivalence Partitioning |
-| test_update_product_conflict_position | ProductController | Integration | BB: Equivalence Partitioning |
-| test_update_product_bad_request_quantity | ProductController | Integration | BB: Boundary Value Analysis |
-| test_assign_position_lifecycle | API Endpoints | System/API | BB: Scenario Testing |
-| test_assign_position_conflict | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_assign_position_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
-| test_assign_position_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_assign_position_invalid_format | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_assign_position_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_assign_position_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_create_product_success_valid_gtin_and_position | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_create_product_insufficient_permissions | API Endpoints | System/API | BB: Access Control |
-| test_create_product_invalid_input | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_create_product_conflict_duplicate_barcode | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_delete_product_success | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_delete_product_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
-| test_delete_product_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_delete_product_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_delete_product_invalid_state_transaction_exists | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_delete_product_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_get_by_barcode_success | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_get_by_barcode_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
-| test_get_by_barcode_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_get_by_barcode_bad_request | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_get_by_barcode_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_get_by_barcode_missing_barcode_param | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_get_product_by_id_success | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_get_product_by_id_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_get_product_by_id_bad_request_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_get_product_by_id_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_increment_quantity_success | API Endpoints | System/API | BB: Statement Coverage |
-| test_decrement_quantity_success | API Endpoints | System/API | BB: Statement Coverage |
-| test_decrement_quantity_insufficient_stock | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_quantity_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
-| test_quantity_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_quantity_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_quantity_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_list_products_empty | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_list_products_success_all_roles | API Endpoints | System/API | BB: Access Control |
-| test_list_products_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_search_products_success_partial_match | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_search_products_success_single_match | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_search_products_no_match | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_search_products_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
-| test_search_products_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_search_products_missing_query_param | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_update_product_success | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_update_product_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
-| test_update_product_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_update_product_validation_error | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_update_product_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
-| test_update_product_conflict_barcode | API Endpoints | System/API | BB: Equivalence Partitioning |
-| test_update_barcode_fails_if_transaction_exists | API Endpoints | System/API | BB: Scenario Testing |
-| test_update_other_fields_allowed_with_transaction | API Endpoints | System/API | BB: Scenario Testing |
+| --- | --- | --- | --- |
+| **test_update_product_invalid_data** | ProductRepository.update_product() | Unit | BB: Boundary Value Analysis |
+| **test_update_product_simple_fields** | ProductRepository.update_product() | Unit | BB: Equivalence Partitioning |
+| **test_update_product_not_found** | ProductRepository.update_product() | Unit | BB: Equivalence Partitioning |
+| **test_update_barcode_success** | ProductRepository.update_product() | Unit | BB: Equivalence Partitioning |
+| **test_update_barcode_conflict** | ProductRepository.update_product() | Unit | BB: Equivalence Partitioning |
+| **test_update_barcode_invalid_state** | ProductRepository.update_product() | Unit | BB: Equivalence Partitioning |
+| **test_delete_product_success** | ProductRepository.delete_product() | Unit | BB: Equivalence Partitioning |
+| **test_delete_product_not_found** | ProductRepository.delete_product() | Unit | BB: Equivalence Partitioning |
+| **test_delete_product_invalid_state** | ProductRepository.delete_product() | Unit | BB: Equivalence Partitioning |
+| **test_get_product_by_barcode_found** | ProductRepository.get_product_by_barcode() | Unit | BB: Equivalence Partitioning |
+| **test_get_product_by_barcode_not_found** | ProductRepository.get_product_by_barcode() | Unit | BB: Equivalence Partitioning |
+| **test_get_product_by_barcode_invalid_format** | ProductRepository.get_product_by_barcode() | Unit | BB: Boundary Value Analysis |
+| **test_get_product_by_id_found** | ProductRepository.get_product_by_id() | Unit | BB: Equivalence Partitioning |
+| **test_get_product_by_id_not_found** | ProductRepository.get_product_by_id() | Unit | BB: Equivalence Partitioning |
+| **test_include_product_in_op_increment_success** | ProductRepository.include_product_in_op() | Unit | WB: Statement Coverage |
+| **test_include_product_in_op_decrement_success** | ProductRepository.include_product_in_op() | Unit | WB: Statement Coverage |
+| **test_include_product_in_op_decrement_below_zero** | ProductRepository.include_product_in_op() | Unit | BB: Boundary Value Analysis |
+| **test_include_product_in_op_not_found** | ProductRepository.include_product_in_op() | Unit | BB: Equivalence Partitioning |
+| **test_is_position_free_yes** | ProductRepository.is_position_free() | Unit | BB: Equivalence Partitioning |
+| **test_is_position_free_no** | ProductRepository.is_position_free() | Unit | BB: Equivalence Partitioning |
+| **test_is_position_free_invalid_format** | ProductRepository.is_position_free() | Unit | BB: Boundary Value Analysis |
+| **test_list_products_populated** | ProductRepository.list_products() | Unit | BB: Equivalence Partitioning |
+| **test_list_products_empty** | ProductRepository.list_products() | Unit | BB: Equivalence Partitioning |
+| **test_create_product_success** | ProductController.create_product() | Integration | BB: Equivalence Partitioning |
+| **test_create_product_defaults_valid** | ProductController.create_product() | Integration | BB: Equivalence Partitioning |
+| **test_create_product_invalid_barcode** | ProductController.create_product() | Integration | BB: Boundary Value Analysis |
+| **test_create_product_invalid_position_format** | ProductController.create_product() | Integration | BB: Boundary Value Analysis |
+| **test_create_product_conflict_position** | ProductController.create_product() | Integration | BB: Equivalence Partitioning |
+| **test_create_product_conflict_barcode** | ProductController.create_product() | Integration | BB: Equivalence Partitioning |
+| **test_delete_product_success** | ProductController.delete_product() | Integration | BB: Equivalence Partitioning |
+| **test_delete_product_not_found** | ProductController.delete_product() | Integration | BB: Equivalence Partitioning |
+| **test_delete_product_invalid_state** | ProductController.delete_product() | Integration | BB: Equivalence Partitioning |
+| **test_exclude_product_from_op_success** | ProductController.exclude_product_from_op() | Integration | WB: Statement Coverage |
+| **test_exclude_product_from_op_success_to_zero** | ProductController.exclude_product_from_op() | Integration | WB: Statement Coverage |
+| **test_exclude_product_from_op_bad_request** | ProductController.exclude_product_from_op() | Integration | BB: Boundary Value Analysis |
+| **test_exclude_product_from_op_not_found** | ProductController.exclude_product_from_op() | Integration | BB: Equivalence Partitioning |
+| **test_get_product_by_barcode_success** | ProductController.get_product_by_barcode() | Integration | BB: Equivalence Partitioning |
+| **test_get_product_by_barcode_not_found** | ProductController.get_product_by_barcode() | Integration | BB: Equivalence Partitioning |
+| **test_get_product_by_barcode_invalid_format** | ProductController.get_product_by_barcode() | Integration | BB: Boundary Value Analysis |
+| **test_get_product_by_id_success** | ProductController.get_product_by_id() | Integration | BB: Equivalence Partitioning |
+| **test_get_product_by_id_not_found** | ProductController.get_product_by_id() | Integration | BB: Equivalence Partitioning |
+| **test_search_by_description_partial_match** | ProductController.get_products_by_description() | Integration | BB: Equivalence Partitioning |
+| **test_search_by_description_case_insensitive** | ProductController.get_products_by_description() | Integration | BB: Equivalence Partitioning |
+| **test_search_by_description_no_match** | ProductController.get_products_by_description() | Integration | BB: Equivalence Partitioning |
+| **test_search_by_description_empty_db** | ProductController.get_products_by_description() | Integration | BB: Equivalence Partitioning |
+| **test_list_products_empty** | ProductController.list_products() | Integration | BB: Equivalence Partitioning |
+| **test_list_products_populated** | ProductController.list_products() | Integration | BB: Equivalence Partitioning |
+| **test_increment_quantity_add_success** | ProductController.increment_product_quantity() | Integration | WB: Statement Coverage |
+| **test_increment_quantity_subtract_success** | ProductController.increment_product_quantity() | Integration | WB: Statement Coverage |
+| **test_increment_quantity_not_found** | ProductController.increment_product_quantity() | Integration | BB: Equivalence Partitioning |
+| **test_increment_quantity_bad_request_negative_result** | ProductController.increment_product_quantity() | Integration | BB: Boundary Value Analysis |
+| **test_move_product_success** | ProductController.move_product() | Integration | BB: Equivalence Partitioning |
+| **test_move_product_reset_position** | ProductController.move_product() | Integration | BB: Equivalence Partitioning |
+| **test_move_product_not_found** | ProductController.move_product() | Integration | BB: Equivalence Partitioning |
+| **test_move_product_conflict** | ProductController.move_product() | Integration | BB: Equivalence Partitioning |
+| **test_move_product_invalid_format** | ProductController.move_product() | Integration | BB: Boundary Value Analysis |
+| **test_update_product_success** | ProductController.update_product() | Integration | BB: Equivalence Partitioning |
+| **test_update_product_move_position_success** | ProductController.update_product() | Integration | BB: Equivalence Partitioning |
+| **test_update_product_reset_position** | ProductController.update_product() | Integration | BB: Equivalence Partitioning |
+| **test_update_product_not_found** | ProductController.update_product() | Integration | BB: Equivalence Partitioning |
+| **test_update_product_conflict_position** | ProductController.update_product() | Integration | BB: Equivalence Partitioning |
+| **test_update_product_bad_request_quantity** | ProductController.update_product() | Integration | BB: Boundary Value Analysis |
+| **test_assign_position_lifecycle** | REST API /products/{id}/position PATCH | System/API | BB: Scenario Testing |
+| **test_assign_position_conflict** | REST API /products/{id}/position PATCH | System/API | BB: Equivalence Partitioning |
+| **test_assign_position_forbidden_cashier** | REST API /products/{id}/position PATCH | System/API | BB: Access Control |
+| **test_assign_position_not_found** | REST API /products/{id}/position PATCH | System/API | BB: Equivalence Partitioning |
+| **test_assign_position_invalid_format** | REST API /products/{id}/position PATCH | System/API | BB: Boundary Value Analysis |
+| **test_assign_position_invalid_id** | REST API /products/{id}/position PATCH | System/API | BB: Boundary Value Analysis |
+| **test_assign_position_unauthenticated** | REST API /products/{id}/position PATCH | System/API | BB: Access Control |
+| **test_create_product_success_valid_gtin_and_position** | REST API /products POST | System/API | BB: Equivalence Partitioning |
+| **test_create_product_insufficient_permissions** | REST API /products POST | System/API | BB: Access Control |
+| **test_create_product_invalid_input** | REST API /products POST | System/API | BB: Boundary Value Analysis |
+| **test_create_product_conflict_duplicate_barcode** | REST API /products POST | System/API | BB: Equivalence Partitioning |
+| **test_delete_product_success** | REST API /products/{id} DELETE | System/API | BB: Equivalence Partitioning |
+| **test_delete_product_forbidden_cashier** | REST API /products/{id} DELETE | System/API | BB: Access Control |
+| **test_delete_product_not_found** | REST API /products/{id} DELETE | System/API | BB: Equivalence Partitioning |
+| **test_delete_product_invalid_id** | REST API /products/{id} DELETE | System/API | BB: Boundary Value Analysis |
+| **test_delete_product_invalid_state_transaction_exists** | REST API /products/{id} DELETE | System/API | BB: Equivalence Partitioning |
+| **test_delete_product_unauthenticated** | REST API /products/{id} DELETE | System/API | BB: Access Control |
+| **test_get_by_barcode_success** | REST API /products/barcode/{barcode} GET | System/API | BB: Equivalence Partitioning |
+| **test_get_by_barcode_forbidden_cashier** | REST API /products/barcode/{barcode} GET | System/API | BB: Access Control |
+| **test_get_by_barcode_not_found** | REST API /products/barcode/{barcode} GET | System/API | BB: Equivalence Partitioning |
+| **test_get_by_barcode_bad_request** | REST API /products/barcode/{barcode} GET | System/API | BB: Boundary Value Analysis |
+| **test_get_by_barcode_unauthenticated** | REST API /products/barcode/{barcode} GET | System/API | BB: Access Control |
+| **test_get_by_barcode_missing_barcode_param** | REST API /products/barcode/ GET | System/API | BB: Boundary Value Analysis |
+| **test_get_product_by_id_success** | REST API /products/{id} GET | System/API | BB: Equivalence Partitioning |
+| **test_get_product_by_id_not_found** | REST API /products/{id} GET | System/API | BB: Equivalence Partitioning |
+| **test_get_product_by_id_bad_request_invalid_id** | REST API /products/{id} GET | System/API | BB: Boundary Value Analysis |
+| **test_get_product_by_id_unauthenticated** | REST API /products/{id} GET | System/API | BB: Access Control |
+| **test_increment_quantity_success** | REST API /products/{id}/quantity PATCH | System/API | BB: Statement Coverage |
+| **test_decrement_quantity_success** | REST API /products/{id}/quantity PATCH | System/API | BB: Statement Coverage |
+| **test_decrement_quantity_insufficient_stock** | REST API /products/{id}/quantity PATCH | System/API | BB: Boundary Value Analysis |
+| **test_quantity_forbidden_cashier** | REST API /products/{id}/quantity PATCH | System/API | BB: Access Control |
+| **test_quantity_not_found** | REST API /products/{id}/quantity PATCH | System/API | BB: Equivalence Partitioning |
+| **test_quantity_invalid_id** | REST API /products/{id}/quantity PATCH | System/API | BB: Boundary Value Analysis |
+| **test_quantity_unauthenticated** | REST API /products/{id}/quantity PATCH | System/API | BB: Access Control |
+| **test_list_products_empty** | REST API /products GET | System/API | BB: Equivalence Partitioning |
+| **test_list_products_success_all_roles** | REST API /products GET | System/API | BB: Access Control |
+| **test_list_products_unauthenticated** | REST API /products GET | System/API | BB: Access Control |
+| **test_search_products_success_partial_match** | REST API /products/search GET | System/API | BB: Equivalence Partitioning |
+| **test_search_products_success_single_match** | REST API /products/search GET | System/API | BB: Equivalence Partitioning |
+| **test_search_products_no_match** | REST API /products/search GET | System/API | BB: Equivalence Partitioning |
+| **test_search_products_forbidden_cashier** | REST API /products/search GET | System/API | BB: Access Control |
+| **test_search_products_unauthenticated** | REST API /products/search GET | System/API | BB: Access Control |
+| **test_search_products_missing_query_param** | REST API /products/search GET | System/API | BB: Boundary Value Analysis |
+| **test_update_product_success** | REST API /products/{id} PUT | System/API | BB: Equivalence Partitioning |
+| **test_update_product_forbidden_cashier** | REST API /products/{id} PUT | System/API | BB: Access Control |
+| **test_update_product_not_found** | REST API /products/{id} PUT | System/API | BB: Equivalence Partitioning |
+| **test_update_product_validation_error** | REST API /products/{id} PUT | System/API | BB: Boundary Value Analysis |
+| **test_update_product_invalid_id** | REST API /products/{id} PUT | System/API | BB: Boundary Value Analysis |
+| **test_update_product_conflict_barcode** | REST API /products/{id} PUT | System/API | BB: Equivalence Partitioning |
+| **test_update_barcode_fails_if_transaction_exists** | REST API /products/{id} PUT | System/API | BB: Scenario Testing |
+| **test_update_other_fields_allowed_with_transaction** | REST API /products/{id} PUT | System/API | BB: Scenario Testing |
+
+
+
+
 
 ## Orders tests
 
