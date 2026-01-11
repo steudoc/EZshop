@@ -442,8 +442,8 @@ Integration strategy: **Bottom-up approach**
 | test_get_product_by_id_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
 | test_get_product_by_id_bad_request_invalid_id | API Endpoints | System/API | BB: Boundary Value Analysis |
 | test_get_product_by_id_unauthenticated | API Endpoints | System/API | BB: Access Control |
-| test_increment_quantity_success | API Endpoints | System/API | WB: Statement Coverage |
-| test_decrement_quantity_success | API Endpoints | System/API | WB: Statement Coverage |
+| test_increment_quantity_success | API Endpoints | System/API | BB: Statement Coverage |
+| test_decrement_quantity_success | API Endpoints | System/API | BB: Statement Coverage |
 | test_decrement_quantity_insufficient_stock | API Endpoints | System/API | BB: Boundary Value Analysis |
 | test_quantity_forbidden_cashier | API Endpoints | System/API | BB: Access Control |
 | test_quantity_not_found | API Endpoints | System/API | BB: Equivalence Partitioning |
@@ -559,18 +559,21 @@ Integration strategy: **Bottom-up approach**
 
 ### Products
 
+
+
+
 | Functional Requirement or scenario | Test(s) |
-| :--------------------------------: | :-----: |
-| FR3.1 - Define/Modify product type | test_create_product_success, test_update_product_success, test_create_product_success_valid_gtin_and_position |
-| FR3.2 - Delete a product type | test_delete_product_success, test_delete_product_invalid_state |
-| FR3.3 - List all product types | test_list_products_populated, test_list_products_empty, test_list_products_success_all_roles |
-| FR3.4 - Search product type | test_get_product_by_barcode_found, test_get_by_barcode_success, test_search_products_success_partial_match, test_search_by_description_partial_match |
-| FR4.1 - Modify quantity available | test_increment_product_quantity, test_increment_quantity_success, test_decrement_quantity_success, test_include_product_in_op_success, test_include_product_in_op_multiple_times |
-| FR4.2 - Modify position | test_move_product_success, test_assign_position_lifecycle, test_update_product_move_position_success |
-| NFR4 - Barcode Algorithm (GTIN) | test_get_product_by_barcode_invalid_format, test_create_product_invalid_input, test_update_product_validation_error |
-| Scenario 1-1 - Create product type X | test_create_product_success_valid_gtin_and_position |
-| Scenario 1-2 - Modify product type location | test_update_product_move_position_success, test_move_product_success, test_assign_position_lifecycle |
-| Scenario 1-3 - Modify product type price | test_update_product_success, test_update_product_simple_fields |
+| --- | --- |
+| **FR3.1 - Define/Modify product type** | test_create_product_success, test_create_product_defaults_valid, test_create_product_conflict_position, test_create_product_conflict_barcode, test_create_product_success_valid_gtin_and_position, test_create_product_insufficient_permissions, test_create_product_conflict_duplicate_barcode, test_create_product_invalid_input, test_create_product_invalid_position_format, test_update_product_success, test_update_product_invalid_data, test_update_product_simple_fields, test_update_product_not_found, test_update_barcode_success, test_update_barcode_conflict, test_update_barcode_invalid_state, test_update_product_conflict_position, test_update_product_forbidden_cashier, test_update_product_invalid_id, test_update_product_conflict_barcode, test_update_barcode_fails_if_transaction_exists, test_update_other_fields_allowed_with_transaction, test_update_product_validation_error |
+| **FR3.2 - Delete a product type** | test_delete_product_success, test_delete_product_not_found, test_delete_product_invalid_state, test_delete_product_forbidden_cashier, test_delete_product_invalid_id, test_delete_product_invalid_state_transaction_exists, test_delete_product_unauthenticated |
+| **FR3.3 - List all products types** | test_list_products_populated, test_list_products_empty, test_list_products_success_all_roles, test_list_products_unauthenticated |
+| **FR3.4 - Search a product type** | test_get_product_by_barcode_found, test_get_product_by_barcode_not_found, test_get_product_by_barcode_success, test_get_by_barcode_success, test_get_by_barcode_forbidden_cashier, test_get_by_barcode_not_found, test_get_by_barcode_unauthenticated, test_get_by_barcode_missing_barcode_param, test_get_product_by_id_found, test_get_product_by_id_not_found, test_get_product_by_id_success, test_get_product_by_id_bad_request_invalid_id, test_get_product_by_id_unauthenticated, test_search_by_description_partial_match, test_search_by_description_case_insensitive, test_search_by_description_no_match, test_search_by_description_empty_db, test_search_products_success_partial_match, test_search_products_success_single_match, test_search_products_no_match, test_search_products_forbidden_cashier, test_search_products_unauthenticated, test_search_products_missing_query_param |
+| **FR4.1 - Modify quantity available** | test_include_product_in_op_increment_success, test_increment_quantity_add_success, test_increment_quantity_success, test_include_product_in_op_success, test_include_product_in_op_multiple_times, test_include_product_in_op_decrement_success, test_include_product_in_op_decrement_below_zero, test_exclude_product_from_op_success, test_exclude_product_from_op_success_to_zero, test_decrement_quantity_success, test_decrement_quantity_insufficient_stock, test_increment_quantity_subtract_success, test_include_product_in_op_not_found, test_exclude_product_from_op_bad_request, test_exclude_product_from_op_not_found, test_increment_quantity_not_found, test_increment_quantity_bad_request_negative_result, test_quantity_forbidden_cashier, test_quantity_not_found, test_quantity_invalid_id, test_quantity_unauthenticated, test_update_product_bad_request_quantity |
+| **FR4.2 - Modify position** | test_move_product_success, test_move_product_reset_position, test_update_product_move_position_success, test_update_product_reset_position, test_assign_position_lifecycle, test_is_position_free_yes, test_is_position_free_no, test_is_position_free_invalid_format, test_move_product_not_found, test_move_product_conflict, test_move_product_invalid_format, test_assign_position_conflict, test_assign_position_forbidden_cashier, test_assign_position_not_found, test_assign_position_invalid_format, test_assign_position_invalid_id, test_assign_position_unauthenticated |
+| **NFR4 - Barcode Algorithm** | test_get_product_by_barcode_invalid_format, test_create_product_invalid_barcode, test_create_product_invalid_input, test_get_by_barcode_bad_request, test_update_product_validation_error |
+| **Scenario 1-1 - Create product type X** | test_create_product_success_valid_gtin_and_position, test_create_product_success |
+| **Scenario 1-2 - Modify product location** | test_update_product_move_position_success, test_move_product_success, test_assign_position_lifecycle |
+| **Scenario 1-3 - Modify product price** | test_update_product_success, test_update_product_simple_fields |
 
 ### Orders
 
