@@ -123,4 +123,10 @@ async def update_customer(customer_id: int, customer: UpdateCustomerDTO):
     if customer.name == "":
         throw_bad_request("Customer name cannot be empty")
 
+    if(customer_id<0):
+        throw_bad_request("Customer id must be positive")
+
+    if(customer.card is not None and customer.card.card_id is not None and customer.card.card_id<0):
+        throw_bad_request("Card id must be positive")
+
     return await controller.update_customer(customer_id, customer)

@@ -99,24 +99,21 @@ class CardRepository:
                 raise NotFoundError(f"Customer card not found: no card associated with customer {customer_id}")
             return card
     
-    async def get_card_by_customer_without_raise_notfounderror(self, customer_id: int) -> CardDAO:
+    async def get_card_by_customer_without_raise_notfounderror(self, customer_id: int) -> Optional[CardDAO]:
         """
-            Retrieve a card associated at the given customer with customer_id.
+        Retrieve a card associated at the given customer with customer_id.
 
-            Args:
-                customer_id(int): Unique identifier of the customer.
+        Args:
+            customer_id(int): Unique identifier of the customer.
 
-            Returns:
-                CardDAO: The requested card, associated at the given customer, if found.
-
-            Raises:
-                NotFoundError: If no card associated at the given customer with customer_id exists.
+        Returns:
+            Optional[CardDAO]: The requested card, associated at the given customer, if found.
         """
         async with await self._get_session() as session:
             stmt = select(CardDAO).filter_by(customer_id=customer_id)
             result = await session.execute(stmt)
-            card = result.scalars().first()
-            return card
+            return result.scalars().first()
+
     
     async def delete_card(self, card_id: int) -> bool:
         """
