@@ -2,18 +2,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.user_type import UserType
 from app.models.DAO.user_dao import UserDAO
+from app.repositories.base_repository import BaseRepository
 from app.utils import throw_conflict_if_found, find_or_throw_not_found
 from app.database.database import AsyncSessionLocal
 from typing import Optional
 
 
-class UserRepository:
+class UserRepository(BaseRepository):
 
     def __init__(self, session: Optional[AsyncSession] = None):
         self._session = session
 
     async def _get_session(self) -> AsyncSession:
-        return self._session or AsyncSessionLocal()
+        return super().get_session()
 
     async def create_user(self, username: str, password: str, user_type: UserType) -> UserDAO:
         """
@@ -77,6 +78,9 @@ class UserRepository:
 
             result_conflict = await session.execute(select(UserDAO).filter(UserDAO.id != db_user.id).filter(UserDAO.username == updated_username))
             conflicting_username = result_conflict.scalars().all()
+            for user in conflicting_username:
+                print(user.id, user_id, db_user.id)
+            
             throw_conflict_if_found(
                 conflicting_username,
                 lambda _: True,
