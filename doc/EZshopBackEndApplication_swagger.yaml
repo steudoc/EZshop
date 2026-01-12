@@ -2038,7 +2038,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
-                  code: 400
+                  code: 500
                   message: "Insufficient points on the card"
                   name: "CustomerCardError"
         '404':
@@ -3291,6 +3291,14 @@ paths:
                 name: "ForbiddenError"
         '500':
           description: Internal server error during balance reset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                  code: 500
+                  message: "Error during balance reset"
+                  name: "GeneralError"
 
   /balance/set:
     post:
@@ -3347,7 +3355,15 @@ paths:
                 message: "Insufficient rights"
                 name: "ForbiddenError"
         '500':
-          description: Internal server error during balance reset
+          description: Internal server error during balance set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                  code: 500
+                  message: "Error during balance set"
+                  name: "GeneralError"
   /balance:
     get:
       tags:
