@@ -353,8 +353,8 @@ def test_remove_item_success_admin(client, auth_tokens,returns_creation):
         headers=auth_header(auth_tokens, role)
     )  
 
-    # Assert response (204 No Content for successful DELETE)
-    assert rem_resp.status_code == 204
+    # Assert response (202 Accepted for successful DELETE)
+    assert rem_resp.status_code == 202
 
     # Get return and verify item quantity decreased
     resp = client.get(
@@ -372,7 +372,7 @@ def test_remove_item_success_admin(client, auth_tokens,returns_creation):
     )  
 
     # Assert response
-    assert rem_resp.status_code == 204
+    assert rem_resp.status_code == 202
 
     # Get return and verify line was deleted
     resp = client.get(
@@ -403,8 +403,8 @@ def test_remove_item_success_manager(client, auth_tokens,returns_creation):
         headers=auth_header(auth_tokens, role)
     )  
 
-    # Assert response (204 No Content for successful DELETE)
-    assert rem_resp.status_code == 204
+    # Assert response (202 Accepted for successful DELETE)
+    assert rem_resp.status_code == 202
 
     # Get return and verify item quantity decreased
     resp = client.get(
@@ -422,7 +422,7 @@ def test_remove_item_success_manager(client, auth_tokens,returns_creation):
     )  
 
     # Assert response
-    assert rem_resp.status_code == 204
+    assert rem_resp.status_code == 202
 
     # Get return and verify line was deleted
     resp = client.get(
@@ -453,8 +453,8 @@ def test_remove_item_success_cashier(client, auth_tokens,returns_creation):
         headers=auth_header(auth_tokens, role)
     )  
 
-    # Assert response (204 No Content for successful DELETE)
-    assert rem_resp.status_code == 204
+    # Assert response (202 Accepted for successful DELETE)
+    assert rem_resp.status_code == 202
 
     # Get return and verify item quantity decreased
     resp = client.get(
@@ -472,7 +472,7 @@ def test_remove_item_success_cashier(client, auth_tokens,returns_creation):
     )  
 
     # Assert response
-    assert rem_resp.status_code == 204
+    assert rem_resp.status_code == 202
 
     # Get return and verify line was deleted
     resp = client.get(
