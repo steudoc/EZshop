@@ -22,6 +22,17 @@ class OrderRepository(BaseRepository):
     (Issued -> Paid -> Completed), ensuring consistency with Product inventory and System balance.
     """
 
+    async def _update_balance(self, system_repository: SystemRepository, amount: float):
+        # check balance
+        system_info = await system_repository.get_last_system_info()
+        if system_info is None:
+            raise NotFoundError("System info not found")
+        # check balance value
+        if system_info.balance < amount:
+            raise BalanceError("Insufficient balance for the operation")
+        # update balance
+        await system_repository.create_system_info(system_info.balance-amount)
+
     async def create_order(self, id: int, product_barcode: str, quantity: int, price_per_unit: float, status: OrderStatus, issue_date: datetime) -> OrderDAO:
         """
         Creates a new order in the system.
@@ -66,12 +77,7 @@ class OrderRepository(BaseRepository):
 
             if status == OrderStatus.PAID:
                 system_repository = SystemRepository(session)
-                # check balance
-                system_info = await system_repository.get_last_system_info()
-                if system_info.balance < quantity*price_per_unit:
-                    raise BalanceError("Insufficient balance for the operation")
-                # update balance
-                await system_repository.create_system_info(system_info.balance-quantity*price_per_unit)
+                await self._update_balance(system_repository, quantity*price_per_unit)
 
             order = OrderDAO(id=id, product_barcode=product_barcode, quantity=quantity, price_per_unit=price_per_unit, status=status, issue_date=issue_date)
             session.add(order)
@@ -128,8 +134,6 @@ class OrderRepository(BaseRepository):
         """
         async with self.get_session() as session:
 
-            system_repository = SystemRepository(session)
-
             # check order
             order = await session.get(OrderDAO, order_id)
             if order is None:
@@ -139,12 +143,9 @@ class OrderRepository(BaseRepository):
             if order.status != OrderStatus.ISSUED:
                 raise InvalidStateError('Order was not Issued')
             
-            # check balance
-            system_info = await system_repository.get_last_system_info()
-            if system_info.balance < order.quantity*order.price_per_unit:
-                raise BalanceError("Insufficient balance for the operation")
-
-            await system_repository.create_system_info(system_info.balance-order.quantity*order.price_per_unit)
+            system_repository = SystemRepository(session)
+            await self._update_balance(system_repository, order.quantity*order.price_per_unit)
+            
             order.status = OrderStatus.PAID
 
             await session.flush()
