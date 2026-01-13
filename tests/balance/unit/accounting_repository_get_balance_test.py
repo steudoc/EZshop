@@ -30,7 +30,7 @@ def mock_repo(mock_session):
     return repo
 
 @pytest.mark.asyncio
-async def test_get_balance_success(mock_repo, mock_session):
+async def test_get_balance_with_success(mock_repo, mock_session):
     """Test retrieving system balance successfully."""
     expected_balance = 1500.0
     
