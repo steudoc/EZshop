@@ -53,7 +53,7 @@ async def list_products():
 @router.get("/search", response_model=List[ProductDTO],
             dependencies=[Depends(authenticate_user([UserType.Administrator, 
 													 UserType.ShopManager]))])
-async def search_products_by_description(query: str):
+async def search_products_by_description(query: str | None = None):
 	"""
     Retrieve all products that contain the given description.
 
@@ -62,6 +62,10 @@ async def search_products_by_description(query: str):
     - Returns: List of products as List of ProductDTO
     - Status code: 200 OK
     """
+
+	# in the absence of a description, return an empty list
+	if (query is None):
+		return []
 
 	# retrieve all products by description
 	return await controller.get_products_by_description(query)
@@ -197,7 +201,7 @@ async def update_product(product_id: int, product: ProductDTO):
 	  - InvalidStateError: if the product barcode is updated while it has some 
 	  shop transaction associated with it (any sale/return/order)
 	  - ConflictError: if the barcode is updated but the new barcode is already in use
-    - Status code: 200
+    - Status code: 201
     """
 
 	# check that product id is valid
