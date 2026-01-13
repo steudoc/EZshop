@@ -91,6 +91,10 @@ class SaleController:
 
         
         sale_lines = next((l for l in sale_dao.lines if l.product_barcode == item_dto.product_barcode), None)
+
+        if not sale_lines:
+            throw_not_found("Product in sale line  not found")
+
         if not sale_lines or sale_lines.quantity < item_dto.quantity:
             throw_bad_request("Not enough quantity in sale line to remove")
 

@@ -85,7 +85,7 @@ def test_increment_quantity_success(client, auth_tokens, seeded_product):
         headers=auth_header(auth_tokens, role)
     )
     
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     assert resp.json()["success"] is True
 
     # 2. Verify Update
@@ -112,7 +112,7 @@ def test_decrement_quantity_success(client, auth_tokens, seeded_product):
         headers=auth_header(auth_tokens, role)
     )
     
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     assert resp.json()["success"] is True
 
     # 2. Verify Update

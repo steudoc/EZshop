@@ -59,7 +59,7 @@ async def test_delete_item_decision_line_not_found(sale_controller, mock_sale_re
     DECISION 2: if status != OPEN -> FALSE
     DECISION 3: if not sale_lines -> TRUE
     Scenario: Sale exists and is OPEN, but the product barcode is NOT in the list.
-    Expected: BadRequestError.
+    Expected: NotFoundError.
     """
     # Arrange
     dto = SaleLineDTO(sale_id=1, product_barcode="GHOST_ITEM", quantity=1)
@@ -72,10 +72,10 @@ async def test_delete_item_decision_line_not_found(sale_controller, mock_sale_re
     mock_sale_repo.get_sale_by_id.return_value = mock_sale
 
     # Act & Assert
-    with pytest.raises(BadRequestError) as excinfo:
+    with pytest.raises(NotFoundError) as excinfo:
         await sale_controller.delete_item_from_sale(dto)
     
-    assert "not enough quantity" in str(excinfo.value).lower()
+    assert "product in sale line  not found" in str(excinfo.value).lower()
 
 @pytest.mark.asyncio
 async def test_delete_item_decision_insufficient_quantity(sale_controller, mock_sale_repo):
