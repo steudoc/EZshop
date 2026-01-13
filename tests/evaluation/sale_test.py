@@ -63,7 +63,7 @@ def auth_header(tokens, role: str):
 # HELPER FUNCTIONS
 # ---------------------------
 
-async def create_product(client, auth_tokens, barcode="614141007346", 
+async def create_product(client, auth_tokens, barcode="614141007349", 
                         description="Test Product", price=2.99, 
                         position="1-A-1", quantity=0):
     """Helper function to create a product with given parameters."""
@@ -463,7 +463,7 @@ async def test_delete_sale_not_found(client, auth_tokens, sale_id):
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_add_item_closed_sale(client, auth_tokens, role):
     """Applying discount to closed sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
@@ -471,7 +471,7 @@ async def test_add_item_closed_sale(client, auth_tokens, role):
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -497,7 +497,7 @@ async def test_add_item_closed_sale(client, auth_tokens, role):
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_add_item_paid_sale(client, auth_tokens, role):
     """Applying discount to paid sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
@@ -505,7 +505,7 @@ async def test_add_item_paid_sale(client, auth_tokens, role):
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -544,7 +544,7 @@ async def test_add_item_paid_sale(client, auth_tokens, role):
 async def test_add_product_to_sale_success_all_roles(client, auth_tokens, role):
     """All roles should be able to add products to a sale."""
     # Create product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=100)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=100)
     
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -553,7 +553,7 @@ async def test_add_product_to_sale_success_all_roles(client, auth_tokens, role):
     # Add product to sale
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -564,7 +564,7 @@ async def test_add_product_to_sale_success_all_roles(client, auth_tokens, role):
 async def test_add_product_various_quantities(client, auth_tokens, amount):
     """Should be able to add products with various quantities."""
     # Create product with sufficient quantity
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=100)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=100)
     
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -573,7 +573,7 @@ async def test_add_product_various_quantities(client, auth_tokens, amount):
     # Add product
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": amount},
+        params={"barcode": "614141007349", "amount": amount},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -592,7 +592,7 @@ async def test_add_product_various_quantities(client, auth_tokens, amount):
 async def test_add_product_deducts_from_inventory(client, auth_tokens):
     """Adding product to sale should deduct from inventory."""
     # Create product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=100)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=100)
 
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -601,7 +601,7 @@ async def test_add_product_deducts_from_inventory(client, auth_tokens):
     # Add product
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 20},
+        params={"barcode": "614141007349", "amount": 20},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -619,7 +619,7 @@ async def test_add_product_deducts_from_inventory(client, auth_tokens):
 async def test_add_multiple_products_to_sale(client, auth_tokens):
     """Should be able to add multiple different products to a sale."""
     # Create multiple products
-    product1 = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product1 = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     product2 = await create_product(client, auth_tokens, barcode="036000291452", position="2-B-2", quantity=30)
     
     # Create sale
@@ -629,7 +629,7 @@ async def test_add_multiple_products_to_sale(client, auth_tokens):
     # Add first product
     resp1 = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -657,7 +657,7 @@ async def test_add_multiple_products_to_sale(client, auth_tokens):
 async def test_add_same_product_multiple_times(client, auth_tokens):
     """Adding the same product multiple times should accumulate quantity."""
     # Create product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=100)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=100)
     
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -666,7 +666,7 @@ async def test_add_same_product_multiple_times(client, auth_tokens):
     # Add product twice
     resp1 = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -674,7 +674,7 @@ async def test_add_same_product_multiple_times(client, auth_tokens):
     
     resp2 = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 3},
+        params={"barcode": "614141007349", "amount": 3},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -698,7 +698,7 @@ async def test_add_product_invalid_sale_id(client, auth_tokens, invalid_id):
     """Invalid sale ID should return 400 or 422."""
     resp = await client.post(
         f"/api/v1/sales/{invalid_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True
     )
@@ -710,14 +710,14 @@ async def test_add_product_invalid_sale_id(client, auth_tokens, invalid_id):
 async def test_add_product_invalid_amount(client, auth_tokens, invalid_amount):
     """Amount must be positive."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
 
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": invalid_amount},
+        params={"barcode": "614141007349", "amount": invalid_amount},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -728,7 +728,7 @@ async def test_add_product_invalid_amount(client, auth_tokens, invalid_amount):
 async def test_add_product_insufficient_stock(client, auth_tokens):
     """Adding more than available quantity should fail."""
     # Create product with limited quantity
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=5)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=5)
 
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -737,7 +737,7 @@ async def test_add_product_insufficient_stock(client, auth_tokens):
     # Try to add more than available
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -762,13 +762,13 @@ async def test_add_product_missing_barcode(client, auth_tokens):
 
 async def test_add_product_missing_amount(client, auth_tokens):
     """Missing amount parameter should fail."""
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346"},
+        params={"barcode": "614141007349"},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -788,7 +788,7 @@ async def test_add_product_unauthorized(client, headers, expected_message):
     """Request without valid authentication should return 401."""
     resp = await client.post(
         "/api/v1/sales/1/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=headers,
         follow_redirects=True
     )
@@ -801,11 +801,11 @@ async def test_add_product_unauthorized(client, headers, expected_message):
 
 async def test_add_product_sale_not_found(client, auth_tokens):
     """Adding product to non-existent sale should return 404."""
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     
     resp = await client.post(
         "/api/v1/sales/99999/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -819,93 +819,12 @@ async def test_add_product_not_found(client, auth_tokens):
     
     resp = await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "999999999999", "amount": 5},
+        params={"barcode": "8435497287344", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
     
     assert resp.status_code == 404
-
-# ----------------------------
-# POST /sales/{sale_id}/items - ADD PRODUCT TESTS - 420 CONFLICT
-# ---------------------------
-
-@pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
-async def test_add_item_closed_sale(client, auth_tokens, role):
-    """Applying discount to closed sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
-    # Create sale
-    sale_resp = await create_sale(client, auth_tokens, role)
-    sale_id = sale_resp.json()["id"]
-
-    # Add product to sale
-    await client.post(
-        f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
-        headers=auth_header(auth_tokens, role),
-        follow_redirects=True
-    )
-    assert sale_resp.status_code == 201
-    
-    # Mark sale as pending
-    await client.patch(
-        f"/api/v1/sales/{sale_id}/close",
-        params={"status": "pending"},
-        headers=auth_header(auth_tokens, role),
-        follow_redirects=True
-    )
-
-    # Try to add product from paid sale
-    resp = await client.post(
-        f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
-        headers=auth_header(auth_tokens, role),
-        follow_redirects=True
-    )
-    
-    assert resp.status_code == 420
-
-@pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
-async def test_add_item_paid_sale(client, auth_tokens, role):
-    """Applying discount to paid sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
-    # Create sale
-    sale_resp = await create_sale(client, auth_tokens, role)
-    sale_id = sale_resp.json()["id"]
-
-    # Add product to sale
-    await client.post(
-        f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
-        headers=auth_header(auth_tokens, role),
-        follow_redirects=True
-    )
-    assert sale_resp.status_code == 201
-    
-    # Mark sale as pending
-    await client.patch(
-        f"/api/v1/sales/{sale_id}/close",
-        params={"status": "pending"},
-        headers=auth_header(auth_tokens, role),
-        follow_redirects=True
-    )
-
-    await client.patch(
-        f"/api/v1/sales/{sale_id}/pay",
-        headers=auth_header(auth_tokens, role),
-        params={'cash_amount': 100.0},
-        follow_redirects=True
-    )
-
-    # Try to add product from paid sale
-    resp = await client.post(
-        f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
-        headers=auth_header(auth_tokens, role),
-        follow_redirects=True
-    )
-    
-    assert resp.status_code == 420
 
 # ---------------------------
 # DELETE /sales/{sale_id}/items - REMOVE PRODUCT TESTS - SUCCESS CASES
@@ -915,7 +834,7 @@ async def test_add_item_paid_sale(client, auth_tokens, role):
 async def test_remove_product_from_sale_success_all_roles(client, auth_tokens, role):
     """All roles should be able to remove products from a sale."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
 
     sale_id = sale_resp.json()["id"]
@@ -923,7 +842,7 @@ async def test_remove_product_from_sale_success_all_roles(client, auth_tokens, r
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -931,7 +850,7 @@ async def test_remove_product_from_sale_success_all_roles(client, auth_tokens, r
     # Remove product
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -941,7 +860,7 @@ async def test_remove_product_from_sale_success_all_roles(client, auth_tokens, r
 async def test_remove_product_restores_inventory(client, auth_tokens):
     """Removing product from sale should restore inventory."""
     # Create product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=100)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=100)
     
     # Create sale and add product
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -949,7 +868,7 @@ async def test_remove_product_restores_inventory(client, auth_tokens):
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 20},
+        params={"barcode": "614141007349", "amount": 20},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -965,7 +884,7 @@ async def test_remove_product_restores_inventory(client, auth_tokens):
     # Remove product
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -983,14 +902,14 @@ async def test_remove_product_restores_inventory(client, auth_tokens):
 async def test_remove_entire_product_quantity(client, auth_tokens):
     """Removing all quantity should remove product line from sale."""
     # Create product and sale
-    await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     # Add product
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -998,7 +917,7 @@ async def test_remove_entire_product_quantity(client, auth_tokens):
     # Remove all quantity
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1023,7 +942,7 @@ async def test_remove_entire_product_quantity(client, auth_tokens):
 async def test_remove_product_various_quantities(client, auth_tokens, add_amount, remove_amount):
     """Should be able to remove various quantities."""
     # Create product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=200)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=200)
     
     # Create sale and add product
     sale_resp = await create_sale(client, auth_tokens, "cashier")
@@ -1031,7 +950,7 @@ async def test_remove_product_various_quantities(client, auth_tokens, add_amount
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": add_amount},
+        params={"barcode": "614141007349", "amount": add_amount},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1039,7 +958,7 @@ async def test_remove_product_various_quantities(client, auth_tokens, add_amount
     # Remove product
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": remove_amount},
+        params={"barcode": "614141007349", "amount": remove_amount},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1063,7 +982,7 @@ async def test_remove_product_invalid_sale_id(client, auth_tokens, invalid_id):
     """Invalid sale ID should return 400 or 422."""
     resp = await client.delete(
         f"/api/v1/sales/{invalid_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True
     )
@@ -1075,20 +994,20 @@ async def test_remove_product_invalid_sale_id(client, auth_tokens, invalid_id):
 async def test_remove_product_invalid_amount(client, auth_tokens, invalid_amount):
     """Amount must be positive."""
     # Create product and sale with item
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier")
     )
     
     # Try to remove with invalid amount
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": invalid_amount},
+        params={"barcode": "614141007349", "amount": invalid_amount},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -1098,14 +1017,14 @@ async def test_remove_product_invalid_amount(client, auth_tokens, invalid_amount
 async def test_remove_more_than_in_sale(client, auth_tokens):
     """Removing more than what's in sale should fail."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     # Add 5 items
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1113,7 +1032,7 @@ async def test_remove_more_than_in_sale(client, auth_tokens):
     # Try to remove 10
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 10},
+        params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1133,7 +1052,7 @@ async def test_remove_product_unauthorized(client, headers, expected_message):
     """Request without valid authentication should return 401."""
     resp = await client.delete(
         "/api/v1/sales/1/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=headers,
         follow_redirects=True
     )
@@ -1149,7 +1068,7 @@ async def test_remove_product_sale_not_found(client, auth_tokens):
     """Removing product from non-existent sale should return 404."""
     resp = await client.delete(
         "/api/v1/sales/99999/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1159,13 +1078,13 @@ async def test_remove_product_sale_not_found(client, auth_tokens):
 async def test_remove_product_not_in_sale(client, auth_tokens):
     """Removing product that's not in sale should return 404."""
     # Create product and sale (but don't add product to sale)
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1179,7 +1098,7 @@ async def test_remove_product_not_in_sale(client, auth_tokens):
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_delete_item_closed_sale(client, auth_tokens, role):
     """Applying discount to closed sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
@@ -1187,7 +1106,7 @@ async def test_delete_item_closed_sale(client, auth_tokens, role):
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1204,7 +1123,7 @@ async def test_delete_item_closed_sale(client, auth_tokens, role):
     # Try to delete product from paid sale
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1214,7 +1133,7 @@ async def test_delete_item_closed_sale(client, auth_tokens, role):
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_delete_item_paid_sale(client, auth_tokens, role):
     """Applying discount to paid sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
@@ -1222,7 +1141,7 @@ async def test_delete_item_paid_sale(client, auth_tokens, role):
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1246,7 +1165,7 @@ async def test_delete_item_paid_sale(client, auth_tokens, role):
     # Try to delete product from paid sale
     resp = await client.delete(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1428,7 +1347,7 @@ async def test_apply_sale_discount_not_found(client, auth_tokens, sale_id):
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_apply_sale_discount_pending_sale(client, auth_tokens, role):
     """Applying discount to pending sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
@@ -1436,7 +1355,7 @@ async def test_apply_sale_discount_pending_sale(client, auth_tokens, role):
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1463,7 +1382,7 @@ async def test_apply_sale_discount_pending_sale(client, auth_tokens, role):
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_apply_sale_discount_paid_sale(client, auth_tokens, role):
     """Applying discount to paid sale should return 420."""
-    prod = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
@@ -1471,7 +1390,7 @@ async def test_apply_sale_discount_paid_sale(client, auth_tokens, role):
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1511,21 +1430,21 @@ async def test_apply_sale_discount_paid_sale(client, auth_tokens, role):
 async def test_apply_product_discount_success_all_roles(client, auth_tokens, role):
     """All roles should be able to apply discount to product in sale."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
     
     # Apply product discount
     resp = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": 0.15},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
@@ -1538,21 +1457,21 @@ async def test_apply_product_discount_success_all_roles(client, auth_tokens, rol
 async def test_apply_product_discount_various_rates(client, auth_tokens, discount_rate):
     """Should be able to apply various valid discount rates to products."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
     
     # Apply discount
     resp = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": discount_rate},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
@@ -1564,7 +1483,7 @@ async def test_apply_product_discount_various_rates(client, auth_tokens, discoun
 async def test_apply_discount_to_multiple_products(client, auth_tokens):
     """Should be able to apply different discounts to different products."""
     # Create products and sale
-    product1 = await create_product(client, auth_tokens, barcode="614141007346", position='1-A-1', quantity=50)
+    product1 = await create_product(client, auth_tokens, barcode="614141007349", position='1-A-1', quantity=50)
     product2 = await create_product(client, auth_tokens, barcode="036000291452", position='1-A-3', quantity=30)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
@@ -1572,7 +1491,7 @@ async def test_apply_discount_to_multiple_products(client, auth_tokens):
     # Add products
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1585,7 +1504,7 @@ async def test_apply_discount_to_multiple_products(client, auth_tokens):
     
     # Apply different discounts
     resp1 = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": 0.1},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
@@ -1608,7 +1527,7 @@ async def test_apply_discount_to_multiple_products(client, auth_tokens):
 async def test_apply_product_discount_invalid_sale_id(client, auth_tokens, invalid_id):
     """Invalid sale ID should return 400 or 422."""
     resp = await client.patch(
-        f"/api/v1/sales/{invalid_id}/items/614141007346/discount",
+        f"/api/v1/sales/{invalid_id}/items/614141007349/discount",
         params={"discount_rate": 0.1},
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True
@@ -1621,20 +1540,20 @@ async def test_apply_product_discount_invalid_sale_id(client, auth_tokens, inval
 async def test_apply_product_discount_invalid_rate(client, auth_tokens, invalid_rate):
     """Invalid discount rate should return 400 or 422."""
     # Create product and sale with item
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
     
     # Try invalid discount
     resp = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": invalid_rate},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
@@ -1654,7 +1573,7 @@ async def test_apply_product_discount_invalid_rate(client, auth_tokens, invalid_
 async def test_apply_product_discount_unauthorized(client, headers, expected_message):
     """Request without valid authentication should return 401."""
     resp = await client.patch(
-        "/api/v1/sales/1/items/614141007346/discount",
+        "/api/v1/sales/1/items/614141007349/discount",
         params={"discount_rate": 0.1},
         headers=headers,
         follow_redirects=True
@@ -1669,7 +1588,7 @@ async def test_apply_product_discount_unauthorized(client, headers, expected_mes
 async def test_apply_product_discount_sale_not_found(client, auth_tokens):
     """Applying discount to product in non-existent sale should return 404."""
     resp = await client.patch(
-        "/api/v1/sales/99999/items/614141007346/discount",
+        "/api/v1/sales/99999/items/614141007349/discount",
         params={"discount_rate": 0.1},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
@@ -1681,12 +1600,12 @@ async def test_apply_product_discount_sale_not_found(client, auth_tokens):
 async def test_apply_product_discount_product_not_in_sale(client, auth_tokens):
     """Applying discount to product not in sale should return 404."""
     # Create product and sale (don't add product)
-    await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     resp = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": 0.1},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
@@ -1701,14 +1620,14 @@ async def test_apply_product_discount_product_not_in_sale(client, auth_tokens):
 async def test_apply_product_discount_to_not_open_sale(client, auth_tokens, role):
     """Applying discount to product in a not OPEN sale should return 420."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
     
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1722,7 +1641,7 @@ async def test_apply_product_discount_to_not_open_sale(client, auth_tokens, role
     
     # Try to apply product discount
     resp = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": 0.15},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
@@ -1738,14 +1657,14 @@ async def test_apply_product_discount_to_not_open_sale(client, auth_tokens, role
 async def test_apply_product_discount_to_paid_sale(client, auth_tokens, role):
     """Applying discount to product in a not OPEN sale should return 420."""
     # Create product and sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
     
     # Add product to sale
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1767,7 +1686,7 @@ async def test_apply_product_discount_to_paid_sale(client, auth_tokens, role):
     
     # Try to apply product discount
     resp = await client.patch(
-        f"/api/v1/sales/{sale_id}/items/614141007346/discount",
+        f"/api/v1/sales/{sale_id}/items/614141007349/discount",
         params={"discount_rate": 0.15},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
@@ -1783,14 +1702,14 @@ async def test_apply_product_discount_to_paid_sale(client, auth_tokens, role):
 async def test_close_sale_success_all_roles(client, auth_tokens, role):
     """All roles should be able to close a sale."""
     # Create sale with product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     # Add product
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1842,13 +1761,13 @@ async def test_close_empty_sale_deletes_it(client, auth_tokens):
 async def test_close_sale_sets_closed_at_timestamp(client, auth_tokens):
     """Closing sale should set closed_at timestamp."""
     # Create sale with product
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -1928,13 +1847,13 @@ async def test_close_sale_not_found(client, auth_tokens, sale_id):
 async def test_close_paid_sale_fails(client, auth_tokens, role):
     """Closing an already paid sale should return 420."""
     # Create, add product, close, and pay for sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=10.0, quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=10.0, quantity=50)
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 2},
+        params={"barcode": "614141007349", "amount": 2},
         headers=auth_header(auth_tokens, role)
     )
     
@@ -1966,13 +1885,13 @@ async def test_close_paid_sale_fails(client, auth_tokens, role):
 async def test_pay_sale_success_all_roles(client, auth_tokens, role):
     """All roles should be able to pay for a sale."""
     # Create, add product, and close sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=10.0, quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=10.0, quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 2},
+        params={"barcode": "614141007349", "amount": 2},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -2011,13 +1930,13 @@ async def test_pay_sale_success_all_roles(client, auth_tokens, role):
 async def test_pay_sale_change_calculation(client, auth_tokens, price, quantity, cash, expected_change):
     """Should calculate correct change for various scenarios."""
     # Create sale with product
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=price, quantity=100)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=price, quantity=100)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": quantity},
+        params={"barcode": "614141007349", "amount": quantity},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -2040,13 +1959,13 @@ async def test_pay_sale_change_calculation(client, auth_tokens, price, quantity,
 async def test_pay_sale_with_discount(client, auth_tokens):
     """Payment should account for sale discount."""
     # Create sale with product and discount
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=100.0, quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=100.0, quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 1},
+        params={"barcode": "614141007349", "amount": 1},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -2093,13 +2012,13 @@ async def test_pay_sale_invalid_id(client, auth_tokens, invalid_id):
 async def test_pay_sale_invalid_cash_amount(client, auth_tokens, invalid_cash):
     """Invalid cash amount should return 400 or 422."""
     # Create and close sale
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=10.0, quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=10.0, quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 1},
+        params={"barcode": "614141007349", "amount": 1},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -2121,13 +2040,13 @@ async def test_pay_sale_invalid_cash_amount(client, auth_tokens, invalid_cash):
 async def test_pay_sale_insufficient_cash(client, auth_tokens):
     """Paying with insufficient cash should fail."""
     # Create sale total = 20
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=10.0, quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=10.0, quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 2},
+        params={"barcode": "614141007349", "amount": 2},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -2188,13 +2107,13 @@ async def test_pay_sale_not_found(client, auth_tokens, sale_id):
 async def test_pay_uncclosed_sale(client, auth_tokens, role):
     """Paying for an unclosed sale should return 420."""
     # Create sale with product
-    product = await create_product(client, auth_tokens, barcode="614141007346", price=10.0, quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", price=10.0, quantity=50)
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 2},
+        params={"barcode": "614141007349", "amount": 2},
         headers=auth_header(auth_tokens, "cashier")
     )
     
@@ -2215,13 +2134,13 @@ async def test_pay_uncclosed_sale(client, auth_tokens, role):
 async def test_compute_points_success_all_roles(client, auth_tokens, role):
     """All roles should be able to compute points for a paid sale."""
     # Create product, sale, add product, close, pay
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, role)
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -2304,13 +2223,13 @@ async def test_compute_points_sale_not_found(client, auth_tokens):
 async def test_compute_points_sale_not_paid(client, auth_tokens):
     """Computing points for unpaid sale should return 420."""
     # Create sale with product and close but don't pay
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -2333,13 +2252,13 @@ async def test_compute_points_sale_not_paid(client, auth_tokens):
 async def test_compute_points_sale_not_closed(client, auth_tokens):
     """Computing points for open sale should return 420."""
     # Create sale with product and close but don't pay
-    product = await create_product(client, auth_tokens, barcode="614141007346", quantity=50)
+    product = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     sale_resp = await create_sale(client, auth_tokens, "cashier")
     sale_id = sale_resp.json()["id"]
     
     await client.post(
         f"/api/v1/sales/{sale_id}/items",
-        params={"barcode": "614141007346", "amount": 5},
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -2359,7 +2278,7 @@ async def test_delete_sale_restores_product_quantity(client, auth_tokens):
     # Create product with quantity
     product = await create_product(
         client, auth_tokens, 
-        barcode="614141007346",
+        barcode="614141007349",
         quantity=100
     )
     
@@ -2369,8 +2288,8 @@ async def test_delete_sale_restores_product_quantity(client, auth_tokens):
     
     # Add product to sale
     add_resp = await client.post(
-        f"/api/v1/sales/{sale_id}/items?barcode=614141007346&amount=10",
-        #params={"barcode": "614141007346", "amount": 10},
+        f"/api/v1/sales/{sale_id}/items?barcode=614141007349&amount=10",
+        #params={"barcode": "614141007349", "amount": 10},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )

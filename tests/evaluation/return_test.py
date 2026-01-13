@@ -63,7 +63,7 @@ def auth_header(tokens, role: str):
 # HELPER FUNCTIONS
 # ---------------------------
 
-async def create_or_return_product(client, auth_tokens, barcode="614141007346", 
+async def create_or_return_product(client, auth_tokens, barcode="614141007349", 
                         description="Test Product", price=2.99, 
                         position="1-A-1", quantity=0):
     """Helper function to create a product with given parameters."""
@@ -702,7 +702,7 @@ async def test_add_product_invalid_return_id(client, auth_tokens, invalid_id):
     """Adding product with invalid return ID should return 400."""
     resp = await client.post(
         f"/api/v1/returns/{invalid_id}/items",
-        params={"barcode": "123456789012", "amount": 1},
+        params={"barcode": "036000291452", "amount": 1},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -795,7 +795,7 @@ async def test_add_product_return_not_found(client, auth_tokens):
     """Adding product to non-existent return should return 404."""
     resp = await client.post(
         "/api/v1/returns/99999/items",
-        params={"barcode": "123456789012", "amount": 1},
+        params={"barcode": "036000291452", "amount": 1},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True
     )
@@ -810,7 +810,7 @@ async def test_add_product_not_in_sale(client, auth_tokens):
     return_id = create_resp.json()["id"]
     
     # Create different product
-    product = await create_or_return_product(client, auth_tokens, position="1-B-3", barcode="999999999999", quantity=10)
+    product = await create_or_return_product(client, auth_tokens, position="1-B-3", barcode="8435497287344", quantity=10)
     
     resp = await client.post(
         f"/api/v1/returns/{return_id}/items",

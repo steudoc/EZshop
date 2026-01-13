@@ -114,27 +114,6 @@ async def test_create_customer_card_unauthenticated(client):
     resp = await client.post("/api/v1/customers/cards", follow_redirects=True)
     assert resp.status_code == 401
 
-
-@pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
-async def test_attach_card_to_customer_success(client, auth_tokens, customer_sample, role):
-    """All roles should be able to attach a card to a customer."""
-    # Create customer
-    cust_resp = await client.post(
-        "/api/v1/customers",
-        json=customer_sample,
-        headers=auth_header(auth_tokens, "admin"),
-        follow_redirects=True,
-    )
-    customer_id = cust_resp.json()["id"]
-
-    # Create card
-    card_resp = await client.post(
-        "/api/v1/customers/cards",
-        headers=auth_header(auth_tokens, "admin"),
-        follow_redirects=True,
-    )
-    card_id = card_resp.json()["card_id"]
-
 # ---------------------------
 # CREATE CUSTOMER TESTS
 # ---------------------------

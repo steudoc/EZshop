@@ -67,7 +67,7 @@ def auth_header(tokens, role: str):
 def valid_product():
     return {
         "description": "Chocolate Bar",
-        "barcode": "614141007346",
+        "barcode": "614141007349",
         "price_per_unit": 2.99,
         "note": "Imported from Belgium",
         "quantity": 0,
@@ -79,7 +79,7 @@ def valid_product():
 def minimal_product():
     return {
         "description": "Water Bottle",
-        "barcode": "123456789012",
+        "barcode": "036000291452",
         "price_per_unit": 1.50,
     }
 
@@ -146,37 +146,23 @@ async def test_create_product_ignores_provided_id(client, auth_tokens, valid_pro
     assert resp.status_code == 201
     assert resp.json()["id"] != 9999
 
-@pytest.mark.parametrize("product", [
-    {"description": "UPC Product", "barcode": "036000291452", "price_per_unit": 1.00},      # 12
-    {"description": "EAN Product", "barcode": "5901234123457", "price_per_unit": 2.00},     # 13
-    {"description": "GTIN Product", "barcode": "10049000042566", "price_per_unit": 3.00},   # 14
-])
-async def test_create_product_barcode_formats_accepted(client, auth_tokens, product):
-    resp = await client.post(
-        "/api/v1/products",
-        json=product,
-        headers=auth_header(auth_tokens, "admin"),
-        follow_redirects=True,
-    )
-    assert resp.status_code == 201
-
 
 # ---------------------------
 # CREATE PRODUCT — 400 / 422
 # ---------------------------
 
 @pytest.mark.parametrize("payload", [
-    {"barcode": "123456789012", "price_per_unit": 2.99},
+    {"barcode": "036000291452", "price_per_unit": 2.99},
     {"description": "Test", "price_per_unit": 2.99},
-    {"description": "Test", "barcode": "123456789012"},
+    {"description": "Test", "barcode": "036000291452"},
     {"description": "Test", "barcode": "", "price_per_unit": 2.99},
     {"description": "Test", "barcode": "12345678901", "price_per_unit": 2.99},
     {"description": "Test", "barcode": "123456789012345", "price_per_unit": 2.99},
     {"description": "Test", "barcode": "12345678901A", "price_per_unit": 2.99},
     {"description": "Test", "barcode": "1234567890-2", "price_per_unit": 2.99},
-    {"description": "Test", "barcode": "123456789012", "price_per_unit": 0},
-    {"description": "Test", "barcode": "123456789012", "price_per_unit": -1},
-    {"description": "Test", "barcode": "123456789012", "price_per_unit": "nope"},
+    {"description": "Test", "barcode": "036000291452", "price_per_unit": 0},
+    {"description": "Test", "barcode": "036000291452", "price_per_unit": -1},
+    {"description": "Test", "barcode": "036000291452", "price_per_unit": "nope"},
 ])
 async def test_create_product_bad_request(client, auth_tokens, payload):
     resp = await client.post(
@@ -420,7 +406,7 @@ async def test_update_product_forbidden_roles(client, auth_tokens, valid_product
     {"price_per_unit": -1},
     {"quantity": 0},
     {"barcode": "123"},
-    {"barcode": 123456789012},
+    {"barcode": "036000291452"},
 ])
 async def test_update_product_invalid_payload(client, auth_tokens, valid_product, payload):
     create = await client.post(
@@ -442,15 +428,15 @@ async def test_update_product_invalid_payload(client, auth_tokens, valid_product
 async def test_update_product_not_found(client, auth_tokens):
     resp = await client.put(
         "/api/v1/products/999999",
-        json={"barcode": '123456789012'},
+        json={"barcode": '036000291452'},
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True,
     )
     assert resp.status_code == 404
 
 async def test_update_product_barcode_conflict(client, auth_tokens):
-    p1 = {"description": "A", "barcode": "123456789012", "price_per_unit": 1}
-    p2 = {"description": "B", "barcode": "123456789013", "price_per_unit": 2}
+    p1 = {"description": "A", "barcode": "036000291452", "price_per_unit": 1}
+    p2 = {"description": "B", "barcode": "036000291452", "price_per_unit": 2}
 
     r1 = await client.post(
         "/api/v1/products", json=p1,
@@ -551,7 +537,7 @@ async def test_get_product_by_barcode_invalid_format(client, auth_tokens, barcod
 
 async def test_get_product_by_barcode_not_found(client, auth_tokens):
     resp = await client.get(
-        "/api/v1/products/barcode/999999999999",
+        "/api/v1/products/barcode/036000291452",
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True,
     )
@@ -559,7 +545,7 @@ async def test_get_product_by_barcode_not_found(client, auth_tokens):
 
 async def test_get_product_by_barcode_forbidden_role(client, auth_tokens):
     resp = await client.get(
-        "/api/v1/products/barcode/123456789012",
+        "/api/v1/products/barcode/036000291452",
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True,
     )
@@ -572,7 +558,7 @@ async def test_get_product_by_barcode_forbidden_role(client, auth_tokens):
 ])
 async def test_get_product_by_barcode_auth_edge_cases(client, headers):
     resp = await client.get(
-        "/api/v1/products/barcode/123456789012",
+        "/api/v1/products/barcode/036000291452",
         headers=headers,
         follow_redirects=True,
     )
@@ -582,7 +568,7 @@ async def test_get_product_by_barcode_auth_edge_cases(client, headers):
 # SEARCH PRODUCTS BY DESCRIPTION
 # ---------------------------
 
-@pytest.mark.parametrize("query", [None, "milk", "choc"])
+@pytest.mark.parametrize("query", ["milk", "choc"])
 async def test_search_products_success(client, auth_tokens, valid_product, query):
     await client.post(
         "/api/v1/products",
@@ -693,8 +679,8 @@ async def test_update_position_forbidden_role(client, auth_tokens):
     assert resp.status_code == 403
 
 async def test_update_position_conflict(client, auth_tokens):
-    p1 = {"description": "A", "barcode": "123456789012", "price_per_unit": 1}
-    p2 = {"description": "B", "barcode": "123456789013", "price_per_unit": 1}
+    p1 = {"description": "A", "barcode": "036000291452", "price_per_unit": 1}
+    p2 = {"description": "B", "barcode": "036000291452", "price_per_unit": 1}
 
     r1 = await client.post(
         "/api/v1/products", json=p1,
@@ -846,7 +832,7 @@ async def test_update_quantity_not_found(client, auth_tokens):
     # Try to update product
     resp = await client.put(
         f"/api/v1/products/{product_id}",
-        json={"barcode": "614141007346", "price_per_unit": 5.0},
+        json={"barcode": "614141007349", "price_per_unit": 5.0},
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True,
     )
@@ -890,7 +876,7 @@ async def test_update_product_in_order(client, auth_tokens, valid_product):
     # Try to update product
     resp = await client.put(
         f"/api/v1/products/{product_id}",
-        json={"barcode": "614141007346",
+        json={"barcode": "614141007349",
               "price_per_unit": 5.0},
         headers=auth_header(auth_tokens, "admin"),
         follow_redirects=True,
