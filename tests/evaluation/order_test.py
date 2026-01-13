@@ -66,7 +66,7 @@ def auth_header(tokens, role: str):
 async def create_product(client, auth_tokens):
     payload = {
         "description": "Water Bottle",
-        "barcode": "123456789012",
+        "barcode": "036000291452",
         "price_per_unit": 1.50,
     }
     resp = await client.post(
@@ -180,10 +180,10 @@ async def test_issue_order_ignores_provided_id(client, auth_tokens):
     {"quantity": 1, "price_per_unit": 5.0},
     {"barcode": "", "quantity": 1, "price_per_unit": 5.0},
     {"barcode": "123", "quantity": 1, "price_per_unit": 5.0},
-    {"barcode": "123456789012", "quantity": 0, "price_per_unit": 5.0},
-    {"barcode": "123456789012", "quantity": -1, "price_per_unit": 5.0},
-    {"barcode": "123456789012", "quantity": 1, "price_per_unit": 0},
-    {"barcode": "123456789012", "quantity": 1, "price_per_unit": -1},
+    {"barcode": "8058269191689", "quantity": 0, "price_per_unit": 5.0},
+    {"barcode": "8058269191689", "quantity": -1, "price_per_unit": 5.0},
+    {"barcode": "8058269191689", "quantity": 1, "price_per_unit": 0},
+    {"barcode": "8058269191689", "quantity": 1, "price_per_unit": -1},
 ])
 async def test_issue_order_bad_request(client, auth_tokens, payload):
     resp = await client.post(
@@ -218,7 +218,7 @@ async def test_issue_order_product_not_found(client, auth_tokens):
 async def test_issue_order_no_auth(client):
     resp = await client.post(
         "/api/v1/orders",
-        json={"barcode": "123456789012", "quantity": 1, "price_per_unit": 5.0},
+        json={"barcode": "8058269191689", "quantity": 1, "price_per_unit": 5.0},
         follow_redirects=True,
     )
     assert resp.status_code == 401
@@ -227,7 +227,7 @@ async def test_issue_order_no_auth(client):
 async def test_issue_order_invalid_token(client):
     resp = await client.post(
         "/api/v1/orders",
-        json={"barcode": "123456789012", "quantity": 1, "price_per_unit": 5.0},
+        json={"barcode": "8058269191689", "quantity": 1, "price_per_unit": 5.0},
         headers={"Authorization": "Bearer invalid"},
         follow_redirects=True,
     )
@@ -237,7 +237,7 @@ async def test_issue_order_invalid_token(client):
 async def test_issue_order_forbidden_role(client, auth_tokens):
     resp = await client.post(
         "/api/v1/orders",
-        json={"barcode": "123456789012", "quantity": 1, "price_per_unit": 5.0},
+        json={"barcode": "8058269191689", "quantity": 1, "price_per_unit": 5.0},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True,
     )
@@ -355,8 +355,8 @@ async def test_payfor_order_ignores_id(client, auth_tokens):
     {"quantity": 1, "price_per_unit": 5.0},
     {"product_barcode": "", "quantity": 1, "price_per_unit": 5.0},
     {"product_barcode": "123", "quantity": 1, "price_per_unit": 5.0},
-    {"product_barcode": "123456789012", "quantity": 0, "price_per_unit": 5.0},
-    {"product_barcode": "123456789012", "quantity": -1, "price_per_unit": 5.0},
+    {"product_barcode": "8058269191689", "quantity": 0, "price_per_unit": 5.0},
+    {"product_barcode": "8058269191689", "quantity": -1, "price_per_unit": 5.0},
 ])
 async def test_payfor_order_bad_request(client, auth_tokens, payload):
     resp = await client.post(
@@ -386,7 +386,7 @@ async def test_payfor_order_product_not_found(client, auth_tokens):
 async def test_payfor_order_no_auth(client):
     resp = await client.post(
         "/api/v1/orders/payfor",
-        json={"product_barcode": "123456789012", "quantity": 1, "price_per_unit": 5.0},
+        json={"product_barcode": "8058269191689", "quantity": 1, "price_per_unit": 5.0},
         follow_redirects=True,
     )
     assert resp.status_code == 401
@@ -395,7 +395,7 @@ async def test_payfor_order_no_auth(client):
 async def test_payfor_order_forbidden(client, auth_tokens):
     resp = await client.post(
         "/api/v1/orders/payfor",
-        json={"product_barcode": "123456789012", "quantity": 1, "price_per_unit": 5.0},
+        json={"product_barcode": "8058269191689", "quantity": 1, "price_per_unit": 5.0},
         headers=auth_header(auth_tokens, "cashier"),
         follow_redirects=True,
     )
