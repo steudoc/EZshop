@@ -144,6 +144,9 @@ async def add_item(return_id: int, barcode: str, amount: int):
     """
     if not return_id or return_id <= 0:
         throw_bad_request('Invalid return id')
+    
+    if amount <= 0:
+        throw_bad_request('Invalid amount')
 
     product_controller = ProductController()
     product = await product_controller.get_product_by_barcode(barcode)
@@ -188,7 +191,7 @@ async def add_item(return_id: int, barcode: str, amount: int):
     return BooleanDTO(success=True)
 
 @router.delete("/{return_id}/items", 
-               status_code=status.HTTP_204_NO_CONTENT, 
+               status_code=status.HTTP_202_ACCEPTED, 
                dependencies=[Depends(authenticate_user([UserType.Administrator, UserType.ShopManager, UserType.Cashier]))])
 async def delete_return(return_id: int, barcode: str, amount: int):
     """
@@ -201,7 +204,7 @@ async def delete_return(return_id: int, barcode: str, amount: int):
       - NotFoundError: when the return does not exist
       - BadRequestError: when the return_id is invalid or missing
       - InvalidStateError: when the return cannot be modified due to its current state CLOSED
-    - Status code: 204 No Content
+    - Status code: 202 Accepted
     """
     if not return_id or return_id <= 0:
         throw_bad_request('Invalid return id')
