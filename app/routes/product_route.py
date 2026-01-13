@@ -119,6 +119,7 @@ async def get_product_by_barcode(barcode: str):
 
 
 @router.patch("/{product_id}/position", response_model=BooleanDTO,
+			  status_code=status.HTTP_201_CREATED,
             dependencies=[Depends(authenticate_user([UserType.Administrator, 
 													 UserType.ShopManager]))])
 async def assign_product_position(product_id: int, position: str):
@@ -134,7 +135,7 @@ async def assign_product_position(product_id: int, position: str):
       - NotFoundError: if the product with given id does not exist
 	  - BadRequestError: if the position format is not valid or id is not valid
 	  - ConflictError: if the position is already occupied by another product
-    - Status code: 200
+    - Status code: 201
     """
 
 	# check that product id is valid
@@ -149,6 +150,7 @@ async def assign_product_position(product_id: int, position: str):
 
 
 @router.patch("/{product_id}/quantity", response_model=BooleanDTO,
+			  status_code=status.HTTP_201_CREATED,
             dependencies=[Depends(authenticate_user([UserType.Administrator, 
 													 UserType.ShopManager]))])
 async def increment_product_quantity(product_id: int, quantity: int):
@@ -164,7 +166,7 @@ async def increment_product_quantity(product_id: int, quantity: int):
       - NotFoundError: if the product with given id does not exist
 	  - BadRequestError: if the resulting product quantity is negative 
 	  or product id is not valid
-    - Status code: 200
+    - Status code: 201
     """
 
 	# check that product id is valid
