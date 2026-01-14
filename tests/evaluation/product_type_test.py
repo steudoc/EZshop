@@ -406,7 +406,7 @@ async def test_update_product_forbidden_roles(client, auth_tokens, valid_product
     {"price_per_unit": -1},
     {"quantity": 0},
     {"barcode": "123"},
-    {"barcode": "036000291452"},
+    {"barcode": "012345678901234"},
 ])
 async def test_update_product_invalid_payload(client, auth_tokens, valid_product, payload):
     create = await client.post(
@@ -436,7 +436,7 @@ async def test_update_product_not_found(client, auth_tokens):
 
 async def test_update_product_barcode_conflict(client, auth_tokens):
     p1 = {"description": "A", "barcode": "036000291452", "price_per_unit": 1}
-    p2 = {"description": "B", "barcode": "036000291452", "price_per_unit": 2}
+    p2 = {"description": "B", "barcode": "8435497287344", "price_per_unit": 2}
 
     r1 = await client.post(
         "/api/v1/products", json=p1,
