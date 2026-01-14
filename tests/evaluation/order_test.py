@@ -200,7 +200,7 @@ async def test_issue_order_bad_request(client, auth_tokens, payload):
 # ---------------------------
 
 async def test_issue_order_product_not_found(client, auth_tokens):
-    payload = valid_order_payload("999999999999")
+    payload = valid_order_payload("8058269191689")
 
     resp = await client.post(
         "/api/v1/orders",
@@ -373,7 +373,7 @@ async def test_payfor_order_product_not_found(client, auth_tokens):
     resp = await client.post(
         "/api/v1/orders/payfor",
         json={
-            "product_barcode": "999999999999",
+            "product_barcode": "8058269191689",
             "quantity": 1,
             "price_per_unit": 5.0,
         },

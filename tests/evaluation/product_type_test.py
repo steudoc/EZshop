@@ -680,7 +680,7 @@ async def test_update_position_forbidden_role(client, auth_tokens):
 
 async def test_update_position_conflict(client, auth_tokens):
     p1 = {"description": "A", "barcode": "036000291452", "price_per_unit": 1}
-    p2 = {"description": "B", "barcode": "036000291452", "price_per_unit": 1}
+    p2 = {"description": "B", "barcode": "8435497287344", "price_per_unit": 1}
 
     r1 = await client.post(
         "/api/v1/products", json=p1,
