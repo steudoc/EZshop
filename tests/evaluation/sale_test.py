@@ -457,12 +457,12 @@ async def test_delete_sale_not_found(client, auth_tokens, sale_id):
     assert resp.status_code == 404
 
 # ---------------------------
-# DELETE /sales/{sale_id} - DELETE SALE TESTS - 420 INVALID STATE
+# POST /sales/{sale_id} - ADD PRODUCT TO SALE TESTS - 420 INVALID STATE
 # ---------------------------
     
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_add_item_closed_sale(client, auth_tokens, role):
-    """Applying discount to closed sale should return 420."""
+    """Add item to closed sale should return 420."""
     prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
@@ -485,9 +485,10 @@ async def test_add_item_closed_sale(client, auth_tokens, role):
         follow_redirects=True
     )
 
-    # Try to delete paid sale
-    resp = await client.delete(
-        f"/api/v1/sales/{sale_id}",
+    # Try to add item to paid sale
+    resp = await client.post(
+        f"/api/v1/sales/{sale_id}/items",
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -496,7 +497,7 @@ async def test_add_item_closed_sale(client, auth_tokens, role):
 
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_add_item_paid_sale(client, auth_tokens, role):
-    """Applying discount to paid sale should return 420."""
+    """Add item to paid sale should return 420."""
     prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
@@ -526,9 +527,10 @@ async def test_add_item_paid_sale(client, auth_tokens, role):
         follow_redirects=True
     )
 
-    # Try to delete paid sale
-    resp = await client.delete(
-        f"/api/v1/sales/{sale_id}",
+    # Try to add item to paid sale
+    resp = await client.post(
+        f"/api/v1/sales/{sale_id}/items",
+        params={"barcode": "614141007349", "amount": 5},
         headers=auth_header(auth_tokens, role),
         follow_redirects=True
     )
@@ -1097,7 +1099,7 @@ async def test_remove_product_not_in_sale(client, auth_tokens):
 
 @pytest.mark.parametrize("role", ["admin", "manager", "cashier"])
 async def test_delete_item_closed_sale(client, auth_tokens, role):
-    """Applying discount to closed sale should return 420."""
+    """Delete item from closed sale should return 420."""
     prod = await create_product(client, auth_tokens, barcode="614141007349", quantity=50)
     # Create sale
     sale_resp = await create_sale(client, auth_tokens, role)
