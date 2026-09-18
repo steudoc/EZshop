@@ -126,6 +126,10 @@ class ProductController:
         Will throw NotFoundError if product doesn't exist, will throw
         BadRequestError if position is not valid,
         will throw ConflictError if position is already occupied"""
+        
+		# first check that given position is valid
+        if (not self.repo.is_position_valid(position)):
+            throw_bad_request("Invalid position")
 
         # get the product in the db (throw not found if not found)
         product = await self.repo.get_product_by_id(product_id)

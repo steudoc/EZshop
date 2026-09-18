@@ -101,7 +101,7 @@ def test_assign_position_lifecycle(client, auth_tokens, seeded_products):
         params={"position": new_position},
         headers=auth_header(auth_tokens, role)
     )
-    assert resp.status_code == 200 # Docstring says 200
+    assert resp.status_code == 201 
     assert resp.json()["success"] is True
 
     # 2. VERIFY UPDATE
@@ -117,7 +117,7 @@ def test_assign_position_lifecycle(client, auth_tokens, seeded_products):
         params={"position": ""},
         headers=auth_header(auth_tokens, role)
     )
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     assert resp.json()["success"] is True
 
     # 4. VERIFY CLEARED

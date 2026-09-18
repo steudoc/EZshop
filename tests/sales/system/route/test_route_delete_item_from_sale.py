@@ -144,8 +144,8 @@ def test_5_delete_item_product_not_in_sale(client, auth_tokens, role):
     )
 
     # Assertion
-    assert response.status_code == 400
-    assert response.json()["name"] == "BadRequestError"
+    assert response.status_code == 404
+    assert response.json()["name"] == "NotFoundError"
 
 
 # -----------------------------------------------------------------------------

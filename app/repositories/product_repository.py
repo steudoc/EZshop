@@ -74,7 +74,7 @@ class ProductRepository(BaseRepository):
             return False
 
         # check that price is present and valid
-        if (price_per_unit == None or price_per_unit < 0):
+        if (price_per_unit == None or price_per_unit <= 0):
             return False
 
         # check that quantity is valid

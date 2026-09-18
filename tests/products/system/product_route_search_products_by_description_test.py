@@ -172,4 +172,4 @@ def test_search_products_missing_query_param(client, auth_tokens):
         BASE_URL + "/products/search",
         headers=auth_header(auth_tokens, "admin")
     )
-    assert resp.status_code == 422
+    assert resp.status_code == 200

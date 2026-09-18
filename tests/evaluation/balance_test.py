@@ -44,7 +44,7 @@ def initial_users():
 
 
 @pytest.fixture
-async def auth_tokens(client, initial_users):
+async def auth_tokens(client, initial_users, reset_state):
     tokens = {}
     for role, creds in initial_users.items():
         resp = await client.post(

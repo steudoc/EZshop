@@ -53,7 +53,7 @@ async def list_products():
 @router.get("/search", response_model=List[ProductDTO],
             dependencies=[Depends(authenticate_user([UserType.Administrator, 
 													 UserType.ShopManager]))])
-async def search_products_by_description(query: str):
+async def search_products_by_description(query: str | None = None):
 	"""
     Retrieve all products that contain the given description.
 
@@ -62,6 +62,10 @@ async def search_products_by_description(query: str):
     - Returns: List of products as List of ProductDTO
     - Status code: 200 OK
     """
+
+	# in the absence of a description, return an empty list
+	if (query is None):
+		return []
 
 	# retrieve all products by description
 	return await controller.get_products_by_description(query)
@@ -119,6 +123,7 @@ async def get_product_by_barcode(barcode: str):
 
 
 @router.patch("/{product_id}/position", response_model=BooleanDTO,
+			  status_code=status.HTTP_201_CREATED,
             dependencies=[Depends(authenticate_user([UserType.Administrator, 
 													 UserType.ShopManager]))])
 async def assign_product_position(product_id: int, position: str):
@@ -134,7 +139,7 @@ async def assign_product_position(product_id: int, position: str):
       - NotFoundError: if the product with given id does not exist
 	  - BadRequestError: if the position format is not valid or id is not valid
 	  - ConflictError: if the position is already occupied by another product
-    - Status code: 200
+    - Status code: 201
     """
 
 	# check that product id is valid
@@ -149,6 +154,7 @@ async def assign_product_position(product_id: int, position: str):
 
 
 @router.patch("/{product_id}/quantity", response_model=BooleanDTO,
+			  status_code=status.HTTP_201_CREATED,
             dependencies=[Depends(authenticate_user([UserType.Administrator, 
 													 UserType.ShopManager]))])
 async def increment_product_quantity(product_id: int, quantity: int):
@@ -164,7 +170,7 @@ async def increment_product_quantity(product_id: int, quantity: int):
       - NotFoundError: if the product with given id does not exist
 	  - BadRequestError: if the resulting product quantity is negative 
 	  or product id is not valid
-    - Status code: 200
+    - Status code: 201
     """
 
 	# check that product id is valid
@@ -195,7 +201,7 @@ async def update_product(product_id: int, product: ProductDTO):
 	  - InvalidStateError: if the product barcode is updated while it has some 
 	  shop transaction associated with it (any sale/return/order)
 	  - ConflictError: if the barcode is updated but the new barcode is already in use
-    - Status code: 200
+    - Status code: 201
     """
 
 	# check that product id is valid
